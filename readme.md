@@ -7,6 +7,8 @@
 
 Beam displays live battery metrics as a persistent status bar notification and shows a full breakdown in-app. You can choose which additional metrics appear in the notification body.
 
+Beam is inspired by the original [Wattz](https://github.com/blunden/Wattz) app.
+
 ## Metrics
 
 - Power (watts)

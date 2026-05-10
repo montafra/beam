@@ -1,0 +1,7 @@
+Prima versione su F-Droid.
+• Riprogettati schermata principale, impostazioni e notifiche
+• Nuove impostazioni tema con colore personalizzato e modalità OLED
+• Introdotto feedback aptico in tutta l'app
+• Localizzazione italiana (it-IT)
+• Aggiornati icona dell'app e screenshot
+• Gradle aggiornato alla versione 9.2.0
