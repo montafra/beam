@@ -13,7 +13,7 @@ val localProps = Properties().apply {
 }
 
 configure<ApplicationExtension> {
-    compileSdk = 37
+    compileSdk = 36
 
     signingConfigs {
         create("release") {
@@ -27,9 +27,9 @@ configure<ApplicationExtension> {
     defaultConfig {
         applicationId = "montafra.beam"
         minSdk = 28 // BatteryManager.computeChargeTimeRemaining()
-        targetSdk = 37
-        versionCode = 22
-        versionName = "1.1"
+        targetSdk = 36
+        versionCode = 23
+        versionName = "1.1.1"
     }
 
     androidResources {
