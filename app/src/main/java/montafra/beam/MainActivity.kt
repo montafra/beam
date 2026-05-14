@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import androidx.activity.ComponentActivity
@@ -22,6 +23,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -49,6 +51,8 @@ const val settingsUpdateInd = "$namespace.settings-update-ind"
 private object NoOpHapticFeedback : HapticFeedback {
     override fun performHapticFeedback(hapticFeedbackType: HapticFeedbackType) {}
 }
+
+val LocalHapticsEnabled = staticCompositionLocalOf { true }
 
 class MainActivity : ComponentActivity() {
     enum class Perm { Granted, Denied, NotAsked }
@@ -84,9 +88,20 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun syncNotificationEnabled() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            checkSelfPermission(permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            getSharedPreferences(settingsName, MODE_PRIVATE)
+                .edit().putBoolean("notificationEnabled", false).apply()
+        }
+    }
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (permissions.contains(permission.POST_NOTIFICATIONS)) startStatusService()
+        if (permissions.contains(permission.POST_NOTIFICATIONS)) {
+            syncNotificationEnabled()
+            startStatusService()
+        }
     }
 
     override fun onDestroy() {
@@ -105,6 +120,7 @@ class MainActivity : ComponentActivity() {
             requestPerm(permission.POST_NOTIFICATIONS)
             // startStatusService() is called from onRequestPermissionsResult once the user responds
         } else {
+            syncNotificationEnabled()
             startStatusService()
         }
 
@@ -124,7 +140,8 @@ class MainActivity : ComponentActivity() {
             val realHaptic = LocalHapticFeedback.current
             BeamTheme(themePrefs) {
                 CompositionLocalProvider(
-                    LocalHapticFeedback provides if (hapticsEnabled.value) realHaptic else NoOpHapticFeedback
+                    LocalHapticFeedback provides if (hapticsEnabled.value) realHaptic else NoOpHapticFeedback,
+                    LocalHapticsEnabled provides hapticsEnabled.value,
                 ) {
                 val navController = rememberNavController()
                 NavHost(

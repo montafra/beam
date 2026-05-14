@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,7 +39,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -60,6 +62,7 @@ fun ThemeSettingsScreen(navController: NavController) {
     var customColorValue by remember { mutableIntStateOf(prefs.getInt("themeColorValue", colorSwatches[6])) }
     var heroBacklight by remember { mutableStateOf(prefs.getBoolean("heroBacklight", true)) }
     var hapticsEnabled by remember { mutableStateOf(prefs.getBoolean("hapticsEnabled", true)) }
+    var keepScreenOn by remember { mutableStateOf(prefs.getBoolean("keepScreenOn", false)) }
 
     Scaffold(
         topBar = {
@@ -157,60 +160,91 @@ fun ThemeSettingsScreen(navController: NavController) {
                 }
             }
             item {
-                SubLabel(stringResource(R.string.backlight))
+                SubLabel(stringResource(R.string.customization))
                 Spacer(Modifier.height(8.dp))
-                ListItem(
-                    headlineContent = { Text(stringResource(R.string.heroBacklight)) },
-                    supportingContent = { Text(stringResource(R.string.heroBacklightDesc)) },
-                    trailingContent = {
-                        Switch(
-                            checked = heroBacklight,
-                            onCheckedChange = {
-                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                heroBacklight = it
-                                prefs.edit().putBoolean("heroBacklight", it).commit()
-                            },
-                        )
-                    },
-                    colors = ListItemDefaults.colors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    ),
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(16.dp))
-                        .clickable {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 4.dp, bottomEnd = 4.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                ) {
+                    ListItem(
+                        headlineContent = { Text(stringResource(R.string.heroBacklight)) },
+                        supportingContent = { Text(stringResource(R.string.heroBacklightDesc)) },
+                        trailingContent = {
+                            Switch(
+                                checked = heroBacklight,
+                                onCheckedChange = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                    heroBacklight = it
+                                    prefs.edit().putBoolean("heroBacklight", it).commit()
+                                },
+                            )
+                        },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                        modifier = Modifier.clickable {
                             haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                             heroBacklight = !heroBacklight
                             prefs.edit().putBoolean("heroBacklight", heroBacklight).commit()
                         },
-                )
-            }
-            item {
-                SubLabel(stringResource(R.string.haptics))
-                Spacer(Modifier.height(8.dp))
-                ListItem(
-                    headlineContent = { Text(stringResource(R.string.hapticsEnabled)) },
-                    supportingContent = { Text(stringResource(R.string.hapticsEnabledDesc)) },
-                    trailingContent = {
-                        Switch(
-                            checked = hapticsEnabled,
-                            onCheckedChange = {
-                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                hapticsEnabled = it
-                                prefs.edit().putBoolean("hapticsEnabled", it).commit()
-                            },
-                        )
-                    },
-                    colors = ListItemDefaults.colors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    ),
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(16.dp))
-                        .clickable {
+                    )
+                }
+                Spacer(Modifier.height(4.dp))
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(4.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                ) {
+                    ListItem(
+                        headlineContent = { Text(stringResource(R.string.hapticsEnabled)) },
+                        supportingContent = { Text(stringResource(R.string.hapticsEnabledDesc)) },
+                        trailingContent = {
+                            Switch(
+                                checked = hapticsEnabled,
+                                onCheckedChange = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                    hapticsEnabled = it
+                                    prefs.edit().putBoolean("hapticsEnabled", it).commit()
+                                },
+                            )
+                        },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                        modifier = Modifier.clickable {
                             haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                             hapticsEnabled = !hapticsEnabled
                             prefs.edit().putBoolean("hapticsEnabled", hapticsEnabled).commit()
                         },
-                )
+                    )
+                }
+                Spacer(Modifier.height(4.dp))
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 20.dp, bottomEnd = 20.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                ) {
+                    ListItem(
+                        headlineContent = { Text(stringResource(R.string.keepScreenOn)) },
+                        supportingContent = { Text(stringResource(R.string.keepScreenOnDesc)) },
+                        trailingContent = {
+                            Switch(
+                                checked = keepScreenOn,
+                                onCheckedChange = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                    keepScreenOn = it
+                                    prefs.edit().putBoolean("keepScreenOn", it).commit()
+                                },
+                            )
+                        },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                        modifier = Modifier.clickable {
+                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            keepScreenOn = !keepScreenOn
+                            prefs.edit().putBoolean("keepScreenOn", keepScreenOn).commit()
+                        },
+                    )
+                }
             }
             item { Spacer(Modifier.height(16.dp)) }
         }

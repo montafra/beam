@@ -1,13 +1,17 @@
 package montafra.beam.ui
 
+import android.Manifest
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.view.HapticFeedbackConstants
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
@@ -63,6 +67,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import montafra.beam.LocalHapticsEnabled
 import montafra.beam.R
 import montafra.beam.StatusService
 import montafra.beam.settingsName
@@ -76,11 +81,14 @@ fun SettingsScreen(navController: NavController) {
     val view = LocalView.current
     val prefs = remember { context.getSharedPreferences(settingsName, Context.MODE_PRIVATE) }
 
+    val hapticsEnabled = LocalHapticsEnabled.current
     val notificationToggleHaptic = { enabled: Boolean ->
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            view.performHapticFeedback(
-                if (enabled) HapticFeedbackConstants.CONFIRM else HapticFeedbackConstants.REJECT
-            )
+            if (hapticsEnabled) {
+                view.performHapticFeedback(
+                    if (enabled) HapticFeedbackConstants.CONFIRM else HapticFeedbackConstants.REJECT
+                )
+            }
         } else {
             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
         }
@@ -96,13 +104,30 @@ fun SettingsScreen(navController: NavController) {
         catch (_: Exception) { "" }
     }
 
-    val setNotificationEnabled = { enabled: Boolean ->
+    val applyNotificationEnabled = { enabled: Boolean ->
         notificationEnabled = enabled
         prefs.edit().putBoolean("notificationEnabled", enabled).commit()
         if (enabled) {
             context.startForegroundService(Intent(context, StatusService::class.java))
         } else {
             context.sendBroadcast(Intent(settingsUpdateInd).setPackage(context.packageName))
+        }
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) applyNotificationEnabled(true)
+    }
+
+    val setNotificationEnabled = { enabled: Boolean ->
+        if (enabled &&
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+        ) {
+            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            applyNotificationEnabled(enabled)
         }
     }
 

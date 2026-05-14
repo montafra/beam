@@ -68,6 +68,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalView
 import kotlinx.coroutines.launch
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -96,13 +97,25 @@ fun MainScreen(navController: NavController, vm: BatteryViewModel = viewModel())
     val heroBacklight = remember { mutableStateOf(
         context.getSharedPreferences(settingsName, Context.MODE_PRIVATE).getBoolean("heroBacklight", true)
     ) }
+    val keepScreenOn = remember { mutableStateOf(
+        context.getSharedPreferences(settingsName, Context.MODE_PRIVATE).getBoolean("keepScreenOn", false)
+    ) }
     DisposableEffect(Unit) {
         val prefs = context.getSharedPreferences(settingsName, Context.MODE_PRIVATE)
         val listener = SharedPreferences.OnSharedPreferenceChangeListener { p, key ->
-            if (key == "heroBacklight") heroBacklight.value = p.getBoolean(key, true)
+            when (key) {
+                "heroBacklight" -> heroBacklight.value = p.getBoolean(key, true)
+                "keepScreenOn" -> keepScreenOn.value = p.getBoolean(key, false)
+            }
         }
         prefs.registerOnSharedPreferenceChangeListener(listener)
         onDispose { prefs.unregisterOnSharedPreferenceChangeListener(listener) }
+    }
+
+    val view = LocalView.current
+    DisposableEffect(keepScreenOn.value) {
+        view.keepScreenOn = keepScreenOn.value
+        onDispose { view.keepScreenOn = false }
     }
 
     val noiseBitmap = remember {

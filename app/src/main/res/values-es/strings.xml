@@ -48,4 +48,7 @@
     <string name="workaroundsShortDesc">Correcciones del dispositivo</string>
     <string name="sourceCode">Código fuente</string>
     <string name="advancedSettings">Configuración avanzada</string>
+    <string name="customization">Personalización</string>
+    <string name="keepScreenOn">Mantener pantalla encendida</string>
+    <string name="keepScreenOnDesc">Impide que la pantalla se apague mientras la pantalla principal está abierta</string>
 </resources>

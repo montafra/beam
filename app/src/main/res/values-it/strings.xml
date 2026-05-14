@@ -46,9 +46,11 @@
     <string name="themeDesc">Modalità, colore, retroilluminazione</string>
     <string name="showTimeToFull">Stima tempo di ricarica</string>
     <string name="showTimeToFullDesc">Mostra il tempo rimanente alla carica completa nella notifica</string>
-    <string name="backlight">Retroilluminazione</string>
+    <string name="customization">Personalizzazione</string>
     <string name="heroBacklight">Retroilluminazione hero</string>
     <string name="heroBacklightDesc">Effetto bagliore animato dietro la scheda principale</string>
+    <string name="keepScreenOn">Mantieni schermo acceso</string>
+    <string name="keepScreenOnDesc">Impedisce lo spegnimento dello schermo nella schermata principale</string>
     <string name="notificationDesc">Icona, voci</string>
     <string name="notificationEnableDesc">Notifica persistente della batteria</string>
     <string name="workaroundsShortDesc">Correzioni specifiche del dispositivo</string>
@@ -56,7 +58,6 @@
     <string name="advancedSettings">Impostazioni avanzate</string>
     <string name="tweaks">Regolazioni</string>
     <string name="pollInterval">Intervallo di aggiornamento</string>
-    <string name="haptics">Vibrazioni</string>
     <string name="hapticsEnabled">Feedback vibrotattile</string>
     <string name="hapticsEnabledDesc">Vibra al tocco e alla pressione</string>
 </resources>

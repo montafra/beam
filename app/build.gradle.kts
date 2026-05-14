@@ -28,8 +28,8 @@ configure<ApplicationExtension> {
         applicationId = "montafra.beam"
         minSdk = 28 // BatteryManager.computeChargeTimeRemaining()
         targetSdk = 37
-        versionCode = 22
-        versionName = "1.1"
+        versionCode = 24
+        versionName = "1.2"
     }
 
     androidResources {
@@ -72,7 +72,7 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.activity:activity-compose:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.3")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.3")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.3ad ")
     implementation("androidx.navigation:navigation-compose:2.8.5")
     debugImplementation("androidx.compose.ui:ui-tooling")
 }
