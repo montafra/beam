@@ -48,4 +48,10 @@
     <string name="workaroundsShortDesc">Correcciones del dispositivo</string>
     <string name="sourceCode">Código fuente</string>
     <string name="advancedSettings">Configuración avanzada</string>
+    <string name="customization">Personalización</string>
+    <string name="keepScreenOn">Mantener pantalla encendida</string>
+    <string name="keepScreenOnDesc">Impide que la pantalla se apague mientras la pantalla principal está abierta</string>
+    <string name="whatsNew">Novedades</string>
+    <string name="monoFont">Fuente monoespaciada</string>
+    <string name="monoFontDesc">Usa una tipografía de ancho fijo en toda la aplicación</string>
 </resources>

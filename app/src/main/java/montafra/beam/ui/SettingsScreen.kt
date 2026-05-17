@@ -1,21 +1,27 @@
 package montafra.beam.ui
 
+import android.Manifest
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.view.HapticFeedbackConstants
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -63,12 +69,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import montafra.beam.LocalHapticsEnabled
 import montafra.beam.R
 import montafra.beam.StatusService
 import montafra.beam.settingsName
 import montafra.beam.settingsUpdateInd
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun SettingsScreen(navController: NavController) {
     val context = LocalContext.current
@@ -76,11 +83,14 @@ fun SettingsScreen(navController: NavController) {
     val view = LocalView.current
     val prefs = remember { context.getSharedPreferences(settingsName, Context.MODE_PRIVATE) }
 
+    val hapticsEnabled = LocalHapticsEnabled.current
     val notificationToggleHaptic = { enabled: Boolean ->
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            view.performHapticFeedback(
-                if (enabled) HapticFeedbackConstants.CONFIRM else HapticFeedbackConstants.REJECT
-            )
+            if (hapticsEnabled) {
+                view.performHapticFeedback(
+                    if (enabled) HapticFeedbackConstants.CONFIRM else HapticFeedbackConstants.REJECT
+                )
+            }
         } else {
             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
         }
@@ -95,14 +105,37 @@ fun SettingsScreen(navController: NavController) {
         try { context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: "" }
         catch (_: Exception) { "" }
     }
+    val currentVersionCode = remember {
+        try { context.packageManager.getPackageInfo(context.packageName, 0).longVersionCode.toInt() }
+        catch (_: Exception) { 0 }
+    }
+    var showChangelog by remember { mutableStateOf(false) }
+    var changelogEntries by remember { mutableStateOf(emptyList<ChangelogEntry>()) }
 
-    val setNotificationEnabled = { enabled: Boolean ->
+    val applyNotificationEnabled = { enabled: Boolean ->
         notificationEnabled = enabled
         prefs.edit().putBoolean("notificationEnabled", enabled).commit()
         if (enabled) {
             context.startForegroundService(Intent(context, StatusService::class.java))
         } else {
             context.sendBroadcast(Intent(settingsUpdateInd).setPackage(context.packageName))
+        }
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) applyNotificationEnabled(true)
+    }
+
+    val setNotificationEnabled = { enabled: Boolean ->
+        if (enabled &&
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+        ) {
+            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            applyNotificationEnabled(enabled)
         }
     }
 
@@ -307,12 +340,20 @@ fun SettingsScreen(navController: NavController) {
                             )
                         },
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        modifier = Modifier.clickable {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            context.startActivity(
-                                Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/montafra/beam"))
-                            )
-                        },
+                        modifier = Modifier.combinedClickable(
+                            onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                context.startActivity(
+                                    Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/montafra/beam"))
+                                )
+                            },
+                            onLongClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                clipboardManager.setPrimaryClip(
+                                    ClipData.newPlainText("Source Code", "https://github.com/montafra/beam")
+                                )
+                            },
+                        ),
                     )
                 }
                 Spacer(Modifier.height(4.dp))
@@ -333,14 +374,21 @@ fun SettingsScreen(navController: NavController) {
                             )
                         },
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        modifier = Modifier.clickable {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            context.startActivity(
-                                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                                    setData(Uri.fromParts("package", context.packageName, null))
-                                }
-                            )
-                        },
+                        modifier = Modifier.combinedClickable(
+                            onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                context.startActivity(
+                                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                        setData(Uri.fromParts("package", context.packageName, null))
+                                    }
+                                )
+                            },
+                            onLongClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                changelogEntries = loadChangelogs(context, 0, currentVersionCode)
+                                if (changelogEntries.isNotEmpty()) showChangelog = true
+                            },
+                        ),
                     )
                 }
             }
@@ -394,6 +442,11 @@ fun SettingsScreen(navController: NavController) {
                                 Intent(Intent.ACTION_VIEW, Uri.parse("https://liberapay.com/montafra"))
                             )
                         },
+                        onLongClick = {
+                            it.setPrimaryClip(
+                                ClipData.newPlainText("Liberapay", "https://liberapay.com/montafra")
+                            )
+                        },
                     )
                     Spacer(Modifier.height(4.dp))
                     DonateCard("Bitcoin", "sp1qqfzps48q94usuqwhfcp082kg3pphr9zyh32cg4h4q84rvr6pa3d6vq56w3trm5cs5rgw5g3wcravusunh39utwfy9p2fe7e4g774r66rwcagqpmy", clipboardManager, RoundedCornerShape(4.dp))
@@ -405,6 +458,13 @@ fun SettingsScreen(navController: NavController) {
                 Spacer(Modifier.height(16.dp))
             }
         }
+    }
+
+    if (showChangelog) {
+        ChangelogSheet(
+            entries = changelogEntries,
+            onDismiss = { showChangelog = false },
+        )
     }
 }
 
@@ -450,6 +510,7 @@ internal fun ColorSwatchPicker(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun DonateCard(
     label: String,
@@ -461,6 +522,7 @@ private fun DonateCard(
     onActionClick: (ClipboardManager) -> Unit = {
         it.setPrimaryClip(ClipData.newPlainText(label, address))
     },
+    onLongClick: ((ClipboardManager) -> Unit)? = null,
 ) {
     val haptic = LocalHapticFeedback.current
     val iconRes = when (label) {
@@ -488,10 +550,18 @@ private fun DonateCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable {
-                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                    onActionClick(clipboard)
-                }
+                .combinedClickable(
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                        onActionClick(clipboard)
+                    },
+                    onLongClick = onLongClick?.let { handler ->
+                        {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            handler(clipboard)
+                        }
+                    },
+                )
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),

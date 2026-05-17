@@ -43,31 +43,39 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.VibrationEffect
+import android.os.Vibrator
 import android.os.VibratorManager
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalView
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -96,13 +104,45 @@ fun MainScreen(navController: NavController, vm: BatteryViewModel = viewModel())
     val heroBacklight = remember { mutableStateOf(
         context.getSharedPreferences(settingsName, Context.MODE_PRIVATE).getBoolean("heroBacklight", true)
     ) }
+    val keepScreenOn = remember { mutableStateOf(
+        context.getSharedPreferences(settingsName, Context.MODE_PRIVATE).getBoolean("keepScreenOn", false)
+    ) }
     DisposableEffect(Unit) {
         val prefs = context.getSharedPreferences(settingsName, Context.MODE_PRIVATE)
         val listener = SharedPreferences.OnSharedPreferenceChangeListener { p, key ->
-            if (key == "heroBacklight") heroBacklight.value = p.getBoolean(key, true)
+            when (key) {
+                "heroBacklight" -> heroBacklight.value = p.getBoolean(key, true)
+                "keepScreenOn" -> keepScreenOn.value = p.getBoolean(key, false)
+            }
         }
         prefs.registerOnSharedPreferenceChangeListener(listener)
         onDispose { prefs.unregisterOnSharedPreferenceChangeListener(listener) }
+    }
+
+    val view = LocalView.current
+    DisposableEffect(keepScreenOn.value) {
+        view.keepScreenOn = keepScreenOn.value
+        onDispose { view.keepScreenOn = false }
+    }
+
+    val currentVersionCode = remember {
+        try { context.packageManager.getPackageInfo(context.packageName, 0).longVersionCode.toInt() }
+        catch (_: Exception) { 0 }
+    }
+    var showChangelog by remember { mutableStateOf(false) }
+    var changelogEntries by remember { mutableStateOf(emptyList<ChangelogEntry>()) }
+    LaunchedEffect(Unit) {
+        val prefs = context.getSharedPreferences(settingsName, Context.MODE_PRIVATE)
+        val lastSeen = prefs.getInt("lastSeenVersionCode", 0)
+        if (currentVersionCode > lastSeen) {
+            val entries = loadChangelogs(context, lastSeen, currentVersionCode)
+            if (entries.isNotEmpty()) {
+                changelogEntries = entries
+                showChangelog = true
+            } else {
+                prefs.edit().putInt("lastSeenVersionCode", currentVersionCode).apply()
+            }
+        }
     }
 
     val noiseBitmap = remember {
@@ -290,6 +330,17 @@ fun MainScreen(navController: NavController, vm: BatteryViewModel = viewModel())
             }
         }
     }
+
+    if (showChangelog) {
+        ChangelogSheet(
+            entries = changelogEntries,
+            onDismiss = {
+                showChangelog = false
+                context.getSharedPreferences(settingsName, Context.MODE_PRIVATE)
+                    .edit().putInt("lastSeenVersionCode", currentVersionCode).apply()
+            },
+        )
+    }
 }
 
 @Composable
@@ -297,29 +348,84 @@ private fun HeroCard(data: BatteryData) {
     val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
     val scope = rememberCoroutineScope()
+    val density = LocalDensity.current
     val primary = MaterialTheme.colorScheme.primary
     val onSurface = MaterialTheme.colorScheme.onSurface
 
     val scaleAnim = remember { Animatable(1f) }
+    var jitterX by remember { mutableFloatStateOf(0f) }
+    var jitterY by remember { mutableFloatStateOf(0f) }
+    var holdActive by remember { mutableStateOf(false) }
     val lastTapMs = remember { LongArray(1) }
 
-    val thudVibrator = remember {
+    val vibrator = remember {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val vm = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-            vm.defaultVibrator.takeIf {
-                it.areAllPrimitivesSupported(VibrationEffect.Composition.PRIMITIVE_THUD)
-            }
+            (context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager).defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        }
+    }
+    val thudCapable = remember {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
+            vibrator.areAllPrimitivesSupported(VibrationEffect.Composition.PRIMITIVE_THUD)
+    }
+    val thudEffect = remember(thudCapable) {
+        if (thudCapable) {
+            VibrationEffect.startComposition()
+                .addPrimitive(VibrationEffect.Composition.PRIMITIVE_THUD)
+                .compose()
         } else null
     }
     val playThud = {
-        if (thudVibrator != null) {
-            thudVibrator.vibrate(
-                VibrationEffect.startComposition()
-                    .addPrimitive(VibrationEffect.Composition.PRIMITIVE_THUD)
-                    .compose()
-            )
+        if (thudEffect != null) {
+            vibrator.vibrate(thudEffect)
         } else {
             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+        }
+    }
+
+    LaunchedEffect(holdActive) {
+        if (!holdActive) {
+            jitterX = 0f
+            jitterY = 0f
+            scaleAnim.animateTo(1f, spring(stiffness = 280f, dampingRatio = 0.4f))
+            return@LaunchedEffect
+        }
+        val pxPerDp = with(density) { 1.dp.toPx() }
+        coroutineScope {
+            launch {
+                scaleAnim.animateTo(0.86f, spring(stiffness = 420f, dampingRatio = 0.7f))
+            }
+            launch {
+                val start = System.nanoTime()
+                while (true) {
+                    withFrameNanos { now ->
+                        val t = (now - start) / 1e9f
+                        jitterX = sin(t * 32f * 2f * PI.toFloat()) * 1.6f * pxPerDp
+                        jitterY = cos(t * 38f * 2f * PI.toFloat()) * 1.6f * pxPerDp
+                    }
+                }
+            }
+            try {
+                if (thudEffect != null) {
+                    while (true) {
+                        vibrator.vibrate(thudEffect)
+                        delay(120)
+                    }
+                } else {
+                    vibrator.vibrate(
+                        VibrationEffect.createWaveform(
+                            longArrayOf(0, 60, 80),
+                            intArrayOf(0, 220, 0),
+                            0,
+                        )
+                    )
+                    awaitCancellation()
+                }
+            } finally {
+                vibrator.cancel()
+            }
         }
     }
 
@@ -340,13 +446,13 @@ private fun HeroCard(data: BatteryData) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp, vertical = 28.dp),
+                .padding(start = 24.dp, top = 8.dp, end = 24.dp, bottom = 28.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Row(
+            Box(
                 modifier = Modifier
-                    .scale(scaleAnim.value)
                     .pointerInput(Unit) {
+                        val longPressTimeout = viewConfiguration.longPressTimeoutMillis
                         detectTapGestures(
                             onPress = { _ ->
                                 val now = System.currentTimeMillis()
@@ -367,9 +473,27 @@ private fun HeroCard(data: BatteryData) {
                                         )
                                     }
                                 }
+                                val longPressJob = scope.launch {
+                                    delay(longPressTimeout)
+                                    holdActive = true
+                                }
                                 tryAwaitRelease()
+                                longPressJob.cancel()
+                                holdActive = false
                             }
                         )
+                    }
+                    .padding(horizontal = 32.dp, vertical = 20.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+            Row(
+                modifier = Modifier
+                    .graphicsLayer {
+                        val s = scaleAnim.value
+                        scaleX = s
+                        scaleY = s
+                        translationX = jitterX
+                        translationY = jitterY
                     },
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -393,7 +517,8 @@ private fun HeroCard(data: BatteryData) {
                     color = onSurface,
                 )
             }
-            Spacer(Modifier.height(24.dp))
+            }
+            Spacer(Modifier.height(4.dp))
             Canvas(Modifier.fillMaxWidth(0.55f).height(5.dp)) {
                 val half = size.height / 2f
                 val y = half

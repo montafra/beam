@@ -1,0 +1,8 @@
+1.1
+First F-Droid release.
+• Redesigned main screen, settings, and notifications UI
+• New theme settings with custom seed colour and OLED mode
+• Introduced haptic feedback throughout the app
+• Italian (it-IT) localization
+• Liberapay donation option in the Support Development menu
+• Updated app icon and screenshots

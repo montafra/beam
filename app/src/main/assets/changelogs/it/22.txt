@@ -1,0 +1,8 @@
+1.1
+Prima versione su F-Droid.
+• Riprogettati schermata principale, impostazioni e notifiche
+• Nuove impostazioni tema con colore personalizzato e modalità OLED
+• Introdotto feedback aptico in tutta l'app
+• Localizzazione italiana (it-IT)
+• Aggiunta opzione di donazione Liberapay nel menu "Supporta lo sviluppo"
+• Aggiornati icona dell'app e screenshot

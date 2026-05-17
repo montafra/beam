@@ -25,7 +25,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import montafra.beam.settingsName
 
-data class ThemePrefs(val mode: String = "system", val customColor: Int? = null)
+data class ThemePrefs(val mode: String = "system", val customColor: Int? = null, val monoFont: Boolean = false)
 
 private fun hsvColor(hue: Float, sat: Float, value: Float): Color =
     Color(android.graphics.Color.HSVToColor(floatArrayOf(hue, sat, value)))
@@ -90,6 +90,7 @@ fun rememberThemePrefs(): State<ThemePrefs> {
         return ThemePrefs(
             mode = p.getString("themeMode", "system") ?: "system",
             customColor = p.getInt("themeColorValue", 0xFF5F4AA6.toInt()).takeIf { it != -1 },
+            monoFont = p.getBoolean("monoFont", false),
         )
     }
 
@@ -98,7 +99,7 @@ fun rememberThemePrefs(): State<ThemePrefs> {
     DisposableEffect(Unit) {
         val prefs = context.getSharedPreferences(settingsName, Context.MODE_PRIVATE)
         val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-            if (key == "themeMode" || key == "themeColorValue") state.value = read()
+            if (key == "themeMode" || key == "themeColorValue" || key == "monoFont") state.value = read()
         }
         prefs.registerOnSharedPreferenceChangeListener(listener)
         onDispose { prefs.unregisterOnSharedPreferenceChangeListener(listener) }
@@ -150,7 +151,7 @@ fun BeamTheme(prefs: ThemePrefs, content: @Composable () -> Unit) {
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = WattzTypography,
+        typography = if (prefs.monoFont) WattzMonoTypography else WattzTypography,
         content = content,
     )
 }

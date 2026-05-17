@@ -1,0 +1,5 @@
+1.2
+• Added a new "Keep Screen On" option
+• Added a monospace font option
+• Fixed the notification permission prompt
+• Fixed the haptics toggle not working for all effects

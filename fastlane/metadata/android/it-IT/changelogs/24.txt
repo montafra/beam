@@ -1,0 +1,4 @@
+• Aggiunta nuova opzione "Mantieni schermo acceso"
+• Aggiunta opzione font monospace
+• Corretta la richiesta di autorizzazione per le notifiche
+• Corretto l'interruttore del feedback vibrotattile che non funzionava per tutti gli effetti
