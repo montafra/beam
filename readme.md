@@ -50,8 +50,15 @@ Beam needs notification permissions on newer Android phones. Open the app once a
 
 ## Support Me
 
-**BTC:** sp1qqfzps48q94usuqwhfcp082kg3pphr9zyh32cg4h4q84rvr6pa3d6vq56w3trm5cs5rgw5g3wcravusunh39utwfy9p2fe7e4g774r66rwcagqpmy
-
-**XMR:** 876wwukGWhU9H6qez4Qmt5gTBBmdKzoDg3zvT33QCwjy9e7jS7MVjQySUCpNhoVrFcF15AicUJ4VaVrTKAXGMu5D7yUbqFs
-
-**Lighting:** monta@cake.cash
+**Bitcoin (BTC):** 
+```
+bc1q7v38g2xn7wxtwn6ewde4kydn5emjr3zt73ew96
+```
+**Monero (XMR):**
+```
+876wwukGWhU9H6qez4Qmt5gTBBmdKzoDg3zvT33QCwjy9e7jS7MVjQySUCpNhoVrFcF15AicUJ4VaVrTKAXGMu5D7yUbqFs
+```
+**Lighting:**
+```
+monta@cake.cash
+```
