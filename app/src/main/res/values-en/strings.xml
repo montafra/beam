@@ -63,4 +63,5 @@
     <string name="whatsNew">What\'s New</string>
     <string name="monoFont">Monospace Font</string>
     <string name="monoFontDesc">Use a monospaced typeface throughout the app</string>
+    <string name="widgetTempLabel">Battery Temperature</string>
 </resources>

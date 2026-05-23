@@ -54,4 +54,5 @@
     <string name="whatsNew">Novedades</string>
     <string name="monoFont">Fuente monoespaciada</string>
     <string name="monoFontDesc">Usa una tipografía de ancho fijo en toda la aplicación</string>
+    <string name="widgetTempLabel">Temperatura de la batería</string>
 </resources>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_temp_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@drawable/widget_temp_background"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/widget_temp_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="32sp"
+        android:textColor="#FFFFFFFF"
+        android:textStyle="normal"
+        android:includeFontPadding="false"
+        android:text="-" />
+
+    <TextView
+        android:id="@+id/widget_temp_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:textSize="11sp"
+        android:textColor="#99FFFFFF"
+        android:includeFontPadding="false"
+        android:text="@string/temperature" />
+
+</LinearLayout>
