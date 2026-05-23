@@ -3,7 +3,8 @@
 
 *Real-time battery monitor for Android.*
 
-[<img src="https://github.com/ImranR98/Obtainium/blob/main/assets/graphics/badge_obtainium.png?raw=true" alt="Get it on Obtainium" height="60">](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/montafra/beam)
+[![Get it on F-Droid](https://img.shields.io/badge/F--Droid-Download-1976D2?logo=fdroid&logoColor=white&style=for-the-badge)](https://f-droid.org/packages/montafra.beam/)
+[![Get it on Obtainium](https://img.shields.io/badge/Obtainium-Download-1A7373?logo=obtainium&logoColor=white&style=for-the-badge)](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/montafra/beam)
 
 Beam displays live battery metrics as a persistent status bar notification and shows a full breakdown in-app. You can choose which additional metrics appear in the notification body.
 
