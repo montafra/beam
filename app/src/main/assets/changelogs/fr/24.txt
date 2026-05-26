@@ -1,0 +1,5 @@
+1.2
+• Ajout de l'option « Garder l'écran allumé »
+• Ajout d'une option de police monospace
+• Correction de l'invite d'autorisation des notifications
+• Correction du bouton du retour haptique qui ne fonctionnait pas pour tous les effets

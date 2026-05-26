@@ -1,0 +1,36 @@
+<i>Beam</i> est un moniteur de batterie léger. Il épingle dans votre barre d'état un relevé en temps réel de la puissance, du courant, de la tension ou de la charge, et s'ouvre sur une vue détaillée des métriques de batterie dans une application claire et personnalisable.
+
+Choisissez quelle unité apparaît dans l'icône de la barre d'état (W, A, Ah, V, Wh, °C, %), ou empilez plusieurs valeurs dans le corps de la notification.
+
+La confidentialité avant tout :
+• Aucune publicité
+• Aucun pistage
+• Aucune collecte de données
+• Aucun partage avec des tiers
+• Aucune permission superflue
+
+Métriques de batterie dans l'application :
+• Puissance (watts)
+• Courant (ampères)
+• Tension (volts)
+• Énergie (wattheures)
+• Température (°C)
+• Niveau de charge (pourcentage)
+• État de charge et type de prise
+• En charge depuis (date / heure)
+• Temps jusqu'à charge complète
+
+Personnalisation :
+• Couleurs dynamiques Material You (Android 12+) ou couleur personnalisée parmi une palette de 12 nuances
+• Thèmes Clair, Sombre, Système et OLED noir
+• Halo lumineux animé et retour haptique en option
+
+Compatibilité des appareils :
+• Correction de l'échelle de puissance pour les téléphones qui rapportent des µA au lieu des mA
+• Bascule d'inversion du courant pour les appareils qui inversent le sens de charge
+• Intervalle d'interrogation ajustable
+
+Code source sur GitHub : https://github.com/montafra/beam
+Chaque don est le bienvenu et soutient mes futurs projets — voir la section À propos dans l'application pour les adresses crypto.
+
+Note : la permission de notification est requise pour afficher l'indicateur dans la barre d'état. Ouvrez l'application une fois pour démarrer le service.

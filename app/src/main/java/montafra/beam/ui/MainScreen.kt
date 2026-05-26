@@ -87,6 +87,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 import montafra.beam.BatteryData
 import montafra.beam.BatteryViewModel
+import montafra.beam.LocalHapticsEnabled
 import montafra.beam.R
 import montafra.beam.settingsName
 
@@ -347,6 +348,7 @@ fun MainScreen(navController: NavController, vm: BatteryViewModel = viewModel())
 private fun HeroCard(data: BatteryData) {
     val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
+    val hapticsEnabled = LocalHapticsEnabled.current
     val scope = rememberCoroutineScope()
     val density = LocalDensity.current
     val primary = MaterialTheme.colorScheme.primary
@@ -378,10 +380,12 @@ private fun HeroCard(data: BatteryData) {
         } else null
     }
     val playThud = {
-        if (thudEffect != null) {
-            vibrator.vibrate(thudEffect)
-        } else {
-            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+        if (hapticsEnabled) {
+            if (thudEffect != null) {
+                vibrator.vibrate(thudEffect)
+            } else {
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+            }
         }
     }
 
@@ -408,7 +412,9 @@ private fun HeroCard(data: BatteryData) {
                 }
             }
             try {
-                if (thudEffect != null) {
+                if (!hapticsEnabled) {
+                    awaitCancellation()
+                } else if (thudEffect != null) {
                     while (true) {
                         vibrator.vibrate(thudEffect)
                         delay(120)

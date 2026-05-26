@@ -1,0 +1,69 @@
+<resources>
+    <string name="app_name">Beam</string>
+    <string name="back">Назад</string>
+    <string name="battery">Акумулятор</string>
+    <string name="charging">Заряджається</string>
+    <string name="chargingSince">Заряджається з</string>
+    <string name="chargeLevel">Рівень заряду</string>
+    <string name="current">Струм</string>
+    <string name="energy">Енергія</string>
+    <string name="fullyCharged">повністю заряджено</string>
+    <string name="indeterminate">-</string>
+    <string name="statusBarIndicator">Записи сповіщення</string>
+    <string name="notificationIcon">Іконка сповіщення</string>
+    <string name="no">ні</string>
+    <string name="power">Потужність</string>
+    <string name="settings">Налаштування</string>
+    <string name="temperature">Температура</string>
+    <string name="timeToFullCharge">Час до повного заряду</string>
+    <string name="voltage">Напруга</string>
+    <string name="units">Одиниці</string>
+    <string name="yes">так</string>
+
+    <!-- settings -->
+    <string name="themeColor">Колір теми</string>
+    <string name="themeColorAuto">Авто</string>
+    <string name="themeColorCustom">Власний</string>
+    <string name="themeMode">Режим теми</string>
+    <string name="themeModeSystem">Системний</string>
+    <string name="themeModeLight">Світла</string>
+    <string name="themeModeDark">Темна</string>
+    <string name="themeModeOled">OLED</string>
+    <string name="currentScalar">Виправлення масштабу потужності</string>
+    <string name="currentScalarDesc">Коли не підключено, змініть цей масштаб, доки \u0022Потужність\u0022 не стане більшою за 0 Вт, але меншою за приблизно 10 Вт.</string>
+    <string name="invertCurrent">Інвертувати індикатор заряджання</string>
+    <string name="invertCurrentDesc">Коли не підключено, увімкніть цей перемикач, якщо \u0022Заряджається\u0022 показує \u0022так\u0022.</string>
+    <string name="workarounds">Обхідні рішення</string>
+    <string name="workaroundsDesc">Багато телефонів некоректно реалізують інтерфейс Android BatteryManager і за замовчуванням повідомляють неправильні показники акумулятора. За потреби скористайтеся наведеними нижче параметрами, щоб обійти недоліки реалізації на своєму телефоні.</string>
+    <string name="supportMe">Підтримати розробку</string>
+    <string name="supportMeDesc">Допоможи підтримати мої проєкти 🐢</string>
+    <string name="openInBrowser">Відкрити в браузері</string>
+    <string name="copy">Копіювати</string>
+    <string name="about">Про застосунок</string>
+    <string name="interfaceSection">Інтерфейс</string>
+    <string name="theme">Тема</string>
+    <string name="notification">Сповіщення</string>
+    <string name="themeDesc">Режим, колір, підсвічування</string>
+    <string name="showTimeToFull">Орієнтовний час заряджання</string>
+    <string name="showTimeToFullDesc">Показувати залишок часу до повного заряду в сповіщенні</string>
+    <string name="customization">Персоналізація</string>
+    <!-- TODO: native review — "Hero" is UI jargon; consider "Підсвічування головної картки" -->
+    <string name="heroBacklight">Підсвічування герой-картки</string>
+    <string name="heroBacklightDesc">Анімований ефект сяяння за герой-карткою</string>
+    <string name="keepScreenOn">Не вимикати екран</string>
+    <string name="keepScreenOnDesc">Запобігає вимкненню екрана на головному екрані застосунку</string>
+    <string name="notificationDesc">Іконка, записи</string>
+    <string name="notificationEnableDesc">Постійне сповіщення про акумулятор</string>
+    <string name="workaroundsShortDesc">Виправлення для конкретних пристроїв</string>
+    <string name="sourceCode">Вихідний код</string>
+    <string name="advancedSettings">Розширені налаштування</string>
+    <!-- TODO: native review — "Налаштування" is already used for "Settings"; "Тонкі налаштування" disambiguates -->
+    <string name="tweaks">Тонкі налаштування</string>
+    <string name="pollInterval">Інтервал оновлення</string>
+    <string name="hapticsEnabled">Тактильний відгук</string>
+    <string name="hapticsEnabledDesc">Вібрація при дотику та натисканні</string>
+    <string name="whatsNew">Що нового</string>
+    <string name="monoFont">Моноширинний шрифт</string>
+    <string name="monoFontDesc">Використовувати моноширинний шрифт у всьому застосунку</string>
+    <string name="widgetTempLabel">Температура акумулятора</string>
+</resources>

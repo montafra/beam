@@ -40,18 +40,30 @@
     <string name="openInBrowser">Abrir en el navegador</string>
     <string name="copy">Copiar</string>
     <string name="about">Acerca de</string>
+    <string name="interfaceSection">Interfaz</string>
     <string name="theme">Tema</string>
     <string name="notification">Notificación</string>
-    <string name="themeDesc">Modo, color</string>
+    <string name="themeDesc">Modo, color, retroiluminación</string>
+    <string name="showTimeToFull">Estimación del tiempo de carga</string>
+    <string name="showTimeToFullDesc">Mostrar el tiempo restante hasta completar la carga en la notificación</string>
+    <string name="customization">Personalización</string>
+    <!-- TODO: native review — "Hero" is UI jargon; consider "Retroiluminación de la tarjeta principal" -->
+    <string name="heroBacklight">Retroiluminación principal</string>
+    <string name="heroBacklightDesc">Efecto de brillo animado detrás de la tarjeta principal</string>
+    <string name="keepScreenOn">Mantener pantalla encendida</string>
+    <string name="keepScreenOnDesc">Impide que la pantalla se apague mientras la pantalla principal está abierta</string>
     <string name="notificationDesc">Icono, entradas</string>
     <string name="notificationEnableDesc">Notificación de batería persistente</string>
     <string name="workaroundsShortDesc">Correcciones del dispositivo</string>
     <string name="sourceCode">Código fuente</string>
     <string name="advancedSettings">Configuración avanzada</string>
-    <string name="customization">Personalización</string>
-    <string name="keepScreenOn">Mantener pantalla encendida</string>
-    <string name="keepScreenOnDesc">Impide que la pantalla se apague mientras la pantalla principal está abierta</string>
+    <!-- TODO: native review — "Ajustes" is already used for "Settings"; "Ajustes finos" disambiguates but consider "Retoques" -->
+    <string name="tweaks">Ajustes finos</string>
+    <string name="pollInterval">Intervalo de actualización</string>
+    <string name="hapticsEnabled">Vibración táctil</string>
+    <string name="hapticsEnabledDesc">Vibrar al tocar y pulsar</string>
     <string name="whatsNew">Novedades</string>
     <string name="monoFont">Fuente monoespaciada</string>
     <string name="monoFontDesc">Usa una tipografía de ancho fijo en toda la aplicación</string>
+    <string name="widgetTempLabel">Temperatura de la batería</string>
 </resources>

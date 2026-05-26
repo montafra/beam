@@ -1,0 +1,3 @@
+• Ajout du widget « Température » pour l'écran d'accueil
+• Ajout des traductions française, allemande et ukrainienne
+• Corrections de bugs

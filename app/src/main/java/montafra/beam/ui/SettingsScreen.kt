@@ -449,7 +449,7 @@ fun SettingsScreen(navController: NavController) {
                         },
                     )
                     Spacer(Modifier.height(4.dp))
-                    DonateCard("Bitcoin", "sp1qqfzps48q94usuqwhfcp082kg3pphr9zyh32cg4h4q84rvr6pa3d6vq56w3trm5cs5rgw5g3wcravusunh39utwfy9p2fe7e4g774r66rwcagqpmy", clipboardManager, RoundedCornerShape(4.dp))
+                    DonateCard("Bitcoin", "bc1q7v38g2xn7wxtwn6ewde4kydn5emjr3zt73ew96", clipboardManager, RoundedCornerShape(4.dp))
                     Spacer(Modifier.height(4.dp))
                     DonateCard("Monero", "876wwukGWhU9H6qez4Qmt5gTBBmdKzoDg3zvT33QCwjy9e7jS7MVjQySUCpNhoVrFcF15AicUJ4VaVrTKAXGMu5D7yUbqFs", clipboardManager, RoundedCornerShape(4.dp))
                     Spacer(Modifier.height(4.dp))
@@ -592,7 +592,7 @@ private fun DonateCard(
                     text = address,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 2,
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
             }

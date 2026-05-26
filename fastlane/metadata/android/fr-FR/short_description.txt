@@ -1,0 +1,1 @@
+Indicateurs de batterie en direct épinglés dans la barre d'état

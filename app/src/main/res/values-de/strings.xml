@@ -1,0 +1,69 @@
+<resources>
+    <string name="app_name">Beam</string>
+    <string name="back">Zurück</string>
+    <string name="battery">Akku</string>
+    <string name="charging">Lädt</string>
+    <string name="chargingSince">Lädt seit</string>
+    <string name="chargeLevel">Ladezustand</string>
+    <string name="current">Strom</string>
+    <string name="energy">Energie</string>
+    <string name="fullyCharged">vollständig geladen</string>
+    <string name="indeterminate">-</string>
+    <string name="statusBarIndicator">Benachrichtigungseinträge</string>
+    <string name="notificationIcon">Benachrichtigungssymbol</string>
+    <string name="no">nein</string>
+    <string name="power">Leistung</string>
+    <string name="settings">Einstellungen</string>
+    <string name="temperature">Temperatur</string>
+    <string name="timeToFullCharge">Zeit bis voll geladen</string>
+    <string name="voltage">Spannung</string>
+    <string name="units">Einheiten</string>
+    <string name="yes">ja</string>
+
+    <!-- settings -->
+    <string name="themeColor">Designfarbe</string>
+    <string name="themeColorAuto">Automatisch</string>
+    <string name="themeColorCustom">Benutzerdefiniert</string>
+    <string name="themeMode">Designmodus</string>
+    <string name="themeModeSystem">System</string>
+    <string name="themeModeLight">Hell</string>
+    <string name="themeModeDark">Dunkel</string>
+    <string name="themeModeOled">OLED</string>
+    <string name="currentScalar">Leistungsskala-Workaround</string>
+    <string name="currentScalarDesc">Wenn nicht angeschlossen, ändere diesen Skalar, bis \u0022Leistung\u0022 größer als 0W, aber kleiner als etwa 10W ist.</string>
+    <string name="invertCurrent">Ladeanzeige umkehren</string>
+    <string name="invertCurrentDesc">Wenn nicht angeschlossen, aktiviere diese Option, falls \u0022Lädt\u0022 \u0022ja\u0022 anzeigt.</string>
+    <string name="workarounds">Workarounds</string>
+    <string name="workaroundsDesc">Viele Telefone implementieren die Android-BatteryManager-Schnittstelle nicht korrekt und melden standardmäßig falsche Akkuwerte. Verwende bei Bedarf die folgenden Einstellungen, um Implementierungsfehler deines Telefons zu umgehen.</string>
+    <string name="supportMe">Entwicklung unterstützen</string>
+    <string name="supportMeDesc">Hilf mit, meine Projekte zu unterstützen 🐢</string>
+    <string name="openInBrowser">Im Browser öffnen</string>
+    <string name="copy">Kopieren</string>
+    <string name="about">Über</string>
+    <string name="interfaceSection">Oberfläche</string>
+    <string name="theme">Design</string>
+    <string name="notification">Benachrichtigung</string>
+    <string name="themeDesc">Modus, Farbe, Hintergrundbeleuchtung</string>
+    <string name="showTimeToFull">Ladezeitschätzung</string>
+    <string name="showTimeToFullDesc">Verbleibende Zeit bis zur vollständigen Ladung in der Benachrichtigung anzeigen</string>
+    <string name="customization">Anpassung</string>
+    <!-- TODO: native review — "Hero" is UI jargon; consider "Akzent-Hintergrundbeleuchtung" -->
+    <string name="heroBacklight">Hero-Hintergrundbeleuchtung</string>
+    <string name="heroBacklightDesc">Animierter Leuchteffekt hinter der Hero-Karte</string>
+    <string name="keepScreenOn">Bildschirm anlassen</string>
+    <string name="keepScreenOnDesc">Verhindert, dass der Bildschirm auf der Startseite in den Ruhezustand wechselt</string>
+    <string name="notificationDesc">Symbol, Einträge</string>
+    <string name="notificationEnableDesc">Dauerhafte Akku-Benachrichtigung</string>
+    <string name="workaroundsShortDesc">Gerätespezifische Korrekturen</string>
+    <string name="sourceCode">Quellcode</string>
+    <string name="advancedSettings">Erweiterte Einstellungen</string>
+    <!-- TODO: native review — "Tweaks" is common in DE tech UI but "Feineinstellungen" is more native -->
+    <string name="tweaks">Feineinstellungen</string>
+    <string name="pollInterval">Aktualisierungsintervall</string>
+    <string name="hapticsEnabled">Haptisches Feedback</string>
+    <string name="hapticsEnabledDesc">Vibrieren bei Berührung und Druck</string>
+    <string name="whatsNew">Neuigkeiten</string>
+    <string name="monoFont">Monospace-Schrift</string>
+    <string name="monoFontDesc">Eine Schrift mit fester Zeichenbreite in der gesamten App verwenden</string>
+    <string name="widgetTempLabel">Akkutemperatur</string>
+</resources>

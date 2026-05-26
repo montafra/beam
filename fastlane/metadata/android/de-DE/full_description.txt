@@ -1,0 +1,36 @@
+<i>Beam</i> ist ein schlanker Akku-Monitor. Er heftet eine Live-Anzeige von Leistung, Stromstärke, Spannung oder Ladestand in deine Statusleiste und öffnet eine vollständige Übersicht der Akkudaten in einer übersichtlichen, anpassbaren App.
+
+Wähle, welche Einheit im Statusleisten-Symbol erscheint (W, A, Ah, V, Wh, °C, %) oder staple mehrere Werte im Benachrichtigungstext.
+
+Datenschutz an erster Stelle:
+• Keine Werbung
+• Kein Tracking
+• Keine Datensammlung
+• Keine Weitergabe an Dritte
+• Keine unnötigen Berechtigungen
+
+Akkudaten in der App:
+• Leistung (Watt)
+• Stromstärke (Ampere)
+• Spannung (Volt)
+• Energie (Wattstunden)
+• Temperatur (°C)
+• Ladestand (Prozent)
+• Ladestatus und Anschlussart
+• Lädt seit (Datum / Uhrzeit)
+• Restzeit bis zur Vollladung
+
+Personalisierung:
+• Material-You-Dynamikfarben (Android 12+) oder eigene Akzentfarbe aus einer Palette mit 12 Tönen
+• Helles, dunkles, System- und OLED-Schwarz-Thema
+• Optionales animiertes Hero-Leuchten und haptisches Feedback
+
+Gerätekompatibilität:
+• Skalierungskorrektur für Geräte, die µA statt mA melden
+• Strom-Inversionsschalter für Geräte, die die Laderichtung umkehren
+• Anpassbares Abfrageintervall
+
+Quellcode auf GitHub: https://github.com/montafra/beam
+Jede Spende ist willkommen und unterstützt meine zukünftigen Projekte — siehe den Info-Bereich in der App für Krypto-Adressen.
+
+Hinweis: Die Benachrichtigungsberechtigung wird benötigt, um die Statusleisten-Anzeige darzustellen. Öffne die App einmal, um den Indikatordienst zu starten.

@@ -1,0 +1,8 @@
+1.1
+Erste F-Droid-Veröffentlichung.
+• Hauptbildschirm, Einstellungen und Benachrichtigungen neu gestaltet
+• Neue Theme-Einstellungen mit eigener Akzentfarbe und OLED-Modus
+• Haptisches Feedback in der gesamten App eingeführt
+• Italienische Lokalisierung (it-IT)
+• Liberapay-Spendenoption im Menü „Entwicklung unterstützen"
+• App-Symbol und Screenshots aktualisiert

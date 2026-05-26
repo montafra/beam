@@ -63,4 +63,5 @@
     <string name="whatsNew">Novità</string>
     <string name="monoFont">Font monospace</string>
     <string name="monoFontDesc">Usa un carattere a spaziatura fissa in tutta l\'app</string>
+    <string name="widgetTempLabel">Temperatura batteria</string>
 </resources>

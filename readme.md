@@ -1,14 +1,22 @@
-# Beam
+<p align="center">
+  <img src="readme/rounded_beam.png" alt="Beam" width="128" />
+</p>
 
+<h1 align="center">Beam</h1>
 
-*Real-time battery monitor for Android.*
+<p align="center"><em>Real-time battery monitor for Android.</em></p>
 
-[![Get it on F-Droid](https://img.shields.io/badge/F--Droid-Download-1976D2?logo=fdroid&logoColor=white&style=for-the-badge)](https://f-droid.org/packages/montafra.beam/)
-[![Get it on Obtainium](https://img.shields.io/badge/Obtainium-Download-1A7373?logo=obtainium&logoColor=white&style=for-the-badge)](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/montafra/beam)
+<p align="center">
+  <a href="https://f-droid.org/packages/montafra.beam/"><img src="https://img.shields.io/badge/F--Droid-Download-1976D2?logo=fdroid&logoColor=white&style=for-the-badge" alt="Get it on F-Droid" /></a>
+  <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/montafra/beam"><img src="https://img.shields.io/badge/Obtainium-Download-1A7373?logo=obtainium&logoColor=white&style=for-the-badge" alt="Get it on Obtainium" /></a>
+  <a href="https://github.com/montafra/beam/releases/latest"><img src="https://img.shields.io/badge/GitHub-Download-181717?logo=github&logoColor=white&style=for-the-badge" alt="Get it on GitHub" /></a>
+</p>
 
-Beam displays live battery metrics as a persistent status bar notification and shows a full breakdown in-app. You can choose which additional metrics appear in the notification body.
+<p align="center">Beam displays live battery metrics as a persistent status bar notification and shows a full breakdown in-app.</p>
 
-Beam is inspired by the original [Wattz](https://github.com/dubrowgn/wattz) app.
+<p align="center">You can choose which additional metrics appear in the notification body.</p>
+
+<p align="center">Beam is inspired by the original <a href="https://github.com/dubrowgn/wattz">Wattz</a> app.</p>
 
 ## Metrics
 
@@ -28,6 +36,8 @@ Beam is inspired by the original [Wattz](https://github.com/dubrowgn/wattz) app.
 - No ads
 - No collection of user data of any kind
 - No sharing data with third parties
+
+See [privacy.md](privacy.md) for the full policy.
 
 ## Screenshots
 
