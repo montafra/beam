@@ -61,7 +61,8 @@
     <string name="hapticsEnabled">Haptic Feedback</string>
     <string name="hapticsEnabledDesc">Vibrate on tap and press</string>
     <string name="whatsNew">What\'s New</string>
-    <string name="monoFont">Monospace Font</string>
-    <string name="monoFontDesc">Use a monospaced typeface throughout the app</string>
+    <string name="font">Font</string>
+    <string name="fontDefault">Default</string>
+    <string name="fontDesc">Typeface used throughout the app</string>
     <string name="widgetTempLabel">Battery Temperature</string>
 </resources>

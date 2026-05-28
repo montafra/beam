@@ -63,7 +63,8 @@
     <string name="hapticsEnabled">Тактильний відгук</string>
     <string name="hapticsEnabledDesc">Вібрація при дотику та натисканні</string>
     <string name="whatsNew">Що нового</string>
-    <string name="monoFont">Моноширинний шрифт</string>
-    <string name="monoFontDesc">Використовувати моноширинний шрифт у всьому застосунку</string>
+    <string name="font">Шрифт</string>
+    <string name="fontDefault">Стандартний</string>
+    <string name="fontDesc">Шрифт, який використовується в усьому застосунку</string>
     <string name="widgetTempLabel">Температура акумулятора</string>
 </resources>

@@ -63,7 +63,8 @@
     <string name="hapticsEnabled">Vibración táctil</string>
     <string name="hapticsEnabledDesc">Vibrar al tocar y pulsar</string>
     <string name="whatsNew">Novedades</string>
-    <string name="monoFont">Fuente monoespaciada</string>
-    <string name="monoFontDesc">Usa una tipografía de ancho fijo en toda la aplicación</string>
+    <string name="font">Fuente</string>
+    <string name="fontDefault">Predeterminada</string>
+    <string name="fontDesc">Tipografía usada en toda la aplicación</string>
     <string name="widgetTempLabel">Temperatura de la batería</string>
 </resources>

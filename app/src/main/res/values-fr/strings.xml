@@ -62,7 +62,8 @@
     <string name="hapticsEnabled">Retour haptique</string>
     <string name="hapticsEnabledDesc">Vibrer lors d\'une touche ou d\'une pression</string>
     <string name="whatsNew">Nouveautés</string>
-    <string name="monoFont">Police monospace</string>
-    <string name="monoFontDesc">Utiliser une police à largeur fixe dans toute l\'application</string>
+    <string name="font">Police</string>
+    <string name="fontDefault">Par défaut</string>
+    <string name="fontDesc">Police utilisée dans toute l\'application</string>
     <string name="widgetTempLabel">Température de la batterie</string>
 </resources>

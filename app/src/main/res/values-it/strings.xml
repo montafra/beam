@@ -61,7 +61,8 @@
     <string name="hapticsEnabled">Feedback vibrotattile</string>
     <string name="hapticsEnabledDesc">Vibra al tocco e alla pressione</string>
     <string name="whatsNew">Novità</string>
-    <string name="monoFont">Font monospace</string>
-    <string name="monoFontDesc">Usa un carattere a spaziatura fissa in tutta l\'app</string>
+    <string name="font">Font</string>
+    <string name="fontDefault">Predefinito</string>
+    <string name="fontDesc">Carattere usato in tutta l\'app</string>
     <string name="widgetTempLabel">Temperatura batteria</string>
 </resources>

@@ -8,7 +8,9 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +20,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -38,6 +42,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -50,6 +55,7 @@ import androidx.navigation.NavController
 import montafra.beam.R
 import montafra.beam.applyNightMode
 import montafra.beam.settingsName
+import montafra.beam.ui.theme.fontFamilyFor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,7 +69,7 @@ fun ThemeSettingsScreen(navController: NavController) {
     var heroBacklight by remember { mutableStateOf(prefs.getBoolean("heroBacklight", true)) }
     var hapticsEnabled by remember { mutableStateOf(prefs.getBoolean("hapticsEnabled", true)) }
     var keepScreenOn by remember { mutableStateOf(prefs.getBoolean("keepScreenOn", false)) }
-    var monoFont by remember { mutableStateOf(prefs.getBoolean("monoFont", false)) }
+    var fontFamily by remember { mutableStateOf(prefs.getString("fontFamily", "default") ?: "default") }
 
     Scaffold(
         topBar = {
@@ -163,9 +169,73 @@ fun ThemeSettingsScreen(navController: NavController) {
             item {
                 SubLabel(stringResource(R.string.customization))
                 Spacer(Modifier.height(8.dp))
+                val fontKeys = listOf("default", "inter", "dm_sans", "space_grotesk", "jetbrains_mono")
+                val fontLabels = listOf(
+                    stringResource(R.string.fontDefault), "Inter", "DM Sans", "Space Grotesk", "JetBrains Mono",
+                )
+                var fontMenuExpanded by remember { mutableStateOf(false) }
+                val selectedFontLabel = fontLabels[fontKeys.indexOf(fontFamily).takeIf { it >= 0 } ?: 0]
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 4.dp, bottomEnd = 4.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                fontMenuExpanded = true
+                            }
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(stringResource(R.string.font), style = MaterialTheme.typography.bodyLarge)
+                            Text(
+                                stringResource(R.string.fontDesc),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        Box(modifier = Modifier.padding(start = 16.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    selectedFontLabel,
+                                    fontFamily = fontFamilyFor(fontFamily),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    maxLines = 1,
+                                )
+                                Icon(
+                                    painter = painterResource(R.drawable.ico_arrow_drop_down),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                            DropdownMenu(
+                                expanded = fontMenuExpanded,
+                                onDismissRequest = { fontMenuExpanded = false },
+                            ) {
+                                fontKeys.forEachIndexed { i, key ->
+                                    DropdownMenuItem(
+                                        text = { Text(fontLabels[i], fontFamily = fontFamilyFor(key)) },
+                                        onClick = {
+                                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                            fontFamily = key
+                                            prefs.edit().putString("fontFamily", key).commit()
+                                            fontMenuExpanded = false
+                                        },
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+                Spacer(Modifier.height(4.dp))
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(4.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
                     elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                 ) {
@@ -221,7 +291,7 @@ fun ThemeSettingsScreen(navController: NavController) {
                 Spacer(Modifier.height(4.dp))
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(4.dp),
+                    shape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 20.dp, bottomEnd = 20.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
                     elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                 ) {
@@ -243,34 +313,6 @@ fun ThemeSettingsScreen(navController: NavController) {
                             haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                             keepScreenOn = !keepScreenOn
                             prefs.edit().putBoolean("keepScreenOn", keepScreenOn).commit()
-                        },
-                    )
-                }
-                Spacer(Modifier.height(4.dp))
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 20.dp, bottomEnd = 20.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-                ) {
-                    ListItem(
-                        headlineContent = { Text(stringResource(R.string.monoFont)) },
-                        supportingContent = { Text(stringResource(R.string.monoFontDesc)) },
-                        trailingContent = {
-                            Switch(
-                                checked = monoFont,
-                                onCheckedChange = {
-                                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                    monoFont = it
-                                    prefs.edit().putBoolean("monoFont", it).commit()
-                                },
-                            )
-                        },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        modifier = Modifier.clickable {
-                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                            monoFont = !monoFont
-                            prefs.edit().putBoolean("monoFont", monoFont).commit()
                         },
                     )
                 }

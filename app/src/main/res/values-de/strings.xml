@@ -63,7 +63,8 @@
     <string name="hapticsEnabled">Haptisches Feedback</string>
     <string name="hapticsEnabledDesc">Vibrieren bei Berührung und Druck</string>
     <string name="whatsNew">Neuigkeiten</string>
-    <string name="monoFont">Monospace-Schrift</string>
-    <string name="monoFontDesc">Eine Schrift mit fester Zeichenbreite in der gesamten App verwenden</string>
+    <string name="font">Schriftart</string>
+    <string name="fontDefault">Standard</string>
+    <string name="fontDesc">Schriftart, die in der gesamten App verwendet wird</string>
     <string name="widgetTempLabel">Akkutemperatur</string>
 </resources>
