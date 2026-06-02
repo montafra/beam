@@ -2,6 +2,7 @@ package montafra.beam.ui
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloat
@@ -29,8 +30,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,6 +40,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.RenderEffect
+import android.graphics.Shader
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -62,6 +63,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ShaderBrush
@@ -74,7 +76,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalView
 import kotlinx.coroutines.awaitCancellation
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.compose.ui.res.painterResource
@@ -90,6 +91,7 @@ import montafra.beam.BatteryViewModel
 import montafra.beam.LocalHapticsEnabled
 import montafra.beam.R
 import montafra.beam.settingsName
+import montafra.beam.ui.theme.BeamCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -167,29 +169,25 @@ fun MainScreen(navController: NavController, vm: BatteryViewModel = viewModel())
         )
     }
 
-    // Slow candle-like glow: coprime durations, never sync → organic non-repeating flicker
-    val candleTransition = rememberInfiniteTransition(label = "candle")
-    val f1 by candleTransition.animateFloat(
+    // Single morphing glow: 3 slow, coprime, linear-eased phases drift overlapping metaball
+    // lobes so they read as one amorphous shape (no separately trackable orbs), plus a slow breath.
+    val glow = rememberInfiniteTransition(label = "glow")
+    val p1 by glow.animateFloat(
         initialValue = 0f, targetValue = 1f,
-        animationSpec = infiniteRepeatable(tween(900, easing = FastOutSlowInEasing), RepeatMode.Reverse),
-        label = "f1",
+        animationSpec = infiniteRepeatable(tween(4_300, easing = LinearEasing), RepeatMode.Reverse),
+        label = "p1",
     )
-    val f2 by candleTransition.animateFloat(
+    val p2 by glow.animateFloat(
         initialValue = 0f, targetValue = 1f,
-        animationSpec = infiniteRepeatable(tween(1_600, easing = FastOutSlowInEasing), RepeatMode.Reverse),
-        label = "f2",
+        animationSpec = infiniteRepeatable(tween(6_700, easing = LinearEasing), RepeatMode.Reverse),
+        label = "p2",
     )
-    val f3 by candleTransition.animateFloat(
+    val p3 by glow.animateFloat(
         initialValue = 0f, targetValue = 1f,
-        animationSpec = infiniteRepeatable(tween(2_700, easing = FastOutSlowInEasing), RepeatMode.Reverse),
-        label = "f3",
+        animationSpec = infiniteRepeatable(tween(9_500, easing = LinearEasing), RepeatMode.Reverse),
+        label = "p3",
     )
-    val sway by candleTransition.animateFloat(
-        initialValue = 0f, targetValue = 1f,
-        animationSpec = infiniteRepeatable(tween(6_300, easing = FastOutSlowInEasing), RepeatMode.Reverse),
-        label = "sway",
-    )
-    val breathe by candleTransition.animateFloat(
+    val breathe by glow.animateFloat(
         initialValue = 0f, targetValue = 1f,
         animationSpec = infiniteRepeatable(tween(11_000, easing = FastOutSlowInEasing), RepeatMode.Reverse),
         label = "breathe",
@@ -243,58 +241,65 @@ fun MainScreen(navController: NavController, vm: BatteryViewModel = viewModel())
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(40.dp))
                     ) {
-                        if (heroBacklight.value) Canvas(Modifier.matchParentSize()) {
+                        val glowMod = Modifier.matchParentSize().let { m ->
+                            if (Build.VERSION.SDK_INT >= 31) m.graphicsLayer {
+                                renderEffect = RenderEffect
+                                    .createBlurEffect(40f, 40f, Shader.TileMode.DECAL)
+                                    .asComposeRenderEffect()
+                            } else m
+                        }
+                        if (heroBacklight.value) Canvas(glowMod) {
                             val w = size.width
                             val h = size.height
-                            val cx = w * 0.50f + w * 0.04f * (sway * 2f - 1f)
-                            val cy = h * 0.50f + h * 0.03f * breathe
+                            val a = (p1 - 0.5f) * 2f   // -1..1 waves
+                            val b = (p2 - 0.5f) * 2f
+                            val c = (p3 - 0.5f) * 2f
+                            val br = breathe
 
-                            val outerR = w * 0.76f * (0.90f + 0.10f * f3)
-                            drawCircle(
-                                brush = Brush.radialGradient(
-                                    listOf(primary.copy(alpha = (0.08f + 0.04f * f2) * glowScale), Color.Transparent),
-                                    center = Offset(cx, cy), radius = outerR,
-                                ),
-                                radius = outerR, center = Offset(cx, cy),
-                            )
+                            val cx = w * 0.50f + w * 0.05f * a   // gentle whole-shape sway, centered
+                            val cy = h * 0.50f + h * 0.03f * b   // centered, no directional bias
 
-                            val nOrbs = 6
-                            val ringR    = w * 0.08f
-                            val baseOrbR = w * 0.20f
-                            for (i in 0 until nOrbs) {
-                                val baseAngle = (i.toFloat() / nOrbs) * 2f * PI.toFloat() + sway * 0.5f
-                                val driftX = ((f1 - 0.5f) * cos(i * 1.3f).toFloat() +
-                                              (f2 - 0.5f) * sin(i * 2.1f).toFloat()) * w * 0.025f
-                                val driftY = ((f2 - 0.5f) * cos(i * 1.7f).toFloat() +
-                                              (f3 - 0.5f) * sin(i * 0.9f).toFloat()) * h * 0.018f
-                                val ox = cx + ringR * cos(baseAngle).toFloat() + driftX
-                                val oy = cy + ringR * sin(baseAngle).toFloat() + driftY
-                                val sizeFactor = when (i % 5) {
-                                    0    -> f1
-                                    1    -> f2
-                                    2    -> f3
-                                    3    -> (f1 + f3) * 0.5f
-                                    else -> (f2 + f1) * 0.5f
-                                }
-                                val orbRi = baseOrbR * (0.65f + 0.45f * sizeFactor)
-                                val phase = when (i % 3) {
-                                    0    -> f1 * 0.55f + f2 * 0.45f
-                                    1    -> f2 * 0.55f + f3 * 0.45f
-                                    else -> f3 * 0.55f + f1 * 0.45f
-                                }
+                            // Ambient halo — steady, large, fills gaps so the union never splits.
+                            run {
+                                val r = w * 0.78f * (0.92f + 0.08f * br)
                                 drawCircle(
                                     brush = Brush.radialGradient(
-                                        listOf(primary.copy(alpha = (0.14f + 0.17f * phase) * glowScale), Color.Transparent),
-                                        center = Offset(ox, oy), radius = orbRi,
+                                        listOf(primary.copy(alpha = (0.07f + 0.03f * br) * glowScale), Color.Transparent),
+                                        center = Offset(cx, cy), radius = r,
                                     ),
-                                    radius = orbRi, center = Offset(ox, oy),
+                                    radius = r, center = Offset(cx, cy),
                                 )
                             }
 
-                            val coreR = w * 0.12f * (0.72f + 0.32f * f1)
+                            // 3 metaball lobes on phase-offset Lissajous paths (each steered by a
+                            // different pair of phases). Large radius vs small drift ⇒ always overlapping
+                            // = one shape. Symmetric wander, no vertical bias.
+                            // entry = (driftA, driftB, baseAngle, rFrac, rPulse, alpha)
+                            val lobes = listOf(
+                                listOf(a, b, -0.35f, 0.40f, c, 0.13f),
+                                listOf(b, c,  0.55f, 0.36f, a, 0.12f),
+                                listOf(c, a,  0.05f, 0.42f, b, 0.14f),
+                            )
+                            for (l in lobes) {
+                                val dA = l[0]; val dB = l[1]; val ang = l[2]
+                                val rFrac = l[3]; val rPulse = l[4]; val alpha = l[5]
+                                val ox = cx + w * 0.085f * dA + w * 0.045f * cos(ang + dB * 0.8f).toFloat()
+                                val oy = cy + h * 0.06f * dB + h * 0.045f * sin(ang + dA * 0.8f).toFloat()
+                                val r = w * rFrac * (0.85f + 0.15f * (rPulse * 0.5f + 0.5f))
+                                drawCircle(
+                                    brush = Brush.radialGradient(
+                                        listOf(primary.copy(alpha = alpha * (0.80f + 0.20f * br) * glowScale), Color.Transparent),
+                                        center = Offset(ox, oy), radius = r,
+                                    ),
+                                    radius = r, center = Offset(ox, oy),
+                                )
+                            }
+
+                            // Steady bright core — keeps a hot center so the shape never reads as hollow/split.
+                            val coreR = w * 0.16f * (0.85f + 0.15f * br)
                             drawCircle(
                                 brush = Brush.radialGradient(
-                                    listOf(primary.copy(alpha = (0.26f + 0.18f * (f1 * f2)) * glowScale), Color.Transparent),
+                                    listOf(primary.copy(alpha = (0.24f + 0.10f * br) * glowScale), Color.Transparent),
                                     center = Offset(cx, cy), radius = coreR,
                                 ),
                                 radius = coreR, center = Offset(cx, cy),
@@ -368,39 +373,76 @@ private fun HeroCard(data: BatteryData) {
             context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         }
     }
-    val thudCapable = remember {
+    val slowRiseCapable = remember {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
-            vibrator.areAllPrimitivesSupported(VibrationEffect.Composition.PRIMITIVE_THUD)
+            vibrator.areAllPrimitivesSupported(VibrationEffect.Composition.PRIMITIVE_SLOW_RISE)
     }
-    val thudEffect = remember(thudCapable) {
-        if (thudCapable) {
+    val spinCapable = remember {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+            vibrator.areAllPrimitivesSupported(
+                VibrationEffect.Composition.PRIMITIVE_QUICK_FALL,
+                VibrationEffect.Composition.PRIMITIVE_SPIN,
+            )
+    }
+    // Tap: a spin. Hold: tension that builds the longer you press. Release: a quick fall into a wobble.
+    val spinEffect = remember(spinCapable) {
+        if (spinCapable) {
             VibrationEffect.startComposition()
-                .addPrimitive(VibrationEffect.Composition.PRIMITIVE_THUD)
+                .addPrimitive(VibrationEffect.Composition.PRIMITIVE_SPIN, 0.6f)
                 .compose()
         } else null
     }
-    val playThud = {
+    val resistEffect = remember(slowRiseCapable) {
+        if (slowRiseCapable) {
+            VibrationEffect.startComposition()
+                .addPrimitive(VibrationEffect.Composition.PRIMITIVE_SLOW_RISE, 0.55f)
+                .compose()
+        } else null
+    }
+    val wobbleEffect = remember(spinCapable) {
+        if (spinCapable) {
+            VibrationEffect.startComposition()
+                .addPrimitive(VibrationEffect.Composition.PRIMITIVE_QUICK_FALL, 0.7f)
+                .addPrimitive(VibrationEffect.Composition.PRIMITIVE_SPIN, 0.5f)
+                .compose()
+        } else null
+    }
+    // Fallbacks for devices without haptic primitives.
+    val spinWaveform = remember {
+        VibrationEffect.createWaveform(
+            longArrayOf(0, 30, 25, 35, 25, 40),
+            intArrayOf(0, 120, 50, 160, 50, 90),
+            -1,
+        )
+    }
+    val resistWaveform = remember {
+        VibrationEffect.createWaveform(
+            longArrayOf(0, 90, 90, 90, 130),
+            intArrayOf(0, 45, 90, 140, 105),
+            3,
+        )
+    }
+    val wobbleWaveform = remember {
+        VibrationEffect.createWaveform(
+            longArrayOf(0, 45, 40, 45, 40, 45, 35),
+            intArrayOf(0, 200, 45, 140, 30, 80, 0),
+            -1,
+        )
+    }
+    val playSpin = {
         if (hapticsEnabled) {
-            if (thudEffect != null) {
-                vibrator.vibrate(thudEffect)
-            } else {
-                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-            }
+            vibrator.vibrate(spinEffect ?: spinWaveform)
         }
     }
 
     LaunchedEffect(holdActive) {
-        if (!holdActive) {
-            jitterX = 0f
-            jitterY = 0f
-            scaleAnim.animateTo(1f, spring(stiffness = 280f, dampingRatio = 0.4f))
-            return@LaunchedEffect
-        }
         val pxPerDp = with(density) { 1.dp.toPx() }
-        coroutineScope {
+        if (holdActive) {
+            // Hold: a firm, non-bouncy squeeze with resistance that builds.
             launch {
-                scaleAnim.animateTo(0.86f, spring(stiffness = 420f, dampingRatio = 0.7f))
+                scaleAnim.animateTo(0.84f, spring(stiffness = 200f, dampingRatio = 1f))
             }
+            // Continuous turbulent vibration of the text for the whole hold.
             launch {
                 val start = System.nanoTime()
                 while (true) {
@@ -411,26 +453,54 @@ private fun HeroCard(data: BatteryData) {
                     }
                 }
             }
-            try {
-                if (!hapticsEnabled) {
-                    awaitCancellation()
-                } else if (thudEffect != null) {
-                    while (true) {
-                        vibrator.vibrate(thudEffect)
-                        delay(120)
+            if (hapticsEnabled) {
+                try {
+                    if (resistEffect != null) {
+                        while (true) {
+                            vibrator.vibrate(resistEffect)
+                            delay(360)
+                        }
+                    } else {
+                        vibrator.vibrate(resistWaveform)
+                        awaitCancellation()
                     }
-                } else {
-                    vibrator.vibrate(
-                        VibrationEffect.createWaveform(
-                            longArrayOf(0, 60, 80),
-                            intArrayOf(0, 220, 0),
-                            0,
-                        )
-                    )
-                    awaitCancellation()
+                } finally {
+                    vibrator.cancel()
                 }
-            } finally {
-                vibrator.cancel()
+            }
+        } else {
+            vibrator.cancel()
+            // Release: wobble back — only if actually squeezed (skips the initial composition).
+            if (scaleAnim.value < 0.995f) {
+                if (hapticsEnabled) {
+                    vibrator.vibrate(wobbleEffect ?: wobbleWaveform)
+                }
+                launch {
+                    val start = System.nanoTime()
+                    val durationMs = 520f
+                    while (true) {
+                        var finished = false
+                        withFrameNanos { now ->
+                            val progress = (now - start) / 1e6f / durationMs
+                            if (progress >= 1f) {
+                                jitterX = 0f
+                                jitterY = 0f
+                                finished = true
+                            } else {
+                                val t = (now - start) / 1e9f
+                                val decay = 1f - progress
+                                val amp = 6f * pxPerDp * decay * decay
+                                jitterX = sin(t * 24f * 2f * PI.toFloat()) * amp
+                                jitterY = cos(t * 19f * 2f * PI.toFloat()) * amp
+                            }
+                        }
+                        if (finished) break
+                    }
+                }
+                scaleAnim.animateTo(1f, spring(stiffness = 240f, dampingRatio = 0.3f))
+            } else {
+                jitterX = 0f
+                jitterY = 0f
             }
         }
     }
@@ -441,13 +511,10 @@ private fun HeroCard(data: BatteryData) {
         label = "charge-progress",
     )
 
-    Card(
+    BeamCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(40.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.45f),
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.45f),
     ) {
         Column(
             modifier = Modifier
@@ -467,7 +534,7 @@ private fun HeroCard(data: BatteryData) {
                                 if (isDouble) {
                                     haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                 } else {
-                                    playThud()
+                                    playSpin()
                                     scope.launch {
                                         scaleAnim.animateTo(
                                             0.82f,
@@ -560,13 +627,10 @@ private fun MetricCard(
     shape: androidx.compose.ui.graphics.Shape = RoundedCornerShape(24.dp),
     content: @Composable () -> Unit,
 ) {
-    Card(
+    BeamCard(
         modifier = Modifier.fillMaxWidth(),
         shape = shape,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.45f),
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.45f),
     ) {
         Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)) {
             content()

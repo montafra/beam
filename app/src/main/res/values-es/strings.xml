@@ -48,7 +48,7 @@
     <string name="interfaceSection">Interfaz</string>
     <string name="theme">Tema</string>
     <string name="notification">Notificación</string>
-    <string name="themeDesc">Modo, color, retroiluminación</string>
+    <string name="themeDesc">Colores, fuentes y efectos</string>
     <string name="showTimeToFull">Estimación del tiempo de carga</string>
     <string name="showTimeToFullDesc">Mostrar el tiempo restante hasta completar la carga en la notificación</string>
     <string name="customization">Personalización</string>
@@ -58,10 +58,11 @@
     <string name="keepScreenOn">Mantener pantalla encendida</string>
     <string name="keepScreenOnDesc">Impide que la pantalla se apague mientras la pantalla principal está abierta</string>
     <string name="notificationDesc">Icono, entradas</string>
-    <string name="notificationEnableDesc">Notificación de batería persistente</string>
+    <string name="notificationEnableDesc">Actualizaciones de la batería</string>
     <string name="workaroundsShortDesc">Correcciones del dispositivo</string>
     <string name="sourceCode">Código fuente</string>
     <string name="advancedSettings">Configuración avanzada</string>
+    <string name="advancedSection">Avanzado</string>
     <!-- TODO: native review — "Ajustes" is already used for "Settings"; "Ajustes finos" disambiguates but consider "Retoques" -->
     <string name="tweaks">Ajustes finos</string>
     <string name="pollInterval">Intervalo de actualización</string>
@@ -72,4 +73,7 @@
     <string name="fontDefault">Predeterminada</string>
     <string name="fontDesc">Tipografía usada en toda la aplicación</string>
     <string name="widgetTempLabel">Temperatura de la batería</string>
+    <string name="versionLicenseLinks">Versión, licencia y enlaces</string>
+    <string name="outlinedCards">Tarjetas con borde</string>
+    <string name="outlinedCardsDesc">Mostrar tarjetas con un borde en lugar de un fondo relleno</string>
 </resources>

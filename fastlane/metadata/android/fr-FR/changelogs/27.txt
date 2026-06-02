@@ -1,0 +1,8 @@
+• Ajout de l'option de thème "cartes en contour uniquement"
+• Ajout de la traduction tchèque
+• Corrections de bugs
+• Correction de la détection de l'état de charge sur certains appareils
+• Correction de certaines traductions
+• Améliorations de l'interface
+• Effet de rétroéclairage mis à jour
+• Retour haptique de l'écran d'accueil mis à jour

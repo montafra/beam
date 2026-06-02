@@ -1,0 +1,8 @@
+• Added "outline-only cards" theme option
+• Added czech translation
+• Bug fixes
+• Fixed charging state being incorrectly detected on some devices
+• Fixed some translations
+• UI improvements
+• Updated backlight effect
+• Updated home screen haptics

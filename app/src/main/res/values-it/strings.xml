@@ -48,7 +48,7 @@
     <string name="interfaceSection">Interfaccia</string>
     <string name="theme">Tema</string>
     <string name="notification">Notifica</string>
-    <string name="themeDesc">Modalità, colore, retroilluminazione</string>
+    <string name="themeDesc">Colori, caratteri ed effetti</string>
     <string name="showTimeToFull">Stima tempo di ricarica</string>
     <string name="showTimeToFullDesc">Mostra il tempo rimanente alla carica completa nella notifica</string>
     <string name="customization">Personalizzazione</string>
@@ -57,10 +57,11 @@
     <string name="keepScreenOn">Mantieni schermo acceso</string>
     <string name="keepScreenOnDesc">Impedisce lo spegnimento dello schermo nella schermata principale</string>
     <string name="notificationDesc">Icona, voci</string>
-    <string name="notificationEnableDesc">Notifica persistente della batteria</string>
+    <string name="notificationEnableDesc">Aggiornamenti della batteria</string>
     <string name="workaroundsShortDesc">Correzioni specifiche del dispositivo</string>
     <string name="sourceCode">Codice sorgente</string>
     <string name="advancedSettings">Impostazioni avanzate</string>
+    <string name="advancedSection">Avanzate</string>
     <string name="tweaks">Regolazioni</string>
     <string name="pollInterval">Intervallo di aggiornamento</string>
     <string name="hapticsEnabled">Feedback vibrotattile</string>
@@ -70,4 +71,7 @@
     <string name="fontDefault">Predefinito</string>
     <string name="fontDesc">Carattere usato in tutta l\'app</string>
     <string name="widgetTempLabel">Temperatura batteria</string>
+    <string name="versionLicenseLinks">Versione, licenza e link</string>
+    <string name="outlinedCards">Schede con bordo</string>
+    <string name="outlinedCardsDesc">Mostra le schede con un bordo invece di uno sfondo pieno</string>
 </resources>

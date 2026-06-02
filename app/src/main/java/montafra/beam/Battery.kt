@@ -27,6 +27,26 @@ enum class PlugType {
     }
 }
 
+enum class ChargeStatus {
+    Charging,
+    Discharging,
+    Full,
+    NotCharging,
+    Unknown;
+
+    companion object {
+        fun fromRaw(status: Int?): ChargeStatus {
+            return when (status) {
+                BatteryManager.BATTERY_STATUS_CHARGING -> Charging
+                BatteryManager.BATTERY_STATUS_DISCHARGING -> Discharging
+                BatteryManager.BATTERY_STATUS_FULL -> Full
+                BatteryManager.BATTERY_STATUS_NOT_CHARGING -> NotCharging
+                else -> Unknown
+            }
+        }
+    }
+}
+
 class Battery(private val ctx: Context) {
     private val mgr = ctx.getSystemService(Activity.BATTERY_SERVICE) as BatteryManager
 
@@ -61,6 +81,7 @@ class Battery(private val ctx: Context) {
         return BatterySnapshot(
             chargeTimeRemainingRaw = mgr.computeChargeTimeRemaining(),
             currentRaw = prop(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW),
+            chargeStatus = ChargeStatus.fromRaw(prop(BatteryManager.EXTRA_STATUS, batteryIntent)?.toInt()),
             currentScalar = currentScalar,
             energyRaw = prop(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER),
             level = level.div(levelScale),

@@ -1,0 +1,3 @@
+• Přidán widget „Teplota“ na domovskou obrazovku
+• Přidány francouzský, německý a ukrajinský překlad
+• Opravy chyb

@@ -1,0 +1,4 @@
+• Přidána stránka s informacemi o aplikaci
+• Přidán nový výběr písma
+• Přidána možnost jazyka v nastavení
+• Vylepšení rozvržení

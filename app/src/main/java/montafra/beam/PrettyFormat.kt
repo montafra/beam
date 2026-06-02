@@ -13,6 +13,13 @@ fun fmt(v: Double?): String {
     return "%.1f".format(Locale.ROOT, v)
 }
 
+fun fmtPercent(v: Double?): String {
+    if (v == null)
+        return "- "
+
+    return "%.0f".format(v)
+}
+
 fun fmtSeconds(seconds: Double?): String {
     if (seconds == null)
         return ""

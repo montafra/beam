@@ -1,0 +1,4 @@
+• Přidána nová možnost „Ponechat obrazovku zapnutou“
+• Přidána možnost neproporcionálního písma
+• Opravena výzva k oprávnění pro oznámení
+• Opraveno přepínání haptiky, které nefungovalo u všech efektů

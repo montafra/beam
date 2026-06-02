@@ -13,9 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
 import androidx.compose.material3.Slider
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -55,6 +53,7 @@ import montafra.beam.BatteryViewModel
 import montafra.beam.R
 import montafra.beam.settingsName
 import montafra.beam.settingsUpdateInd
+import montafra.beam.ui.theme.BeamCard
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -140,13 +139,9 @@ fun WorkaroundsSettingsScreen(navController: NavController, vm: BatteryViewModel
                 }
             }
             item {
-                Card(
+                BeamCard(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                 ) {
                     Column {
                         ListItem(

@@ -90,15 +90,17 @@ class StatusService : Service() {
         else       -> R.string.power
     })
 
-    private fun metricValue(key: String) = fmt(when (key) {
-        "A"  -> snapshot.amps
-        "Ah" -> snapshot.energyAmpHours
-        "C"  -> snapshot.celsius
-        "V"  -> snapshot.volts
-        "Wh" -> snapshot.energyWattHours
-        "%"  -> snapshot.levelPercent
-        else -> snapshot.watts
-    })
+    private fun metricValue(key: String) = when (key) {
+        "%"  -> fmtPercent(snapshot.levelPercent)
+        else -> fmt(when (key) {
+            "A"  -> snapshot.amps
+            "Ah" -> snapshot.energyAmpHours
+            "C"  -> snapshot.celsius
+            "V"  -> snapshot.volts
+            "Wh" -> snapshot.energyWattHours
+            else -> snapshot.watts
+        })
+    }
 
     private fun metricUnit(key: String) = if (key == "C") "°C" else key
 
@@ -249,7 +251,7 @@ class StatusService : Service() {
                     false -> no
                 }
             )
-            .putExtra("chargeLevel", fmt(snapshot.levelPercent) + "%")
+            .putExtra("chargeLevel", fmtPercent(snapshot.levelPercent) + "%")
             .putExtra("chargingSince",
                 when (val pluggedInAt = pluggedInAt) {
                     null -> indeterminate

@@ -18,15 +18,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
@@ -44,7 +40,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -55,6 +50,7 @@ import androidx.navigation.NavController
 import montafra.beam.R
 import montafra.beam.applyNightMode
 import montafra.beam.settingsName
+import montafra.beam.ui.theme.BeamCard
 import montafra.beam.ui.theme.fontFamilyFor
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,6 +66,7 @@ fun ThemeSettingsScreen(navController: NavController) {
     var hapticsEnabled by remember { mutableStateOf(prefs.getBoolean("hapticsEnabled", true)) }
     var keepScreenOn by remember { mutableStateOf(prefs.getBoolean("keepScreenOn", false)) }
     var fontFamily by remember { mutableStateOf(prefs.getString("fontFamily", "default") ?: "default") }
+    var outlineOnlyCards by remember { mutableStateOf(prefs.getBoolean("outlineOnlyCards", false)) }
 
     Scaffold(
         topBar = {
@@ -175,11 +172,9 @@ fun ThemeSettingsScreen(navController: NavController) {
                 )
                 var fontMenuExpanded by remember { mutableStateOf(false) }
                 val selectedFontLabel = fontLabels[fontKeys.indexOf(fontFamily).takeIf { it >= 0 } ?: 0]
-                Card(
+                BeamCard(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 4.dp, bottomEnd = 4.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                 ) {
                     Row(
                         modifier = Modifier
@@ -224,6 +219,7 @@ fun ThemeSettingsScreen(navController: NavController) {
                                             haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                             fontFamily = key
                                             prefs.edit().putString("fontFamily", key).commit()
+                                            montafra.beam.BeamTempWidgetProvider.requestUpdate(context)
                                             fontMenuExpanded = false
                                         },
                                     )
@@ -233,86 +229,53 @@ fun ThemeSettingsScreen(navController: NavController) {
                     }
                 }
                 Spacer(Modifier.height(4.dp))
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(4.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-                ) {
-                    ListItem(
-                        headlineContent = { Text(stringResource(R.string.heroBacklight)) },
-                        supportingContent = { Text(stringResource(R.string.heroBacklightDesc)) },
-                        trailingContent = {
-                            Switch(
-                                checked = heroBacklight,
-                                onCheckedChange = {
-                                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                    heroBacklight = it
-                                    prefs.edit().putBoolean("heroBacklight", it).commit()
-                                },
-                            )
-                        },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        modifier = Modifier.clickable {
-                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                            heroBacklight = !heroBacklight
-                            prefs.edit().putBoolean("heroBacklight", heroBacklight).commit()
+                BeamCard(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(4.dp)) {
+                    ThemeToggleRow(
+                        title = stringResource(R.string.outlinedCards),
+                        description = stringResource(R.string.outlinedCardsDesc),
+                        checked = outlineOnlyCards,
+                        onToggle = {
+                            outlineOnlyCards = it
+                            prefs.edit().putBoolean("outlineOnlyCards", it).commit()
                         },
                     )
                 }
                 Spacer(Modifier.height(4.dp))
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(4.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-                ) {
-                    ListItem(
-                        headlineContent = { Text(stringResource(R.string.hapticsEnabled)) },
-                        supportingContent = { Text(stringResource(R.string.hapticsEnabledDesc)) },
-                        trailingContent = {
-                            Switch(
-                                checked = hapticsEnabled,
-                                onCheckedChange = {
-                                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                    hapticsEnabled = it
-                                    prefs.edit().putBoolean("hapticsEnabled", it).commit()
-                                },
-                            )
-                        },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        modifier = Modifier.clickable {
-                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                            hapticsEnabled = !hapticsEnabled
-                            prefs.edit().putBoolean("hapticsEnabled", hapticsEnabled).commit()
+                BeamCard(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(4.dp)) {
+                    ThemeToggleRow(
+                        title = stringResource(R.string.heroBacklight),
+                        description = stringResource(R.string.heroBacklightDesc),
+                        checked = heroBacklight,
+                        onToggle = {
+                            heroBacklight = it
+                            prefs.edit().putBoolean("heroBacklight", it).commit()
                         },
                     )
                 }
                 Spacer(Modifier.height(4.dp))
-                Card(
+                BeamCard(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(4.dp)) {
+                    ThemeToggleRow(
+                        title = stringResource(R.string.hapticsEnabled),
+                        description = stringResource(R.string.hapticsEnabledDesc),
+                        checked = hapticsEnabled,
+                        onToggle = {
+                            hapticsEnabled = it
+                            prefs.edit().putBoolean("hapticsEnabled", it).commit()
+                        },
+                    )
+                }
+                Spacer(Modifier.height(4.dp))
+                BeamCard(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 20.dp, bottomEnd = 20.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                 ) {
-                    ListItem(
-                        headlineContent = { Text(stringResource(R.string.keepScreenOn)) },
-                        supportingContent = { Text(stringResource(R.string.keepScreenOnDesc)) },
-                        trailingContent = {
-                            Switch(
-                                checked = keepScreenOn,
-                                onCheckedChange = {
-                                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                    keepScreenOn = it
-                                    prefs.edit().putBoolean("keepScreenOn", it).commit()
-                                },
-                            )
-                        },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        modifier = Modifier.clickable {
-                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                            keepScreenOn = !keepScreenOn
-                            prefs.edit().putBoolean("keepScreenOn", keepScreenOn).commit()
+                    ThemeToggleRow(
+                        title = stringResource(R.string.keepScreenOn),
+                        description = stringResource(R.string.keepScreenOnDesc),
+                        checked = keepScreenOn,
+                        onToggle = {
+                            keepScreenOn = it
+                            prefs.edit().putBoolean("keepScreenOn", it).commit()
                         },
                     )
                 }
@@ -321,4 +284,41 @@ fun ThemeSettingsScreen(navController: NavController) {
         }
     }
 
+}
+
+@Composable
+private fun ThemeToggleRow(
+    title: String,
+    description: String,
+    checked: Boolean,
+    onToggle: (Boolean) -> Unit,
+) {
+    val haptic = LocalHapticFeedback.current
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                onToggle(!checked)
+            }
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(title, style = MaterialTheme.typography.bodyLarge)
+            Text(
+                description,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Switch(
+            checked = checked,
+            onCheckedChange = {
+                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                onToggle(it)
+            },
+            modifier = Modifier.padding(start = 16.dp),
+        )
+    }
 }

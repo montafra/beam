@@ -1,0 +1,8 @@
+• Přidána možnost motivu „pouze obrysové karty“
+• Přidán český překlad
+• Opravy chyb
+• Opravena nesprávná detekce stavu nabíjení na některých zařízeních
+• Opraveny některé překlady
+• Vylepšení uživatelského rozhraní
+• Aktualizován efekt podsvícení
+• Aktualizována haptika domovské obrazovky

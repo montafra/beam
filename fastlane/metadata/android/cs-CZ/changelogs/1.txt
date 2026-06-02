@@ -1,0 +1,7 @@
+První vydání aplikace Beam.
+• Konfigurovatelný indikátor ve stavovém řádku (W, A, Ah, V, Wh, °C, %)
+• Podrobný rozpis baterie v aplikaci včetně typu nabíjení a časové osy nabíjení
+• Motivy Material You, vlastní výchozí barva a černý OLED
+• Design karet z matného skla s volitelnou září hero karty a haptikou
+• Řešení pro zařízení hlásící µA, obrácený proud nebo neobvyklou frekvenci dotazování
+• Otevřený zdrojový kód s adresami pro dary v sekci O aplikaci

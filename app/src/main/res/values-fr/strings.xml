@@ -48,7 +48,7 @@
     <string name="interfaceSection">Interface</string>
     <string name="theme">Thème</string>
     <string name="notification">Notification</string>
-    <string name="themeDesc">Mode, couleur, rétroéclairage</string>
+    <string name="themeDesc">Couleurs, polices et effets</string>
     <string name="showTimeToFull">Estimation du temps de charge</string>
     <string name="showTimeToFullDesc">Afficher le temps restant avant la charge complète dans la notification</string>
     <string name="customization">Personnalisation</string>
@@ -58,10 +58,11 @@
     <string name="keepScreenOn">Garder l\'écran allumé</string>
     <string name="keepScreenOnDesc">Empêche l\'écran de s\'éteindre lorsque l\'écran d\'accueil est ouvert</string>
     <string name="notificationDesc">Icône, entrées</string>
-    <string name="notificationEnableDesc">Notification de batterie persistante</string>
+    <string name="notificationEnableDesc">Mises à jour de la batterie</string>
     <string name="workaroundsShortDesc">Corrections spécifiques à l\'appareil</string>
     <string name="sourceCode">Code source</string>
     <string name="advancedSettings">Paramètres avancés</string>
+    <string name="advancedSection">Avancé</string>
     <string name="tweaks">Ajustements</string>
     <string name="pollInterval">Intervalle de mise à jour</string>
     <string name="hapticsEnabled">Retour haptique</string>
@@ -71,4 +72,7 @@
     <string name="fontDefault">Par défaut</string>
     <string name="fontDesc">Police utilisée dans toute l\'application</string>
     <string name="widgetTempLabel">Température de la batterie</string>
+    <string name="versionLicenseLinks">Version, licence et liens</string>
+    <string name="outlinedCards">Cartes avec contour</string>
+    <string name="outlinedCardsDesc">Afficher les cartes avec une bordure au lieu d\'un fond plein</string>
 </resources>

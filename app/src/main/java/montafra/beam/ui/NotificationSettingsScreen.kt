@@ -32,7 +32,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -43,6 +43,7 @@ import androidx.navigation.NavController
 import montafra.beam.R
 import montafra.beam.settingsName
 import montafra.beam.settingsUpdateInd
+import montafra.beam.ui.theme.BeamCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -142,28 +143,28 @@ fun NotificationSettingsScreen(navController: NavController) {
                 }
             }
             item {
-                ListItem(
-                    headlineContent = { Text(stringResource(R.string.showTimeToFull)) },
-                    supportingContent = { Text(stringResource(R.string.showTimeToFullDesc)) },
-                    trailingContent = {
-                        Switch(
-                            checked = showTimeToFull,
-                            onCheckedChange = {
-                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                showTimeToFull = it
-                                prefs.edit().putBoolean("showTimeToFull", it).commit()
-                                context.sendBroadcast(
-                                    Intent().setPackage(context.packageName).setAction(settingsUpdateInd)
-                                )
-                            },
-                        )
-                    },
-                    colors = ListItemDefaults.colors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    ),
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(16.dp))
-                        .clickable {
+                BeamCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                ) {
+                    ListItem(
+                        headlineContent = { Text(stringResource(R.string.showTimeToFull)) },
+                        supportingContent = { Text(stringResource(R.string.showTimeToFullDesc)) },
+                        trailingContent = {
+                            Switch(
+                                checked = showTimeToFull,
+                                onCheckedChange = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                    showTimeToFull = it
+                                    prefs.edit().putBoolean("showTimeToFull", it).commit()
+                                    context.sendBroadcast(
+                                        Intent().setPackage(context.packageName).setAction(settingsUpdateInd)
+                                    )
+                                },
+                            )
+                        },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                        modifier = Modifier.clickable {
                             haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                             showTimeToFull = !showTimeToFull
                             prefs.edit().putBoolean("showTimeToFull", showTimeToFull).commit()
@@ -171,7 +172,8 @@ fun NotificationSettingsScreen(navController: NavController) {
                                 Intent().setPackage(context.packageName).setAction(settingsUpdateInd)
                             )
                         },
-                )
+                    )
+                }
             }
             item { Spacer(Modifier.height(16.dp)) }
         }

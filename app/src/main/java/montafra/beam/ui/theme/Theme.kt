@@ -12,6 +12,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.State
@@ -25,7 +26,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import montafra.beam.settingsName
 
-data class ThemePrefs(val mode: String = "system", val customColor: Int? = null, val fontFamily: String = "default")
+data class ThemePrefs(val mode: String = "system", val customColor: Int? = null, val fontFamily: String = "default", val outlineOnlyCards: Boolean = false)
 
 private fun hsvColor(hue: Float, sat: Float, value: Float): Color =
     Color(android.graphics.Color.HSVToColor(floatArrayOf(hue, sat, value)))
@@ -91,6 +92,7 @@ fun rememberThemePrefs(): State<ThemePrefs> {
             mode = p.getString("themeMode", "system") ?: "system",
             customColor = p.getInt("themeColorValue", 0xFF43A047.toInt()).takeIf { it != -1 },
             fontFamily = p.getString("fontFamily", "default") ?: "default",
+            outlineOnlyCards = p.getBoolean("outlineOnlyCards", false),
         )
     }
 
@@ -99,7 +101,7 @@ fun rememberThemePrefs(): State<ThemePrefs> {
     DisposableEffect(Unit) {
         val prefs = context.getSharedPreferences(settingsName, Context.MODE_PRIVATE)
         val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-            if (key == "themeMode" || key == "themeColorValue" || key == "fontFamily") state.value = read()
+            if (key == "themeMode" || key == "themeColorValue" || key == "fontFamily" || key == "outlineOnlyCards") state.value = read()
         }
         prefs.registerOnSharedPreferenceChangeListener(listener)
         onDispose { prefs.unregisterOnSharedPreferenceChangeListener(listener) }
@@ -149,9 +151,11 @@ fun BeamTheme(prefs: ThemePrefs, content: @Composable () -> Unit) {
         }
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = typographyForFont(prefs.fontFamily),
-        content = content,
-    )
+    CompositionLocalProvider(LocalOutlineOnlyCards provides prefs.outlineOnlyCards) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = typographyForFont(prefs.fontFamily),
+            content = content,
+        )
+    }
 }

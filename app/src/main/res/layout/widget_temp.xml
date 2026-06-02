@@ -18,6 +18,13 @@
         android:includeFontPadding="false"
         android:text="-" />
 
+    <ImageView
+        android:id="@+id/widget_temp_value_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@null"
+        android:visibility="gone" />
+
     <TextView
         android:id="@+id/widget_temp_label"
         android:layout_width="wrap_content"
@@ -27,5 +34,13 @@
         android:textColor="#99FFFFFF"
         android:includeFontPadding="false"
         android:text="@string/temperature" />
+
+    <ImageView
+        android:id="@+id/widget_temp_label_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:contentDescription="@null"
+        android:visibility="gone" />
 
 </LinearLayout>

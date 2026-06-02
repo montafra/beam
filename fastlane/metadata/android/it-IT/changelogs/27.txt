@@ -1,0 +1,8 @@
+• Aggiunta l'opzione tema "schede con solo contorno"
+• Aggiunta la traduzione ceca
+• Correzioni di bug
+• Corretto il rilevamento errato dello stato di carica su alcuni dispositivi
+• Corrette alcune traduzioni
+• Miglioramenti all'interfaccia
+• Aggiornato l'effetto di retroilluminazione
+• Aggiornato il feedback aptico della schermata principale

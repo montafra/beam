@@ -36,8 +36,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -76,6 +74,7 @@ import montafra.beam.R
 import montafra.beam.StatusService
 import montafra.beam.settingsName
 import montafra.beam.settingsUpdateInd
+import montafra.beam.ui.theme.BeamCard
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -101,7 +100,7 @@ fun SettingsScreen(navController: NavController) {
         context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     }
     var showDonateDialog by remember { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var notificationEnabled by remember { mutableStateOf(prefs.getBoolean("notificationEnabled", true)) }
     val version = remember {
         try { context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: "" }
@@ -174,11 +173,9 @@ fun SettingsScreen(navController: NavController) {
             item {
                 SectionHeader(stringResource(R.string.interfaceSection))
                 Spacer(Modifier.height(8.dp))
-                Card(
+                BeamCard(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 4.dp, bottomEnd = 4.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                 ) {
                     ListItem(
                         headlineContent = { Text(stringResource(R.string.notification)) },
@@ -215,11 +212,9 @@ fun SettingsScreen(navController: NavController) {
                     exit = shrinkVertically(tween(220)) + fadeOut(tween(180)),
                 ) {
                     Column {
-                        Card(
+                        BeamCard(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(4.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                         ) {
                             ListItem(
                                 headlineContent = { Text(stringResource(R.string.advancedSettings)) },
@@ -242,15 +237,13 @@ fun SettingsScreen(navController: NavController) {
                     }
                 }
                 val showLanguage = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
-                Card(
+                BeamCard(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(
                         topStart = 4.dp, topEnd = 4.dp,
                         bottomStart = if (showLanguage) 4.dp else 20.dp,
                         bottomEnd = if (showLanguage) 4.dp else 20.dp,
                     ),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                 ) {
                     ListItem(
                         headlineContent = { Text(stringResource(R.string.theme)) },
@@ -272,11 +265,9 @@ fun SettingsScreen(navController: NavController) {
                 }
                 if (showLanguage) {
                     Spacer(Modifier.height(4.dp))
-                    Card(
+                    BeamCard(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 20.dp, bottomEnd = 20.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                     ) {
                         ListItem(
                             headlineContent = { Text(stringResource(R.string.language)) },
@@ -309,15 +300,11 @@ fun SettingsScreen(navController: NavController) {
 
             // Workarounds
             item {
-                SectionHeader(stringResource(R.string.workarounds))
+                SectionHeader(stringResource(R.string.advancedSection))
                 Spacer(Modifier.height(8.dp))
-                Card(
+                BeamCard(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                 ) {
                     ListItem(
                         headlineContent = { Text(stringResource(R.string.workarounds)) },
@@ -343,11 +330,9 @@ fun SettingsScreen(navController: NavController) {
             item {
                 SectionHeader(stringResource(R.string.about))
                 Spacer(Modifier.height(8.dp))
-                Card(
+                BeamCard(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 4.dp, bottomEnd = 4.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                 ) {
                     ListItem(
                         headlineContent = { Text(stringResource(R.string.supportMe)) },
@@ -367,15 +352,13 @@ fun SettingsScreen(navController: NavController) {
                     )
                 }
                 Spacer(Modifier.height(4.dp))
-                Card(
+                BeamCard(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 20.dp, bottomEnd = 20.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                 ) {
                     ListItem(
                         headlineContent = { Text("Beam $version") },
-                        supportingContent = { Text("Version, license & links") },
+                        supportingContent = { Text(stringResource(R.string.versionLicenseLinks)) },
                         leadingContent = {
                             Icon(
                                 painter = painterResource(R.drawable.ico_info),
@@ -475,11 +458,14 @@ fun SettingsScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Box(
+                BeamCard(
+                    modifier = Modifier.size(88.dp),
+                    shape = CircleShape,
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                ) {
+                    Box(
                         modifier = Modifier
-                            .size(88.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+                            .fillMaxSize()
                             .clickable {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 context.startActivity(
@@ -495,6 +481,7 @@ fun SettingsScreen(navController: NavController) {
                             modifier = Modifier.size(60.dp),
                         )
                     }
+                }
                     Spacer(Modifier.height(16.dp))
                     Text(
                         text = stringResource(R.string.app_name),
@@ -542,122 +529,134 @@ fun SettingsScreen(navController: NavController) {
                     )
                     Spacer(Modifier.height(24.dp))
                     Column(modifier = Modifier.fillMaxWidth()) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 4.dp, bottomEnd = 4.dp))
-                                .background(MaterialTheme.colorScheme.surfaceContainerHighest)
-                                .clickable {
-                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                    showAppInfo = false
-                                    changelogEntries = loadChangelogs(context, 0, currentVersionCode)
-                                    if (changelogEntries.isNotEmpty()) showChangelog = true
-                                }
-                                .padding(horizontal = 16.dp, vertical = 16.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        BeamCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 4.dp, bottomEnd = 4.dp),
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                         ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ico_info),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(24.dp),
-                            )
-                            Text(
-                                text = stringResource(R.string.changelog),
-                                style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier.weight(1f),
-                            )
-                            Icon(
-                                painter = painterResource(R.drawable.ico_chevron_right),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(20.dp),
-                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        showAppInfo = false
+                                        changelogEntries = loadChangelogs(context, 0, currentVersionCode)
+                                        if (changelogEntries.isNotEmpty()) showChangelog = true
+                                    }
+                                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ico_info),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(24.dp),
+                                )
+                                Text(
+                                    text = stringResource(R.string.changelog),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    modifier = Modifier.weight(1f),
+                                )
+                                Icon(
+                                    painter = painterResource(R.drawable.ico_chevron_right),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(20.dp),
+                                )
+                            }
                         }
                         Spacer(Modifier.height(4.dp))
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(4.dp))
-                                .background(MaterialTheme.colorScheme.surfaceContainerHighest)
-                                .combinedClickable(
-                                    onClick = {
-                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                        context.startActivity(
-                                            Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/montafra/beam"))
-                                        )
-                                    },
-                                    onLongClick = {
-                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                        clipboardManager.setPrimaryClip(
-                                            ClipData.newPlainText("Source Code", "https://github.com/montafra/beam")
-                                        )
-                                    },
-                                )
-                                .padding(horizontal = 16.dp, vertical = 16.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        BeamCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(4.dp),
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                         ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ico_github),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(24.dp),
-                            )
-                            Text(
-                                text = stringResource(R.string.sourceCode),
-                                style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier.weight(1f),
-                            )
-                            Icon(
-                                painter = painterResource(R.drawable.ico_open_in_new),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(18.dp),
-                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .combinedClickable(
+                                        onClick = {
+                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                            context.startActivity(
+                                                Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/montafra/beam"))
+                                            )
+                                        },
+                                        onLongClick = {
+                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                            clipboardManager.setPrimaryClip(
+                                                ClipData.newPlainText("Source Code", "https://github.com/montafra/beam")
+                                            )
+                                        },
+                                    )
+                                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ico_github),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(24.dp),
+                                )
+                                Text(
+                                    text = stringResource(R.string.sourceCode),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    modifier = Modifier.weight(1f),
+                                )
+                                Icon(
+                                    painter = painterResource(R.drawable.ico_open_in_new),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(18.dp),
+                                )
+                            }
                         }
                         Spacer(Modifier.height(4.dp))
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 16.dp, bottomEnd = 16.dp))
-                                .background(MaterialTheme.colorScheme.surfaceContainerHighest)
-                                .combinedClickable(
-                                    onClick = {
-                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                        context.startActivity(
-                                            Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/montafra/beam/issues"))
-                                        )
-                                    },
-                                    onLongClick = {
-                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                        clipboardManager.setPrimaryClip(
-                                            ClipData.newPlainText("Issue Tracker", "https://github.com/montafra/beam/issues")
-                                        )
-                                    },
-                                )
-                                .padding(horizontal = 16.dp, vertical = 16.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        BeamCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 16.dp, bottomEnd = 16.dp),
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                         ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ico_bug),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(24.dp),
-                            )
-                            Text(
-                                text = stringResource(R.string.issueTracker),
-                                style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier.weight(1f),
-                            )
-                            Icon(
-                                painter = painterResource(R.drawable.ico_open_in_new),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(18.dp),
-                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .combinedClickable(
+                                        onClick = {
+                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                            context.startActivity(
+                                                Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/montafra/beam/issues"))
+                                            )
+                                        },
+                                        onLongClick = {
+                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                            clipboardManager.setPrimaryClip(
+                                                ClipData.newPlainText("Issue Tracker", "https://github.com/montafra/beam/issues")
+                                            )
+                                        },
+                                    )
+                                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ico_bug),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(24.dp),
+                                )
+                                Text(
+                                    text = stringResource(R.string.issueTracker),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    modifier = Modifier.weight(1f),
+                                )
+                                Icon(
+                                    painter = painterResource(R.drawable.ico_open_in_new),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(18.dp),
+                                )
+                            }
                         }
                     }
                     Spacer(Modifier.height(20.dp))
@@ -751,13 +750,9 @@ private fun DonateCard(
         "Lightning" -> Color(0xFF9B59B6)
         else -> MaterialTheme.colorScheme.primary
     }
-    Card(
+    BeamCard(
         modifier = Modifier.fillMaxWidth(),
         shape = shape,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
     ) {
         Row(
             modifier = Modifier

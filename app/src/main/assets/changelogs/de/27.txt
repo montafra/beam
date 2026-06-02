@@ -1,0 +1,9 @@
+1.5
+• Themenoption "Umriss-Karten" hinzugefügt
+• Tschechische Übersetzung hinzugefügt
+• Fehlerbehebungen
+• Falsche Erkennung des Ladezustands auf einigen Geräten behoben
+• Einige Übersetzungen korrigiert
+• UI-Verbesserungen
+• Hintergrundbeleuchtungseffekt aktualisiert
+• Haptik des Startbildschirms aktualisiert

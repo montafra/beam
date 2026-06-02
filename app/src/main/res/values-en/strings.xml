@@ -48,7 +48,7 @@
     <string name="interfaceSection">Interface</string>
     <string name="theme">Theme</string>
     <string name="notification">Notification</string>
-    <string name="themeDesc">Mode, colour, backlight</string>
+    <string name="themeDesc">Colours, fonts, and effects</string>
     <string name="showTimeToFull">Charge Time Estimate</string>
     <string name="showTimeToFullDesc">Show time remaining until fully charged in the notification</string>
     <string name="customization">Customization</string>
@@ -61,6 +61,7 @@
     <string name="workaroundsShortDesc">Device-specific fixes</string>
     <string name="sourceCode">Source Code</string>
     <string name="advancedSettings">Advanced Settings</string>
+    <string name="advancedSection">Advanced</string>
     <string name="tweaks">Tweaks</string>
     <string name="pollInterval">Update Interval</string>
     <string name="hapticsEnabled">Haptic Feedback</string>
@@ -69,5 +70,8 @@
     <string name="font">Font</string>
     <string name="fontDefault">Default</string>
     <string name="fontDesc">Typeface used throughout the app</string>
+    <string name="outlinedCards">Outlined Cards</string>
+    <string name="outlinedCardsDesc">Show cards with a border instead of a filled background</string>
     <string name="widgetTempLabel">Battery Temperature</string>
+    <string name="versionLicenseLinks">Version, license &amp; links</string>
 </resources>

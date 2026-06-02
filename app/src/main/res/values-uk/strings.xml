@@ -48,7 +48,7 @@
     <string name="interfaceSection">Інтерфейс</string>
     <string name="theme">Тема</string>
     <string name="notification">Сповіщення</string>
-    <string name="themeDesc">Режим, колір, підсвічування</string>
+    <string name="themeDesc">Кольори, шрифти та ефекти</string>
     <string name="showTimeToFull">Орієнтовний час заряджання</string>
     <string name="showTimeToFullDesc">Показувати залишок часу до повного заряду в сповіщенні</string>
     <string name="customization">Персоналізація</string>
@@ -58,10 +58,11 @@
     <string name="keepScreenOn">Не вимикати екран</string>
     <string name="keepScreenOnDesc">Запобігає вимкненню екрана на головному екрані застосунку</string>
     <string name="notificationDesc">Іконка, записи</string>
-    <string name="notificationEnableDesc">Постійне сповіщення про акумулятор</string>
+    <string name="notificationEnableDesc">Оновлення акумулятора</string>
     <string name="workaroundsShortDesc">Виправлення для конкретних пристроїв</string>
     <string name="sourceCode">Вихідний код</string>
     <string name="advancedSettings">Розширені налаштування</string>
+    <string name="advancedSection">Розширені</string>
     <!-- TODO: native review — "Налаштування" is already used for "Settings"; "Тонкі налаштування" disambiguates -->
     <string name="tweaks">Тонкі налаштування</string>
     <string name="pollInterval">Інтервал оновлення</string>
@@ -72,4 +73,7 @@
     <string name="fontDefault">Стандартний</string>
     <string name="fontDesc">Шрифт, який використовується в усьому застосунку</string>
     <string name="widgetTempLabel">Температура акумулятора</string>
+    <string name="versionLicenseLinks">Версія, ліцензія та посилання</string>
+    <string name="outlinedCards">Карти з обведенням</string>
+    <string name="outlinedCardsDesc">Показувати карти з рамкою замість заповненого фону</string>
 </resources>

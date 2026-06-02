@@ -1,0 +1,36 @@
+<i>Beam</i> je odlehčený monitor baterie. Připne živý údaj o výkonu, proudu, napětí nebo úrovni nabití do vašeho stavového řádku a po otevření zobrazí kompletní rozpis údajů o baterii v přehledné aplikaci s možností přizpůsobení motivu.
+
+Vyberte, která jednotka se zobrazí v ikoně stavového řádku (W, A, Ah, V, Wh, °C, %), nebo si jich několik naskládejte do těla oznámení.
+
+Soukromí na prvním místě:
+• Žádné reklamy
+• Žádné sledování
+• Žádné shromažďování dat
+• Žádné sdílení s třetími stranami
+• Žádná zbytečná oprávnění
+
+Údaje o baterii v aplikaci:
+• Výkon (watty)
+• Proud (ampéry)
+• Napětí (volty)
+• Energie (watthodiny)
+• Teplota (°C)
+• Úroveň nabití (procenta)
+• Stav nabíjení a typ připojení
+• Nabíjení od (datum / čas)
+• Čas do plného nabití
+
+Přizpůsobení:
+• Dynamické barvy Material You (Android 12+) nebo vlastní výchozí barva z palety 12 odstínů
+• Světlý, tmavý, systémový a černý OLED motiv
+• Volitelná zář podsvícení hero karty a haptická odezva
+
+Kompatibilita zařízení:
+• Korekce škály výkonu pro telefony, které hlásí µA místo mA
+• Přepínač obráceného proudu pro telefony, které obracejí směr nabíjení
+• Nastavitelný interval dotazování
+
+Otevřený zdrojový kód na GitHubu: https://github.com/montafra/beam
+Každý dar je vítán a pomáhá podpořit mé budoucí projekty — kryptoadresy najdete v sekci O aplikaci.
+
+Poznámka: pro zobrazení indikátoru ve stavovém řádku je vyžadováno oprávnění k oznámením. Jednou aplikaci otevřete, aby se spustila služba indikátoru.

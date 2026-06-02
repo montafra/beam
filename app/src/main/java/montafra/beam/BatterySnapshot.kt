@@ -7,6 +7,7 @@ class BatterySnapshot(
     private val invertCurrent: Boolean,
 
     // data
+    val chargeStatus: ChargeStatus,
     val chargeTimeRemainingRaw: Long,
     val currentRaw: Long?,
     val energyRaw: Long?,
@@ -43,13 +44,20 @@ class BatterySnapshot(
 
     val celsius : Double? get() = tempRaw?.toDouble()?.div(10.0)
 
-    // Some devices always report false for isCharging, so fall back to battery current detection
+    // Prefer the OS-reported charge status; some devices misreport isCharging or the
+    // current sign, so only fall back to those heuristics when the status is unknown.
     val charging : Boolean get() {
+        when (chargeStatus) {
+            ChargeStatus.Charging, ChargeStatus.Full -> return true
+            ChargeStatus.Discharging, ChargeStatus.NotCharging -> return false
+            ChargeStatus.Unknown -> {} // fall through to the heuristics below
+        }
+
         if (isChargingRaw)
             return true
 
         val ma = milliamps
-        return ma != null && ma < 1.0
+        return ma != null && ma < 0.0
     }
 
     val secondsUntilCharged: Double? get() {

@@ -48,7 +48,7 @@
     <string name="interfaceSection">Oberfläche</string>
     <string name="theme">Design</string>
     <string name="notification">Benachrichtigung</string>
-    <string name="themeDesc">Modus, Farbe, Hintergrundbeleuchtung</string>
+    <string name="themeDesc">Farben, Schriftarten und Effekte</string>
     <string name="showTimeToFull">Ladezeitschätzung</string>
     <string name="showTimeToFullDesc">Verbleibende Zeit bis zur vollständigen Ladung in der Benachrichtigung anzeigen</string>
     <string name="customization">Anpassung</string>
@@ -58,10 +58,11 @@
     <string name="keepScreenOn">Bildschirm anlassen</string>
     <string name="keepScreenOnDesc">Verhindert, dass der Bildschirm auf der Startseite in den Ruhezustand wechselt</string>
     <string name="notificationDesc">Symbol, Einträge</string>
-    <string name="notificationEnableDesc">Dauerhafte Akku-Benachrichtigung</string>
+    <string name="notificationEnableDesc">Akku-Aktualisierungen</string>
     <string name="workaroundsShortDesc">Gerätespezifische Korrekturen</string>
     <string name="sourceCode">Quellcode</string>
     <string name="advancedSettings">Erweiterte Einstellungen</string>
+    <string name="advancedSection">Erweitert</string>
     <!-- TODO: native review — "Tweaks" is common in DE tech UI but "Feineinstellungen" is more native -->
     <string name="tweaks">Feineinstellungen</string>
     <string name="pollInterval">Aktualisierungsintervall</string>
@@ -72,4 +73,7 @@
     <string name="fontDefault">Standard</string>
     <string name="fontDesc">Schriftart, die in der gesamten App verwendet wird</string>
     <string name="widgetTempLabel">Akkutemperatur</string>
+    <string name="versionLicenseLinks">Version, Lizenz &amp; Links</string>
+    <string name="outlinedCards">Umrandete Karten</string>
+    <string name="outlinedCardsDesc">Karten mit Rahmen statt gefülltem Hintergrund anzeigen</string>
 </resources>

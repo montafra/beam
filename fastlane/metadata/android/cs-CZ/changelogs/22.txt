@@ -1,0 +1,8 @@
+První vydání na F-Droidu.
+• Přepracované rozhraní hlavní obrazovky, nastavení a oznámení
+• Nové nastavení motivu s vlastní výchozí barvou a OLED režimem
+• Přidána haptická odezva v celé aplikaci
+• Italská (it-IT) lokalizace
+• Možnost daru přes Liberapay v nabídce Podpořit vývoj
+• Aktualizovaná ikona aplikace a snímky obrazovky
+• Gradle aktualizován na verzi 9.2.0
