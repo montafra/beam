@@ -9,10 +9,12 @@ import android.graphics.*
 import android.graphics.drawable.Icon
 import android.os.Binder
 import android.os.IBinder
+import android.os.PowerManager
 import android.util.Log
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import androidx.core.content.edit
 
 
 class StatusService : Service() {
@@ -31,7 +33,11 @@ class StatusService : Service() {
     private var indicatorEntries: Set<String> = emptySet()
     private var notificationIndicator: String = "W"
     private var showTimeToFull: Boolean = true
+    private var showScreenTimeInNotification: Boolean = false
     private var pollIntervalMs: Long = intervalMs
+    private var screenTimeSessionStart = 0L
+    private var screenTimeOnTotal = 0L
+    private var screenTimeOnStart = 0L
     private var notificationEnabled = true
     private var initialized = false
     private lateinit var msgReceiver: MsgReceiver
@@ -61,10 +67,35 @@ class StatusService : Service() {
                 }
                 Intent.ACTION_POWER_DISCONNECTED -> {
                     pluggedInAt = null
+                    val now = System.currentTimeMillis()
+                    screenTimeSessionStart = now
+                    screenTimeOnTotal = 0L
+                    screenTimeOnStart = if ((getSystemService(Context.POWER_SERVICE) as PowerManager).isInteractive) now else 0L
+                    getSharedPreferences(settingsName, MODE_MULTI_PROCESS).edit {
+                        putLong("screenTimeSessionStart", screenTimeSessionStart)
+                            .putLong("screenTimeOnTotal", screenTimeOnTotal)
+                            .putLong("screenTimeOnStart", screenTimeOnStart)
+                    }
                     update()
                 }
-                Intent.ACTION_SCREEN_OFF -> task.stop()
-                Intent.ACTION_SCREEN_ON -> task.start()
+                Intent.ACTION_SCREEN_OFF -> {
+                    if (screenTimeOnStart > 0L) {
+                        screenTimeOnTotal += System.currentTimeMillis() - screenTimeOnStart
+                        screenTimeOnStart = 0L
+                        getSharedPreferences(settingsName, MODE_MULTI_PROCESS).edit {
+                            putLong("screenTimeOnTotal", screenTimeOnTotal)
+                            putLong("screenTimeOnStart", screenTimeOnStart)
+                        }
+                    }
+                    task.stop()
+                }
+                Intent.ACTION_SCREEN_ON -> {
+                    screenTimeOnStart = System.currentTimeMillis()
+                    getSharedPreferences(settingsName, MODE_MULTI_PROCESS).edit {
+                        putLong("screenTimeOnStart", screenTimeOnStart)
+                    }
+                    task.start()
+                }
             }
         }
     }
@@ -78,7 +109,28 @@ class StatusService : Service() {
         indicatorEntries = settings.getStringSet("indicatorEntries", null) ?: emptySet()
         notificationIndicator = settings.getString("notificationIndicator", "W") ?: "W"
         showTimeToFull = settings.getBoolean("showTimeToFull", true)
+        showScreenTimeInNotification = settings.getBoolean("showScreenTimeInNotification", false)
         pollIntervalMs = settings.getLong("pollIntervalMs", intervalMs)
+        screenTimeSessionStart = settings.getLong("screenTimeSessionStart", 0L)
+        screenTimeOnTotal = settings.getLong("screenTimeOnTotal", 0L)
+        screenTimeOnStart = settings.getLong("screenTimeOnStart", 0L)
+        if (screenTimeSessionStart == 0L) {
+            screenTimeSessionStart = System.currentTimeMillis()
+            settings.edit { putLong("screenTimeSessionStart", screenTimeSessionStart) }
+        }
+        val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
+        if (pm.isInteractive) {
+            if (screenTimeOnStart == 0L) screenTimeOnStart = System.currentTimeMillis()
+        } else {
+            if (screenTimeOnStart > 0L) {
+                screenTimeOnTotal += System.currentTimeMillis() - screenTimeOnStart
+                screenTimeOnStart = 0L
+                settings.edit {
+                    putLong("screenTimeOnTotal", screenTimeOnTotal)
+                    putLong("screenTimeOnStart", screenTimeOnStart)
+                }
+            }
+        }
     }
 
     private fun metricLabel(key: String) = getString(when (key) {
@@ -218,21 +270,35 @@ class StatusService : Service() {
             .setOnlyAlertOnce(true)
 
         val entries = indicatorEntries.filter { it != notificationIndicator }.sortedBy { metricOrder.indexOf(it) }
+        val screenTimeText = if (showScreenTimeInNotification) screenTimeFormatted() else null
 
-        if (entries.isEmpty()) {
-            builder.setStyle(null).setContentText(timeText)
-        } else {
+        if (entries.isNotEmpty() || screenTimeText != null) {
             val style = Notification.InboxStyle()
             entries.forEach { key ->
                 style.addLine("${metricLabel(key)}  ${metricValue(key)}${metricUnit(key)}")
             }
+            if (screenTimeText != null) {
+                style.addLine("${getString(R.string.screenTime)}  $screenTimeText")
+            }
             if (timeText.isNotEmpty()) style.setSummaryText(timeText)
-            builder
-                .setStyle(style)
-                .setContentText(entries.joinToString("  ") { k -> "${metricValue(k)}${metricUnit(k)}" })
+            val compactParts = mutableListOf<String>()
+            entries.forEach { k -> compactParts.add("${metricValue(k)}${metricUnit(k)}") }
+            if (screenTimeText != null) compactParts.add(screenTimeText)
+            builder.setStyle(style).setContentText(compactParts.joinToString("  "))
+        } else {
+            builder.setStyle(null).setContentText(timeText)
         }
 
         return builder.build()
+    }
+
+    private fun screenTimeFormatted(): String {
+        val now = System.currentTimeMillis()
+        val currentOnMs = screenTimeOnTotal +
+            (if (screenTimeOnStart > 0L) now - screenTimeOnStart else 0L)
+        val totalElapsedMs = (now - screenTimeSessionStart).coerceAtLeast(1)
+        val percent = ((currentOnMs * 100) / totalElapsedMs).coerceIn(0, 100)
+        return getString(R.string.screenTimeFormat, fmtDurationHms(currentOnMs / 1000), percent)
     }
 
     private fun updateData() {
@@ -274,6 +340,7 @@ class StatusService : Service() {
                 }
             )
             .putExtra("voltage", fmt(snapshot.volts) + "V")
+            .putExtra("screenTime", screenTimeFormatted())
 
         applicationContext.sendBroadcast(intent)
     }

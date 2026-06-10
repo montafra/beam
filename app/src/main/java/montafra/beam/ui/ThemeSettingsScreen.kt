@@ -63,6 +63,7 @@ fun ThemeSettingsScreen(navController: NavController) {
     var themeMode by remember { mutableStateOf(prefs.getString("themeMode", "system") ?: "system") }
     var customColorValue by remember { mutableIntStateOf(prefs.getInt("themeColorValue", colorSwatches[5])) }
     var heroBacklight by remember { mutableStateOf(prefs.getBoolean("heroBacklight", true)) }
+    var showChargeLevel by remember { mutableStateOf(prefs.getBoolean("showChargeLevel", true)) }
     var hapticsEnabled by remember { mutableStateOf(prefs.getBoolean("hapticsEnabled", true)) }
     var keepScreenOn by remember { mutableStateOf(prefs.getBoolean("keepScreenOn", false)) }
     var fontFamily by remember { mutableStateOf(prefs.getString("fontFamily", "default") ?: "default") }
@@ -166,9 +167,9 @@ fun ThemeSettingsScreen(navController: NavController) {
             item {
                 SubLabel(stringResource(R.string.customization))
                 Spacer(Modifier.height(8.dp))
-                val fontKeys = listOf("default", "inter", "dm_sans", "space_grotesk", "jetbrains_mono", "noto_sans_mono")
+                val fontKeys = listOf("default", "inter", "gantari", "dm_sans", "space_grotesk", "jetbrains_mono", "ubuntu_sans_mono")
                 val fontLabels = listOf(
-                    stringResource(R.string.fontDefault), "Inter", "DM Sans", "Space Grotesk", "JetBrains Mono", "Noto Sans Mono",
+                    stringResource(R.string.fontDefault), "Inter", "Gantari", "DM Sans", "Space Grotesk", "JetBrains Mono", "Ubuntu Sans Mono",
                 )
                 var fontMenuExpanded by remember { mutableStateOf(false) }
                 val selectedFontLabel = fontLabels[fontKeys.indexOf(fontFamily).takeIf { it >= 0 } ?: 0]
@@ -241,7 +242,28 @@ fun ThemeSettingsScreen(navController: NavController) {
                     )
                 }
                 Spacer(Modifier.height(4.dp))
-                BeamCard(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(4.dp)) {
+                BeamCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 20.dp, bottomEnd = 20.dp),
+                ) {
+                    ThemeToggleRow(
+                        title = stringResource(R.string.hapticsEnabled),
+                        description = stringResource(R.string.hapticsEnabledDesc),
+                        checked = hapticsEnabled,
+                        onToggle = {
+                            hapticsEnabled = it
+                            prefs.edit().putBoolean("hapticsEnabled", it).commit()
+                        },
+                    )
+                }
+            }
+            item {
+                SubLabel(stringResource(R.string.home))
+                Spacer(Modifier.height(8.dp))
+                BeamCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 4.dp, bottomEnd = 4.dp),
+                ) {
                     ThemeToggleRow(
                         title = stringResource(R.string.heroBacklight),
                         description = stringResource(R.string.heroBacklightDesc),
@@ -255,12 +277,12 @@ fun ThemeSettingsScreen(navController: NavController) {
                 Spacer(Modifier.height(4.dp))
                 BeamCard(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(4.dp)) {
                     ThemeToggleRow(
-                        title = stringResource(R.string.hapticsEnabled),
-                        description = stringResource(R.string.hapticsEnabledDesc),
-                        checked = hapticsEnabled,
+                        title = stringResource(R.string.chargeLevel),
+                        description = stringResource(R.string.heroChargeLevelDesc),
+                        checked = showChargeLevel,
                         onToggle = {
-                            hapticsEnabled = it
-                            prefs.edit().putBoolean("hapticsEnabled", it).commit()
+                            showChargeLevel = it
+                            prefs.edit().putBoolean("showChargeLevel", it).commit()
                         },
                     )
                 }

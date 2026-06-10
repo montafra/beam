@@ -1,0 +1,9 @@
+1.6
+• Přidány chybějící překlady
+• Nové efekty hlavní karty
+• Nová nastavení motivu
+• Vylepšení uživatelského rozhraní
+• Aktualizováno nastavení řešení škálování výkonu
+• Aktualizováno chování dlaždice rychlého nastavení
+• Přidány brazilské překlady, díky @WaggBR
+• Přidána doba zapnuté obrazovky, díky @ryosoftware

@@ -12,6 +12,26 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.spring
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Velocity
+import kotlinx.coroutines.launch
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -59,6 +79,39 @@ fun loadChangelogs(context: Context, sinceVersionCode: Int, currentVersionCode: 
 @Composable
 fun ChangelogSheet(entries: List<ChangelogEntry>, onDismiss: () -> Unit) {
     val sheetState = rememberModalBottomSheetState()
+    val haptic = LocalHapticFeedback.current
+    val scope = rememberCoroutineScope()
+    val density = LocalDensity.current
+    val maxPull = with(density) { 150.dp.toPx() }
+    val threshold = with(density) { 90.dp.toPx() }
+    // Easter egg: overscroll past the bottom of the changelog to peek a shrug while
+    // pulling; it springs back to hidden on release.
+    val pull = remember { Animatable(0f) }
+    var armed by remember { mutableStateOf(false) }
+    val pullConn = remember {
+        object : NestedScrollConnection {
+            override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset {
+                // At the bottom, leftover upward drag (available.y < 0) becomes rubber-band pull.
+                if (source == NestedScrollSource.UserInput && available.y < 0f) {
+                    val next = (pull.value - available.y * 0.5f).coerceIn(0f, maxPull)
+                    scope.launch { pull.snapTo(next) }
+                    if (!armed && next >= threshold) {
+                        armed = true
+                        haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                    }
+                    return available
+                }
+                return Offset.Zero
+            }
+
+            override suspend fun onPreFling(available: Velocity): Velocity {
+                // Release: hide the shrug again by springing the pull back to zero.
+                armed = false
+                scope.launch { pull.animateTo(0f, spring()) }
+                return Velocity.Zero
+            }
+        }
+    }
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
@@ -66,6 +119,7 @@ fun ChangelogSheet(entries: List<ChangelogEntry>, onDismiss: () -> Unit) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .nestedScroll(pullConn)
                 .verticalScroll(rememberScrollState())
         ) {
             Row(
@@ -99,7 +153,7 @@ fun ChangelogSheet(entries: List<ChangelogEntry>, onDismiss: () -> Unit) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             if (entry.versionName.isNotEmpty()) {
                                 Text(
-                                    text = "Beam ${entry.versionName}",
+                                    text = "v${entry.versionName}",
                                     style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.primary,
                                 )
@@ -115,7 +169,7 @@ fun ChangelogSheet(entries: List<ChangelogEntry>, onDismiss: () -> Unit) {
                 } else {
                     if (entry.versionName.isNotEmpty()) {
                         Text(
-                            text = "Beam ${entry.versionName}",
+                            text = "v${entry.versionName}",
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(horizontal = 24.dp, vertical = 4.dp),
@@ -130,7 +184,26 @@ fun ChangelogSheet(entries: List<ChangelogEntry>, onDismiss: () -> Unit) {
                 }
                 Spacer(Modifier.height(8.dp))
             }
-            Spacer(Modifier.height(16.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 24.dp)
+                    .padding(vertical = 16.dp),
+            ) {
+                Text(
+                    text = "¯\\_(ツ)_/¯",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .graphicsLayer {
+                            val reveal = (pull.value / threshold).coerceIn(0f, 1f)
+                            alpha = reveal
+                            translationY = (1f - reveal) * 12.dp.toPx()
+                        },
+                )
+            }
         }
     }
 }

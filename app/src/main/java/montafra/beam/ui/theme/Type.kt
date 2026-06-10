@@ -47,13 +47,29 @@ fun variableFamily(resId: Int): FontFamily = FontFamily(
     Font(resId, weight = FontWeight.Bold, variationSettings = FontVariation.Settings(FontVariation.weight(700))),
 )
 
-fun fontFamilyFor(key: String): FontFamily? = when (key) {
-    "inter" -> variableFamily(R.font.inter)
-    "dm_sans" -> variableFamily(R.font.dm_sans)
-    "space_grotesk" -> variableFamily(R.font.space_grotesk)
-    "jetbrains_mono" -> variableFamily(R.font.jetbrains_mono)
-    "noto_sans_mono" -> variableFamily(R.font.noto_sans_mono)
+fun fontResFor(key: String): Int? = when (key) {
+    "inter" -> R.font.inter
+    "dm_sans" -> R.font.dm_sans
+    "space_grotesk" -> R.font.space_grotesk
+    "jetbrains_mono" -> R.font.jetbrains_mono
+    "gantari" -> R.font.gantari
+    "ubuntu_sans_mono" -> R.font.ubuntu_sans_mono
     else -> null
+}
+
+fun fontFamilyFor(key: String): FontFamily? = fontResFor(key)?.let { variableFamily(it) }
+
+// Single-Font family at an arbitrary (animatable) weight, for the hero number's
+// tap effect. The bundled fonts are variable (wght axis) so this morphs smoothly;
+// "default" falls back to the system font, whose weight animates best-effort.
+@OptIn(ExperimentalTextApi::class)
+fun heroNumberFontFamily(key: String, weight: Int): FontFamily {
+    val w = weight.coerceIn(1, 1000)
+    return fontResFor(key)?.let {
+        FontFamily(
+            Font(it, weight = FontWeight(w), variationSettings = FontVariation.Settings(FontVariation.weight(w))),
+        )
+    } ?: FontFamily.Default
 }
 
 fun typographyForFont(key: String): Typography =

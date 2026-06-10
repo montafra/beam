@@ -54,9 +54,11 @@
     <string name="customization">Anpassung</string>
     <!-- TODO: native review — "Hero" is UI jargon; consider "Akzent-Hintergrundbeleuchtung" -->
     <string name="heroBacklight">Hero-Hintergrundbeleuchtung</string>
-    <string name="heroBacklightDesc">Animierter Leuchteffekt hinter der Hero-Karte</string>
+    <string name="heroBacklightDesc">Animierter Leuchteffekt</string>
+    <string name="heroChargeLevelDesc">Ladezustand anzeigen</string>
     <string name="keepScreenOn">Bildschirm anlassen</string>
-    <string name="keepScreenOnDesc">Verhindert, dass der Bildschirm auf der Startseite in den Ruhezustand wechselt</string>
+    <string name="keepScreenOnDesc">Verhindert, dass der Bildschirm in den Ruhezustand wechselt</string>
+    <string name="home">Startbildschirm</string>
     <string name="notificationDesc">Symbol, Einträge</string>
     <string name="notificationEnableDesc">Akku-Aktualisierungen</string>
     <string name="workaroundsShortDesc">Gerätespezifische Korrekturen</string>
@@ -74,6 +76,15 @@
     <string name="fontDesc">Schriftart, die in der gesamten App verwendet wird</string>
     <string name="widgetTempLabel">Akkutemperatur</string>
     <string name="versionLicenseLinks">Version, Lizenz &amp; Links</string>
+    <string name="screenTime">Bildschirm-Einschaltzeit</string>
+    <string name="screenTimeFormat">%1$s (%2$d%%)</string>
+    <string name="screenTimeShowInNotificationDesc">Bildschirm-Einschaltzeit seit dem letzten Ladevorgang anzeigen</string>
     <string name="outlinedCards">Umrandete Karten</string>
     <string name="outlinedCardsDesc">Karten mit Rahmen statt gefülltem Hintergrund anzeigen</string>
+    <string name="privacyStatement">Keine Werbung · Kein Tracking · Keine Datenerfassung</string>
+    <string name="byAuthor">von %1$s</string>
+    <string name="batteryUsage">Systemakkuverbrauch</string>
+    <string name="batteryUsageDesc">Android-Akkuverbrauchsbildschirm öffnen</string>
+    <string name="systemNotificationSettings">System-Benachrichtigungseinstellungen</string>
+    <string name="systemNotificationSettingsDesc">Android-Benachrichtigungseinstellungen öffnen</string>
 </resources>

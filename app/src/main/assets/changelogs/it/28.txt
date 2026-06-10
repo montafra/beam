@@ -1,0 +1,9 @@
+1.6
+• Aggiunte traduzioni mancanti
+• Nuovi effetti della scheda principale
+• Nuove impostazioni del tema
+• Miglioramenti all'interfaccia
+• Aggiornate le impostazioni della soluzione scala potenza
+• Aggiornato il comportamento del riquadro delle impostazioni rapide
+• Aggiunte traduzioni brasiliane, grazie a @WaggBR
+• Aggiunto il tempo di schermo acceso, grazie a @ryosoftware

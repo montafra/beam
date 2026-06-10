@@ -53,9 +53,11 @@
     <string name="showTimeToFullDesc">Show time remaining until fully charged in the notification</string>
     <string name="customization">Customization</string>
     <string name="heroBacklight">Hero Backlight</string>
-    <string name="heroBacklightDesc">Animated glow effect behind the hero card</string>
+    <string name="heroBacklightDesc">Animated glow effect</string>
+    <string name="heroChargeLevelDesc">Show the charge level</string>
     <string name="keepScreenOn">Keep Screen On</string>
-    <string name="keepScreenOnDesc">Prevent the screen from sleeping while on the home screen</string>
+    <string name="keepScreenOnDesc">Prevent the screen from sleeping</string>
+    <string name="home">Home screen</string>
     <string name="notificationDesc">Icon, entries</string>
     <string name="notificationEnableDesc">Persistent battery notification</string>
     <string name="workaroundsShortDesc">Device-specific fixes</string>
@@ -74,4 +76,14 @@
     <string name="outlinedCardsDesc">Show cards with a border instead of a filled background</string>
     <string name="widgetTempLabel">Battery Temperature</string>
     <string name="versionLicenseLinks">Version, license &amp; links</string>
+    <string name="privacyStatement">No ads · No tracking · No data collection</string>
+    <string name="byAuthor">by %1$s</string>
+    <string name="licenseCopyright" translatable="false">MIT · © 2026 Francesco Montalegni</string>
+    <string name="batteryUsage">System Battery Usage</string>
+    <string name="batteryUsageDesc">Open Android\'s battery usage screen</string>
+    <string name="systemNotificationSettings">System Notification Settings</string>
+    <string name="systemNotificationSettingsDesc">Open Android\'s notification settings</string>
+    <string name="screenTime">Screen Time</string>
+    <string name="screenTimeFormat">%1$s (%2$d%%)</string>
+    <string name="screenTimeShowInNotificationDesc">Show screen-on time since last charge</string>
 </resources>

@@ -1,0 +1,8 @@
+Primeira versão no F-Droid.
+• Interface da tela principal, configurações e notificações redesenhada
+• Novas configurações de tema com cor base personalizada e modo OLED
+• Vibração tátil adicionada em todo o aplicativo
+• Tradução para o italiano (it-IT)
+• Opção de doação via Liberapay no menu Apoiar o desenvolvimento
+• Ícone do aplicativo e capturas de tela atualizados
+• Gradle atualizado para a versão 9.2.0

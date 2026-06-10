@@ -1,0 +1,9 @@
+1.5
+• Adicionada a opção de tema "cartões somente com contorno"
+• Adicionada tradução para o tcheco
+• Correções de bugs
+• Corrigida a detecção incorreta do estado de carregamento em alguns dispositivos
+• Corrigidas algumas traduções
+• Melhorias na interface
+• Efeito de retroiluminação atualizado
+• Vibração da tela inicial atualizada

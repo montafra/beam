@@ -29,7 +29,8 @@ class BeamTempWidgetProvider : AppWidgetProvider() {
             "dm_sans" -> R.font.dm_sans
             "space_grotesk" -> R.font.space_grotesk
             "jetbrains_mono" -> R.font.jetbrains_mono
-            "noto_sans_mono" -> R.font.noto_sans_mono
+            "gantari" -> R.font.gantari
+            "ubuntu_sans_mono" -> R.font.ubuntu_sans_mono
             else -> null
         }
 
