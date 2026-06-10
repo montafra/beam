@@ -76,6 +76,9 @@
     <string name="fontDesc">Шрифт, який використовується в усьому застосунку</string>
     <string name="widgetTempLabel">Температура акумулятора</string>
     <string name="versionLicenseLinks">Версія, ліцензія та посилання</string>
+    <string name="screenTime">Час увімкненого екрана</string>
+    <string name="screenTimeFormat">%1$s (%2$d%%)</string>
+    <string name="screenTimeShowInNotificationDesc">Показувати час увімкненого екрана з моменту останнього заряджання</string>
     <string name="outlinedCards">Карти з обведенням</string>
     <string name="outlinedCardsDesc">Показувати карти з рамкою замість заповненого фону</string>
     <string name="privacyStatement">Без реклами · Без відстеження · Без збору даних</string>

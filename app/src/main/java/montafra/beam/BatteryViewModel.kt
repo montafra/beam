@@ -20,6 +20,7 @@ data class BatteryData(
     val charging: String = "-",
     val chargingSince: String = "-",
     val timeToFullCharge: String = "-",
+    val screenTime: String = "-",
     val chargeLevelFloat: Float = 0f,
 )
 
@@ -43,6 +44,7 @@ class BatteryViewModel(app: Application) : AndroidViewModel(app) {
                 charging = intent.getStringExtra("charging") ?: ind,
                 chargingSince = intent.getStringExtra("chargingSince") ?: ind,
                 timeToFullCharge = intent.getStringExtra("timeToFullCharge") ?: ind,
+                screenTime = intent.getStringExtra("screenTime") ?: ind,
                 chargeLevelFloat = levelFloat,
             )
         }

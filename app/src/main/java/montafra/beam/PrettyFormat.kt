@@ -20,6 +20,14 @@ fun fmtPercent(v: Double?): String {
     return "%.0f".format(v)
 }
 
+fun fmtDurationHms(seconds: Long): String {
+    var secs = seconds.coerceAtLeast(0)
+    val hours = secs / 3600
+    val minutes = (secs % 3600) / 60
+    secs %= 60
+    return "%02d:%02d:%02d".format(hours, minutes, secs)
+}
+
 fun fmtSeconds(seconds: Double?): String {
     if (seconds == null)
         return ""

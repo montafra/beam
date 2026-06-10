@@ -83,4 +83,7 @@
     <string name="batteryUsageDesc">Open Android\'s battery usage screen</string>
     <string name="systemNotificationSettings">System Notification Settings</string>
     <string name="systemNotificationSettingsDesc">Open Android\'s notification settings</string>
+    <string name="screenTime">Screen Time</string>
+    <string name="screenTimeFormat">%1$s (%2$d%%)</string>
+    <string name="screenTimeShowInNotificationDesc">Show screen-on time since last charge</string>
 </resources>

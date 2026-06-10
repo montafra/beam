@@ -76,6 +76,9 @@
     <string name="fontDesc">Tipografía usada en toda la aplicación</string>
     <string name="widgetTempLabel">Temperatura de la batería</string>
     <string name="versionLicenseLinks">Versión, licencia y enlaces</string>
+    <string name="screenTime">Tiempo de pantalla encendida</string>
+    <string name="screenTimeFormat">%1$s (%2$d%%)</string>
+    <string name="screenTimeShowInNotificationDesc">Mostrar el tiempo de pantalla encendida desde la última carga</string>
     <string name="outlinedCards">Tarjetas con borde</string>
     <string name="outlinedCardsDesc">Mostrar tarjetas con un borde en lugar de un fondo relleno</string>
     <string name="privacyStatement">Sin anuncios · Sin rastreo · Sin recopilación de datos</string>

@@ -381,7 +381,7 @@ fun MainScreen(navController: NavController, vm: BatteryViewModel = viewModel())
                     }
                     Spacer(Modifier.height(6.dp))
                     MetricCard(
-                        shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp, bottomStart = 24.dp, bottomEnd = 24.dp),
+                        shape = RoundedCornerShape(10.dp),
                     ) {
                         val rows = listOf(
                             stringResource(R.string.chargeLevel) to data.chargeLevel,
@@ -390,6 +390,12 @@ fun MainScreen(navController: NavController, vm: BatteryViewModel = viewModel())
                             stringResource(R.string.timeToFullCharge) to data.timeToFullCharge,
                         ).filter { (_, v) -> v != "-" }
                         rows.forEach { (label, value) -> MetricRow(label, value) }
+                    }
+                    Spacer(Modifier.height(6.dp))
+                    MetricCard(
+                        shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp, bottomStart = 24.dp, bottomEnd = 24.dp),
+                    ) {
+                        MetricRow(stringResource(R.string.screenTime), data.screenTime)
                     }
                 }
                 item { Spacer(Modifier.height(16.dp)) }
