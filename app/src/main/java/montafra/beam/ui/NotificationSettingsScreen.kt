@@ -148,7 +148,7 @@ fun NotificationSettingsScreen(navController: NavController) {
             item {
                 BeamCard(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 4.dp, bottomEnd = 4.dp),
                 ) {
                     ListItem(
                         headlineContent = { Text(stringResource(R.string.showTimeToFull)) },
