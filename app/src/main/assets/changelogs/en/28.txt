@@ -5,3 +5,5 @@
 • UI improvements
 • Updated power scalar workaround settings
 • Updated quick setting tile behaviour
+• Added Brazilian translations, thanks to @WaggBR
+• Added Screen On Time, thanks to @ryosoftware

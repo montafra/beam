@@ -1,0 +1,4 @@
+• Adicionada a página de informações do aplicativo
+• Adicionado um novo seletor de fontes
+• Adicionada a opção de idioma nas configurações
+• Melhorias no layout

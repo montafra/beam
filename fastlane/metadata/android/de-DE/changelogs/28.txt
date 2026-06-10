@@ -4,3 +4,5 @@
 • UI-Verbesserungen
 • Einstellungen des Leistungsskala-Workarounds aktualisiert
 • Verhalten der Schnelleinstellungen-Kachel aktualisiert
+• Brasilianische Übersetzungen hinzugefügt, danke an @WaggBR
+• Bildschirm-Einschaltzeit hinzugefügt, danke an @ryosoftware

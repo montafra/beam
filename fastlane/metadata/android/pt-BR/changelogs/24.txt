@@ -1,0 +1,4 @@
+• Adicionada a nova opção "Manter tela ligada"
+• Adicionada uma opção de fonte monoespaçada
+• Corrigida a solicitação de permissão de notificação
+• Corrigido o botão de vibração que não funcionava para todos os efeitos

@@ -1,0 +1,9 @@
+1.6
+• Adicionadas traduções faltantes
+• Novos efeitos do cartão hero
+• Novas configurações de tema
+• Melhorias na interface
+• Atualizadas as configurações da solução de escala de potência
+• Atualizado o comportamento do bloco de configurações rápidas
+• Adicionadas traduções para o português brasileiro, obrigado a @WaggBR
+• Adicionado o tempo de tela, obrigado a @ryosoftware

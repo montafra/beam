@@ -4,3 +4,5 @@
 • Améliorations de l'interface
 • Paramètres de la solution d'échelle de puissance mis à jour
 • Comportement de la tuile de réglages rapides mis à jour
+• Ajout des traductions brésiliennes, merci à @WaggBR
+• Ajout du temps d'écran allumé, merci à @ryosoftware

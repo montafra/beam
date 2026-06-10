@@ -1,0 +1,1 @@
+• Gradle atualizado para a versão 9.2.0

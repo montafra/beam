@@ -153,7 +153,7 @@ fun ChangelogSheet(entries: List<ChangelogEntry>, onDismiss: () -> Unit) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             if (entry.versionName.isNotEmpty()) {
                                 Text(
-                                    text = "Beam ${entry.versionName}",
+                                    text = "v${entry.versionName}",
                                     style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.primary,
                                 )
@@ -169,7 +169,7 @@ fun ChangelogSheet(entries: List<ChangelogEntry>, onDismiss: () -> Unit) {
                 } else {
                     if (entry.versionName.isNotEmpty()) {
                         Text(
-                            text = "Beam ${entry.versionName}",
+                            text = "v${entry.versionName}",
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(horizontal = 24.dp, vertical = 4.dp),
