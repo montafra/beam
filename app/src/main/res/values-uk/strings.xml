@@ -54,9 +54,11 @@
     <string name="customization">Персоналізація</string>
     <!-- TODO: native review — "Hero" is UI jargon; consider "Підсвічування головної картки" -->
     <string name="heroBacklight">Підсвічування герой-картки</string>
-    <string name="heroBacklightDesc">Анімований ефект сяяння за герой-карткою</string>
+    <string name="heroBacklightDesc">Анімований ефект сяяння</string>
+    <string name="heroChargeLevelDesc">Показувати рівень заряду</string>
     <string name="keepScreenOn">Не вимикати екран</string>
-    <string name="keepScreenOnDesc">Запобігає вимкненню екрана на головному екрані застосунку</string>
+    <string name="keepScreenOnDesc">Запобігає вимкненню екрана</string>
+    <string name="home">Головний екран</string>
     <string name="notificationDesc">Іконка, записи</string>
     <string name="notificationEnableDesc">Оновлення акумулятора</string>
     <string name="workaroundsShortDesc">Виправлення для конкретних пристроїв</string>
@@ -76,4 +78,10 @@
     <string name="versionLicenseLinks">Версія, ліцензія та посилання</string>
     <string name="outlinedCards">Карти з обведенням</string>
     <string name="outlinedCardsDesc">Показувати карти з рамкою замість заповненого фону</string>
+    <string name="privacyStatement">Без реклами · Без відстеження · Без збору даних</string>
+    <string name="byAuthor">від %1$s</string>
+    <string name="batteryUsage">Використання батареї системою</string>
+    <string name="batteryUsageDesc">Відкрити екран використання батареї Android</string>
+    <string name="systemNotificationSettings">Системні налаштування сповіщень</string>
+    <string name="systemNotificationSettingsDesc">Відкрити налаштування сповіщень Android</string>
 </resources>

@@ -1,0 +1,6 @@
+• Fehlende Übersetzungen hinzugefügt
+• Neue Hero-Karten-Effekte
+• Neue Themeneinstellungen
+• UI-Verbesserungen
+• Einstellungen des Leistungsskala-Workarounds aktualisiert
+• Verhalten der Schnelleinstellungen-Kachel aktualisiert

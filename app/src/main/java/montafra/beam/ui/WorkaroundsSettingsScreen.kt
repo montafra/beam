@@ -2,6 +2,8 @@ package montafra.beam.ui
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Slider
@@ -121,8 +124,8 @@ fun WorkaroundsSettingsScreen(navController: NavController, vm: BatteryViewModel
             item {
                 SubLabel(stringResource(R.string.currentScalar))
                 Spacer(Modifier.height(8.dp))
-                val scalarOptions = remember { listOf("0.001×", "1×", "1000×") }
-                val scalarValues = remember { listOf(0.001f, 1f, 1000f) }
+                val scalarOptions = remember { listOf("0.001×", "0.5×", "1×", "2×", "1000×") }
+                val scalarValues = remember { listOf(0.001f, 0.5f, 1f, 2f, 1000f) }
                 SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
                     scalarOptions.forEachIndexed { i, label ->
                         SegmentedButton(
@@ -133,7 +136,7 @@ fun WorkaroundsSettingsScreen(navController: NavController, vm: BatteryViewModel
                                 saveWorkarounds()
                             },
                             shape = SegmentedButtonDefaults.itemShape(i, scalarOptions.size),
-                            label = { Text(label) },
+                            label = { Text(label, maxLines = 1, style = MaterialTheme.typography.labelMedium) },
                         )
                     }
                 }
@@ -179,7 +182,6 @@ fun WorkaroundsSettingsScreen(navController: NavController, vm: BatteryViewModel
                     }
                 }
             }
-            item { SectionHeader(stringResource(R.string.tweaks)) }
             item {
                 Column(modifier = Modifier.padding(horizontal = 4.dp)) {
                     Row(
@@ -233,6 +235,39 @@ fun WorkaroundsSettingsScreen(navController: NavController, vm: BatteryViewModel
                             }
                         }
                     }
+                }
+            }
+            item {
+                BeamCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                ) {
+                    ListItem(
+                        headlineContent = { Text(stringResource(R.string.batteryUsage)) },
+                        supportingContent = { Text(stringResource(R.string.batteryUsageDesc)) },
+                        trailingContent = {
+                            Icon(
+                                painter = painterResource(R.drawable.ico_open_in_new),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(24.dp),
+                            )
+                        },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                        modifier = Modifier.clickable {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            try {
+                                context.startActivity(Intent(Intent.ACTION_POWER_USAGE_SUMMARY))
+                            } catch (_: Exception) {
+                                context.startActivity(
+                                    Intent(
+                                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                        Uri.fromParts("package", context.packageName, null),
+                                    )
+                                )
+                            }
+                        },
+                    )
                 }
             }
             item { Spacer(Modifier.height(16.dp)) }

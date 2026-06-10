@@ -1,0 +1,7 @@
+1.6
+• Added missing translations
+• New hero card effects
+• New theme settings
+• UI improvements
+• Updated power scalar workaround settings
+• Updated quick setting tile behaviour

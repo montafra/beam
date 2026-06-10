@@ -54,9 +54,11 @@
     <string name="customization">Personnalisation</string>
     <!-- TODO: native review — "Hero" is UI jargon; consider "Rétroéclairage de la carte principale" -->
     <string name="heroBacklight">Rétroéclairage hero</string>
-    <string name="heroBacklightDesc">Effet de lueur animé derrière la carte principale</string>
+    <string name="heroBacklightDesc">Effet de lueur animé</string>
+    <string name="heroChargeLevelDesc">Afficher le niveau de charge</string>
     <string name="keepScreenOn">Garder l\'écran allumé</string>
-    <string name="keepScreenOnDesc">Empêche l\'écran de s\'éteindre lorsque l\'écran d\'accueil est ouvert</string>
+    <string name="keepScreenOnDesc">Empêche l\'écran de s\'éteindre</string>
+    <string name="home">Écran d\'accueil</string>
     <string name="notificationDesc">Icône, entrées</string>
     <string name="notificationEnableDesc">Mises à jour de la batterie</string>
     <string name="workaroundsShortDesc">Corrections spécifiques à l\'appareil</string>
@@ -75,4 +77,10 @@
     <string name="versionLicenseLinks">Version, licence et liens</string>
     <string name="outlinedCards">Cartes avec contour</string>
     <string name="outlinedCardsDesc">Afficher les cartes avec une bordure au lieu d\'un fond plein</string>
+    <string name="privacyStatement">Pas de publicité · Pas de suivi · Aucune collecte de données</string>
+    <string name="byAuthor">par %1$s</string>
+    <string name="batteryUsage">Utilisation de la batterie du système</string>
+    <string name="batteryUsageDesc">Ouvrir l\'écran d\'utilisation de la batterie d\'Android</string>
+    <string name="systemNotificationSettings">Paramètres de notification du système</string>
+    <string name="systemNotificationSettingsDesc">Ouvrir les paramètres de notification d\'Android</string>
 </resources>

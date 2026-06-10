@@ -123,6 +123,7 @@ fun SettingsScreen(navController: NavController) {
         } else {
             context.sendBroadcast(Intent(settingsUpdateInd).setPackage(context.packageName))
         }
+        montafra.beam.BeamNotificationTileService.requestRefresh(context)
     }
 
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -507,7 +508,7 @@ fun SettingsScreen(navController: NavController) {
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        text = "by montafra",
+                        text = stringResource(R.string.byAuthor, "montafra"),
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier
@@ -661,14 +662,14 @@ fun SettingsScreen(navController: NavController) {
                     }
                     Spacer(Modifier.height(20.dp))
                     Text(
-                        text = "No ads · No tracking · No data collection",
+                        text = stringResource(R.string.privacyStatement),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center,
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        text = "MIT · © 2026 Francesco Montalegni",
+                        text = stringResource(R.string.licenseCopyright),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center,

@@ -2,6 +2,8 @@ package montafra.beam.ui
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
@@ -9,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -145,7 +148,7 @@ fun NotificationSettingsScreen(navController: NavController) {
             item {
                 BeamCard(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 4.dp, bottomEnd = 4.dp),
                 ) {
                     ListItem(
                         headlineContent = { Text(stringResource(R.string.showTimeToFull)) },
@@ -171,6 +174,41 @@ fun NotificationSettingsScreen(navController: NavController) {
                             context.sendBroadcast(
                                 Intent().setPackage(context.packageName).setAction(settingsUpdateInd)
                             )
+                        },
+                    )
+                }
+                Spacer(Modifier.height(4.dp))
+                BeamCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 16.dp, bottomEnd = 16.dp),
+                ) {
+                    ListItem(
+                        headlineContent = { Text(stringResource(R.string.systemNotificationSettings)) },
+                        supportingContent = { Text(stringResource(R.string.systemNotificationSettingsDesc)) },
+                        trailingContent = {
+                            Icon(
+                                painter = painterResource(R.drawable.ico_open_in_new),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(24.dp),
+                            )
+                        },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                        modifier = Modifier.clickable {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            try {
+                                context.startActivity(
+                                    Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                                        .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                                )
+                            } catch (_: Exception) {
+                                context.startActivity(
+                                    Intent(
+                                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                        Uri.fromParts("package", context.packageName, null),
+                                    )
+                                )
+                            }
                         },
                     )
                 }

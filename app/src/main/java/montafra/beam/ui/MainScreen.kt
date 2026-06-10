@@ -41,6 +41,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.RenderEffect
+import android.graphics.RuntimeShader
 import android.graphics.Shader
 import android.os.Build
 import android.os.VibrationEffect
@@ -59,7 +60,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
@@ -75,16 +75,16 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalView
-import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import kotlin.math.PI
 import kotlin.math.cos
+import kotlin.math.roundToInt
 import kotlin.math.sin
 import montafra.beam.BatteryData
 import montafra.beam.BatteryViewModel
@@ -92,6 +92,7 @@ import montafra.beam.LocalHapticsEnabled
 import montafra.beam.R
 import montafra.beam.settingsName
 import montafra.beam.ui.theme.BeamCard
+import montafra.beam.ui.theme.heroNumberFontFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -101,6 +102,30 @@ fun MainScreen(navController: NavController, vm: BatteryViewModel = viewModel())
     val background = MaterialTheme.colorScheme.background
     val haptic = LocalHapticFeedback.current
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val hapticsEnabled = LocalHapticsEnabled.current
+
+    // Easter egg: tap the "Beam" title 10 times in a row to make it spin.
+    val titleSpin = remember { Animatable(0f) }
+    var beamTaps by remember { mutableStateOf(0) }
+    val lastBeamTapMs = remember { LongArray(1) }
+    val spinVibrator = remember {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            (context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager).defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        }
+    }
+    // A subtle spin-flavored buzz that matches the title's spin.
+    val spinHaptic = remember {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+            spinVibrator.areAllPrimitivesSupported(VibrationEffect.Composition.PRIMITIVE_SPIN)) {
+            VibrationEffect.startComposition()
+                .addPrimitive(VibrationEffect.Composition.PRIMITIVE_SPIN, 0.4f)
+                .compose()
+        } else null
+    }
 
     LaunchedEffect(Unit) { vm.requestUpdate() }
 
@@ -110,12 +135,20 @@ fun MainScreen(navController: NavController, vm: BatteryViewModel = viewModel())
     val keepScreenOn = remember { mutableStateOf(
         context.getSharedPreferences(settingsName, Context.MODE_PRIVATE).getBoolean("keepScreenOn", false)
     ) }
+    val showChargeLevel = remember { mutableStateOf(
+        context.getSharedPreferences(settingsName, Context.MODE_PRIVATE).getBoolean("showChargeLevel", true)
+    ) }
+    val fontKey = remember { mutableStateOf(
+        context.getSharedPreferences(settingsName, Context.MODE_PRIVATE).getString("fontFamily", "default") ?: "default"
+    ) }
     DisposableEffect(Unit) {
         val prefs = context.getSharedPreferences(settingsName, Context.MODE_PRIVATE)
         val listener = SharedPreferences.OnSharedPreferenceChangeListener { p, key ->
             when (key) {
                 "heroBacklight" -> heroBacklight.value = p.getBoolean(key, true)
                 "keepScreenOn" -> keepScreenOn.value = p.getBoolean(key, false)
+                "showChargeLevel" -> showChargeLevel.value = p.getBoolean(key, true)
+                "fontFamily" -> fontKey.value = p.getString(key, "default") ?: "default"
             }
         }
         prefs.registerOnSharedPreferenceChangeListener(listener)
@@ -212,7 +245,34 @@ fun MainScreen(navController: NavController, vm: BatteryViewModel = viewModel())
             containerColor = Color.Transparent,
             topBar = {
                 TopAppBar(
-                    title = { Text(stringResource(R.string.app_name)) },
+                    title = {
+                        Text(
+                            text = stringResource(R.string.app_name),
+                            modifier = Modifier
+                                .graphicsLayer { rotationZ = titleSpin.value }
+                                .pointerInput(Unit) {
+                                    detectTapGestures {
+                                        val now = System.currentTimeMillis()
+                                        if (now - lastBeamTapMs[0] > 800L) beamTaps = 0
+                                        lastBeamTapMs[0] = now
+                                        beamTaps++
+                                        if (beamTaps >= 10) {
+                                            beamTaps = 0
+                                            if (hapticsEnabled) {
+                                                if (spinHaptic != null) spinVibrator.vibrate(spinHaptic)
+                                                else haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                            }
+                                            scope.launch {
+                                                titleSpin.animateTo(
+                                                    titleSpin.value + 720f,
+                                                    spring(stiffness = Spring.StiffnessLow, dampingRatio = 0.5f),
+                                                )
+                                            }
+                                        }
+                                    }
+                                },
+                        )
+                    },
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = Color.Transparent,
                     ),
@@ -305,7 +365,7 @@ fun MainScreen(navController: NavController, vm: BatteryViewModel = viewModel())
                                 radius = coreR, center = Offset(cx, cy),
                             )
                         }
-                        HeroCard(data)
+                        HeroCard(data, showChargeLevel.value, fontKey.value)
                     }
                 }
                 item { Spacer(Modifier.height(8.dp)) }
@@ -349,21 +409,53 @@ fun MainScreen(navController: NavController, vm: BatteryViewModel = viewModel())
     }
 }
 
+// AGSL domain-warp that melts the rendered number while it's held. The text is
+// supplied as the `content` shader (the name MUST match the layer name passed to
+// createRuntimeShaderEffect). Each sampled coordinate is pushed around by a couple
+// of cheap crossed-axis sine layers whose phase advances with `time`, and a
+// downward `droop` that grows toward the baseline so it reads as melting rather
+// than shaking. Amplitude scales with `progress` (0 = identity), and everything is
+// normalized against `size` so the look is resolution-independent.
+private const val LIQUIFY_AGSL = """
+    uniform shader content;
+    uniform float2 size;
+    uniform float time;
+    uniform float progress;
+
+    half4 main(float2 coord) {
+        float2 uv = coord / size;
+        float amp = progress * 9.0;                       // max px displacement; keeps glyphs legible
+        float wx = sin(uv.y * 11.0 + time * 1.7) + 0.5 * sin(uv.y * 23.0 - time * 2.3);
+        float wy = sin(uv.x * 9.0  + time * 1.3) + 0.5 * sin(uv.x * 19.0 + time * 2.9);
+        float droop = uv.y * progress * 6.0;              // melt bias: more droop toward baseline
+        float2 offset = float2(wx * amp, wy * amp + droop);
+        return content.eval(coord + offset);
+    }
+"""
+
 @Composable
-private fun HeroCard(data: BatteryData) {
+private fun HeroCard(data: BatteryData, showChargeLevel: Boolean, fontKey: String) {
     val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
     val hapticsEnabled = LocalHapticsEnabled.current
     val scope = rememberCoroutineScope()
-    val density = LocalDensity.current
     val primary = MaterialTheme.colorScheme.primary
     val onSurface = MaterialTheme.colorScheme.onSurface
 
     val scaleAnim = remember { Animatable(1f) }
-    var jitterX by remember { mutableFloatStateOf(0f) }
-    var jitterY by remember { mutableFloatStateOf(0f) }
+    val tapWeight = remember { Animatable(700f) }
     var holdActive by remember { mutableStateOf(false) }
     val lastTapMs = remember { LongArray(1) }
+
+    // Liquify hold (API 33+ only): a RuntimeShader melts the rendered number while
+    // held, then un-melts on release. `warpProgress` is the 0..1 amount of melt;
+    // `warpTime` advances every frame to animate the flow. Both default to a no-op
+    // (0f) so the resting state and pre-33 path stay clean.
+    val liquifyShader = remember {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) RuntimeShader(LIQUIFY_AGSL) else null
+    }
+    val warpProgress = remember { Animatable(0f) }
+    var warpTime by remember { mutableFloatStateOf(0f) }
 
     val vibrator = remember {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -373,134 +465,88 @@ private fun HeroCard(data: BatteryData) {
             context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         }
     }
-    val slowRiseCapable = remember {
+    // Primitive support for the liquify haptics. THUD requires API 30 (R); these are
+    // only ever played on the API 33+ path, so the query is always safe there.
+    val splashCapable = remember {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
-            vibrator.areAllPrimitivesSupported(VibrationEffect.Composition.PRIMITIVE_SLOW_RISE)
-    }
-    val spinCapable = remember {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
             vibrator.areAllPrimitivesSupported(
-                VibrationEffect.Composition.PRIMITIVE_QUICK_FALL,
-                VibrationEffect.Composition.PRIMITIVE_SPIN,
+                VibrationEffect.Composition.PRIMITIVE_THUD,
+                VibrationEffect.Composition.PRIMITIVE_TICK,
+                VibrationEffect.Composition.PRIMITIVE_LOW_TICK,
             )
     }
-    // Tap: a spin. Hold: tension that builds the longer you press. Release: a quick fall into a wobble.
-    val spinEffect = remember(spinCapable) {
-        if (spinCapable) {
+    // Hold start: a strong THUD then a settling run of fading ticks with growing gaps
+    // — "starts strong, fades out", like a drop hitting liquid and rippling away.
+    val splashEffect = remember(splashCapable) {
+        if (splashCapable) {
             VibrationEffect.startComposition()
-                .addPrimitive(VibrationEffect.Composition.PRIMITIVE_SPIN, 0.6f)
+                .addPrimitive(VibrationEffect.Composition.PRIMITIVE_THUD, 1.0f, 0)
+                .addPrimitive(VibrationEffect.Composition.PRIMITIVE_TICK, 0.7f, 90)
+                .addPrimitive(VibrationEffect.Composition.PRIMITIVE_LOW_TICK, 0.45f, 150)
+                .addPrimitive(VibrationEffect.Composition.PRIMITIVE_LOW_TICK, 0.25f, 230)
+                .addPrimitive(VibrationEffect.Composition.PRIMITIVE_LOW_TICK, 0.12f, 320)
                 .compose()
         } else null
     }
-    val resistEffect = remember(slowRiseCapable) {
-        if (slowRiseCapable) {
-            VibrationEffect.startComposition()
-                .addPrimitive(VibrationEffect.Composition.PRIMITIVE_SLOW_RISE, 0.55f)
-                .compose()
-        } else null
-    }
-    val wobbleEffect = remember(spinCapable) {
-        if (spinCapable) {
-            VibrationEffect.startComposition()
-                .addPrimitive(VibrationEffect.Composition.PRIMITIVE_QUICK_FALL, 0.7f)
-                .addPrimitive(VibrationEffect.Composition.PRIMITIVE_SPIN, 0.5f)
-                .compose()
-        } else null
-    }
-    // Fallbacks for devices without haptic primitives.
-    val spinWaveform = remember {
+    // Fallback splash for devices without primitives: a single decaying waveform.
+    val splashWaveform = remember {
         VibrationEffect.createWaveform(
-            longArrayOf(0, 30, 25, 35, 25, 40),
-            intArrayOf(0, 120, 50, 160, 50, 90),
+            longArrayOf(0, 60, 70, 80, 100, 120),
+            intArrayOf(0, 200, 130, 80, 45, 20),
             -1,
         )
     }
-    val resistWaveform = remember {
-        VibrationEffect.createWaveform(
-            longArrayOf(0, 90, 90, 90, 130),
-            intArrayOf(0, 45, 90, 140, 105),
-            3,
-        )
+    // Release: a soft, short tick acknowledging the un-melt.
+    val releaseTickEffect = remember(splashCapable) {
+        if (splashCapable) {
+            VibrationEffect.startComposition()
+                .addPrimitive(VibrationEffect.Composition.PRIMITIVE_LOW_TICK, 0.5f, 0)
+                .compose()
+        } else null
     }
-    val wobbleWaveform = remember {
-        VibrationEffect.createWaveform(
-            longArrayOf(0, 45, 40, 45, 40, 45, 35),
-            intArrayOf(0, 200, 45, 140, 30, 80, 0),
-            -1,
-        )
-    }
-    val playSpin = {
-        if (hapticsEnabled) {
-            vibrator.vibrate(spinEffect ?: spinWaveform)
-        }
+    val releaseTickWaveform = remember {
+        VibrationEffect.createWaveform(longArrayOf(0, 22), intArrayOf(0, 110), -1)
     }
 
     LaunchedEffect(holdActive) {
-        val pxPerDp = with(density) { 1.dp.toPx() }
+        // The liquify hold (squeeze + warp + haptics) is API 33+ only. On older
+        // devices a hold does nothing visually — only the tap weight-morph applies.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return@LaunchedEffect
+
         if (holdActive) {
-            // Hold: a firm, non-bouncy squeeze with resistance that builds.
-            launch {
-                scaleAnim.animateTo(0.84f, spring(stiffness = 200f, dampingRatio = 1f))
-            }
-            // Continuous turbulent vibration of the text for the whole hold.
+            // Firm, non-bouncy squeeze.
+            launch { scaleAnim.animateTo(0.84f, spring(stiffness = 200f, dampingRatio = 1f)) }
+            // Melt in.
+            launch { warpProgress.animateTo(1f, spring(stiffness = 200f, dampingRatio = 1f)) }
+            // Advance shader time every frame for as long as we're held. This loop is
+            // cancelled when holdActive flips (the LaunchedEffect restarts); the release
+            // branch starts its own loop to finish the un-melt.
             launch {
                 val start = System.nanoTime()
                 while (true) {
-                    withFrameNanos { now ->
-                        val t = (now - start) / 1e9f
-                        jitterX = sin(t * 32f * 2f * PI.toFloat()) * 1.6f * pxPerDp
-                        jitterY = cos(t * 38f * 2f * PI.toFloat()) * 1.6f * pxPerDp
-                    }
+                    withFrameNanos { now -> warpTime = (now - start) / 1e9f }
                 }
             }
+            // One-shot decaying splash on hold start.
             if (hapticsEnabled) {
-                try {
-                    if (resistEffect != null) {
-                        while (true) {
-                            vibrator.vibrate(resistEffect)
-                            delay(360)
-                        }
-                    } else {
-                        vibrator.vibrate(resistWaveform)
-                        awaitCancellation()
-                    }
-                } finally {
-                    vibrator.cancel()
-                }
+                vibrator.vibrate(splashEffect ?: splashWaveform)
             }
         } else {
             vibrator.cancel()
-            // Release: wobble back — only if actually squeezed (skips the initial composition).
-            if (scaleAnim.value < 0.995f) {
+            // Release: reverse the melt — only if we actually melted (skips quick taps).
+            if (warpProgress.value > 0.001f) {
                 if (hapticsEnabled) {
-                    vibrator.vibrate(wobbleEffect ?: wobbleWaveform)
+                    vibrator.vibrate(releaseTickEffect ?: releaseTickWaveform)
                 }
+                // Keep advancing time so the un-melt still flows, until progress settles.
                 launch {
                     val start = System.nanoTime()
-                    val durationMs = 520f
-                    while (true) {
-                        var finished = false
-                        withFrameNanos { now ->
-                            val progress = (now - start) / 1e6f / durationMs
-                            if (progress >= 1f) {
-                                jitterX = 0f
-                                jitterY = 0f
-                                finished = true
-                            } else {
-                                val t = (now - start) / 1e9f
-                                val decay = 1f - progress
-                                val amp = 6f * pxPerDp * decay * decay
-                                jitterX = sin(t * 24f * 2f * PI.toFloat()) * amp
-                                jitterY = cos(t * 19f * 2f * PI.toFloat()) * amp
-                            }
-                        }
-                        if (finished) break
+                    while (warpProgress.value > 0.001f || warpProgress.isRunning) {
+                        withFrameNanos { now -> warpTime = (now - start) / 1e9f }
                     }
                 }
-                scaleAnim.animateTo(1f, spring(stiffness = 240f, dampingRatio = 0.3f))
-            } else {
-                jitterX = 0f
-                jitterY = 0f
+                launch { scaleAnim.animateTo(1f, spring(stiffness = 240f, dampingRatio = 0.3f)) }
+                warpProgress.animateTo(0f, spring(stiffness = 240f, dampingRatio = 1f))
             }
         }
     }
@@ -519,7 +565,7 @@ private fun HeroCard(data: BatteryData) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 24.dp, top = 8.dp, end = 24.dp, bottom = 28.dp),
+                .padding(start = 24.dp, top = 8.dp, end = 24.dp, bottom = if (showChargeLevel) 28.dp else 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Box(
@@ -534,15 +580,13 @@ private fun HeroCard(data: BatteryData) {
                                 if (isDouble) {
                                     haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                 } else {
-                                    playSpin()
+                                    if (hapticsEnabled) {
+                                        haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                    }
                                     scope.launch {
-                                        scaleAnim.animateTo(
-                                            0.82f,
-                                            spring(stiffness = 600f, dampingRatio = 0.65f),
-                                        )
-                                        scaleAnim.animateTo(
-                                            1f,
-                                            spring(stiffness = 280f, dampingRatio = 0.4f),
+                                        tapWeight.animateTo(
+                                            200f,
+                                            spring(stiffness = 1000f, dampingRatio = 0.65f),
                                         )
                                     }
                                 }
@@ -553,20 +597,49 @@ private fun HeroCard(data: BatteryData) {
                                 tryAwaitRelease()
                                 longPressJob.cancel()
                                 holdActive = false
+                                if (!isDouble) {
+                                    scope.launch {
+                                        tapWeight.animateTo(
+                                            700f,
+                                            spring(stiffness = 500f, dampingRatio = 0.4f),
+                                        )
+                                    }
+                                }
                             }
                         )
                     }
                     .padding(horizontal = 32.dp, vertical = 20.dp),
                 contentAlignment = Alignment.Center,
             ) {
+            // Press thins the number (variable-font weight morph) like the
+            // Android 16 lock-screen clock; it stays thin through a hold and
+            // springs back to bold on release.
+            val numberWeight = tapWeight.value.roundToInt()
+            val heroStyle = MaterialTheme.typography.displayLarge.copy(
+                fontFamily = heroNumberFontFamily(fontKey, numberWeight),
+                fontWeight = FontWeight(numberWeight.coerceIn(1, 1000)),
+            )
             Row(
                 modifier = Modifier
                     .graphicsLayer {
                         val s = scaleAnim.value
                         scaleX = s
                         scaleY = s
-                        translationX = jitterX
-                        translationY = jitterY
+                        // Liquify (API 33+): rebuild the RenderEffect every frame so the
+                        // animated time/progress uniforms take effect (uniforms of an
+                        // already-applied effect can't be mutated). Reading warpProgress.value
+                        // and warpTime here registers this lambda as a per-frame snapshot
+                        // reader. The card-root clip keeps any melt overflow inside the border.
+                        if (liquifyShader != null && warpProgress.value > 0f) {
+                            liquifyShader.setFloatUniform("size", size.width, size.height)
+                            liquifyShader.setFloatUniform("time", warpTime)
+                            liquifyShader.setFloatUniform("progress", warpProgress.value)
+                            renderEffect = RenderEffect
+                                .createRuntimeShaderEffect(liquifyShader, "content")
+                                .asComposeRenderEffect()
+                        } else {
+                            renderEffect = null
+                        }
                     },
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -580,44 +653,46 @@ private fun HeroCard(data: BatteryData) {
                 ) { value ->
                     Text(
                         text = value,
-                        style = MaterialTheme.typography.displayLarge,
+                        style = heroStyle,
                         color = onSurface,
                     )
                 }
                 Text(
                     text = "W",
-                    style = MaterialTheme.typography.displayLarge,
+                    style = heroStyle,
                     color = onSurface,
                 )
             }
             }
-            Spacer(Modifier.height(4.dp))
-            Canvas(Modifier.fillMaxWidth(0.55f).height(5.dp)) {
-                val half = size.height / 2f
-                val y = half
-                drawLine(
-                    color = primary.copy(alpha = 0.18f),
-                    start = Offset(half, y),
-                    end = Offset(size.width - half, y),
-                    strokeWidth = size.height,
-                    cap = StrokeCap.Round,
-                )
-                if (animatedProgress > 0f) {
+            if (showChargeLevel) {
+                Spacer(Modifier.height(4.dp))
+                Canvas(Modifier.fillMaxWidth(0.55f).height(5.dp)) {
+                    val half = size.height / 2f
+                    val y = half
                     drawLine(
-                        color = primary,
+                        color = primary.copy(alpha = 0.18f),
                         start = Offset(half, y),
-                        end = Offset(half + (size.width - size.height) * animatedProgress, y),
+                        end = Offset(size.width - half, y),
                         strokeWidth = size.height,
                         cap = StrokeCap.Round,
                     )
+                    if (animatedProgress > 0f) {
+                        drawLine(
+                            color = primary,
+                            start = Offset(half, y),
+                            end = Offset(half + (size.width - size.height) * animatedProgress, y),
+                            strokeWidth = size.height,
+                            cap = StrokeCap.Round,
+                        )
+                    }
                 }
+                Spacer(Modifier.height(14.dp))
+                Text(
+                    text = data.chargeLevel,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = onSurface.copy(alpha = 0.6f),
+                )
             }
-            Spacer(Modifier.height(14.dp))
-            Text(
-                text = data.chargeLevel,
-                style = MaterialTheme.typography.labelMedium,
-                color = onSurface.copy(alpha = 0.6f),
-            )
         }
     }
 }

@@ -53,9 +53,11 @@
     <string name="showTimeToFullDesc">Zobrazit v oznámení zbývající čas do plného nabití</string>
     <string name="customization">Přizpůsobení</string>
     <string name="heroBacklight">Podsvícení hlavní karty</string>
-    <string name="heroBacklightDesc">Animovaný efekt záře za hlavní kartou</string>
+    <string name="heroBacklightDesc">Animovaný efekt záře</string>
+    <string name="heroChargeLevelDesc">Zobrazit úroveň nabití</string>
     <string name="keepScreenOn">Ponechat obrazovku zapnutou</string>
-    <string name="keepScreenOnDesc">Zabránit uspání obrazovky na domovské obrazovce</string>
+    <string name="keepScreenOnDesc">Zabránit uspání obrazovky</string>
+    <string name="home">Domovská obrazovka</string>
     <string name="notificationDesc">Ikona, položky</string>
     <string name="notificationEnableDesc">Aktualizace baterie</string>
     <string name="workaroundsShortDesc">Opravy specifické pro zařízení</string>
@@ -74,4 +76,10 @@
     <string name="outlinedCardsDesc">Zobrazit karty s obrysem místo vyplněného pozadí</string>
     <string name="widgetTempLabel">Teplota baterie</string>
     <string name="versionLicenseLinks">Verze, licence a odkazy</string>
+    <string name="privacyStatement">Žádné reklamy · Žádné sledování · Žádný sběr dat</string>
+    <string name="byAuthor">od %1$s</string>
+    <string name="batteryUsage">Využití baterie systému</string>
+    <string name="batteryUsageDesc">Otevřít obrazovku využití baterie systému Android</string>
+    <string name="systemNotificationSettings">Systémová nastavení oznámení</string>
+    <string name="systemNotificationSettingsDesc">Otevřít nastavení oznámení systému Android</string>
 </resources>

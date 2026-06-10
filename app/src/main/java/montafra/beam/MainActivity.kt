@@ -93,6 +93,7 @@ class MainActivity : ComponentActivity() {
             checkSelfPermission(permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             getSharedPreferences(settingsName, MODE_PRIVATE)
                 .edit().putBoolean("notificationEnabled", false).apply()
+            BeamNotificationTileService.requestRefresh(this)
         }
     }
 
