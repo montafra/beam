@@ -30,6 +30,13 @@
 - Charging since (date/time)
 - Time to full charge (duration)
 
+## Theming
+
+- Light, dark, and pure-black OLED modes
+- Material You dynamic color (Android 12+) or a custom accent color
+- Seven font choices, including monospace options
+- Outlined or filled cards, optional hero glow, haptic feedback toggle
+
 ## Privacy
 
 - No unnecessary permissions

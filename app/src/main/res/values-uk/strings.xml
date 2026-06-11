@@ -85,6 +85,13 @@
     <string name="byAuthor">від %1$s</string>
     <string name="batteryUsage">Використання батареї системою</string>
     <string name="batteryUsageDesc">Відкрити екран використання батареї Android</string>
+    <string name="vendorBatteryTitle">Обмеження у фоновому режимі</string>
+    <string name="vendorBatteryDesc">Дозвольте Beam автозапуск і вимкніть обмеження батареї, щоб сповіщення залишалося активним</string>
+    <string name="vendorBatteryRestricted">Фонову роботу наразі обмежено — сповіщення може перестати оновлюватися</string>
+    <string name="vendorHintTitle">Підтримувати роботу Beam</string>
+    <string name="vendorHintBody">%1$s агресивно зупиняє фонові застосунки. Щоб сповіщення про батарею залишалося активним, увімкніть автозапуск і вимкніть обмеження батареї для Beam у системних налаштуваннях.</string>
+    <string name="vendorHintOpenSettings">Відкрити налаштування</string>
+    <string name="learnMore">Дізнатися більше</string>
     <string name="systemNotificationSettings">Системні налаштування сповіщень</string>
     <string name="systemNotificationSettingsDesc">Відкрити налаштування сповіщень Android</string>
 </resources>

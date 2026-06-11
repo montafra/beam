@@ -1,0 +1,8 @@
+1.1
+Pierwsze wydanie na F-Droid.
+• Przeprojektowany ekran główny, ustawienia i interfejs powiadomień
+• Nowe ustawienia motywu z niestandardowym kolorem bazowym i trybem OLED
+• Wprowadzono wibracje dotykowe w całej aplikacji
+• Włoska lokalizacja (it-IT)
+• Opcja dotacji Liberapay w menu „Wesprzyj rozwój”
+• Zaktualizowana ikona aplikacji i zrzuty ekranu

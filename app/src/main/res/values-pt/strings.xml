@@ -80,6 +80,13 @@
     <string name="byAuthor">por %1$s</string>
     <string name="batteryUsage">Uso da bateria do sistema</string>
     <string name="batteryUsageDesc">Abrir a tela de uso da bateria do Android</string>
+    <string name="vendorBatteryTitle">Restrições em segundo plano</string>
+    <string name="vendorBatteryDesc">Permita que o Beam inicie automaticamente e isente-o das restrições de bateria para que a notificação continue ativa</string>
+    <string name="vendorBatteryRestricted">O uso em segundo plano está atualmente restrito — a notificação pode parar de atualizar</string>
+    <string name="vendorHintTitle">Manter o Beam em execução</string>
+    <string name="vendorHintBody">%1$s interrompe agressivamente os apps em segundo plano. Para manter a notificação de bateria ativa, ative o início automático e remova as restrições de bateria do Beam nas configurações do sistema.</string>
+    <string name="vendorHintOpenSettings">Abrir configurações</string>
+    <string name="learnMore">Saiba mais</string>
     <string name="systemNotificationSettings">Configurações de notificação do sistema</string>
     <string name="systemNotificationSettingsDesc">Abrir as configurações de notificação do Android</string>
     <string name="screenTime">Tempo de tela</string>

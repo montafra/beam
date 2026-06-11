@@ -1,0 +1,4 @@
+• Dodano nową opcję „Nie wygaszaj ekranu”
+• Dodano opcję czcionki o stałej szerokości
+• Naprawiono monit o uprawnienie do powiadomień
+• Naprawiono przełącznik wibracji, który nie działał dla wszystkich efektów

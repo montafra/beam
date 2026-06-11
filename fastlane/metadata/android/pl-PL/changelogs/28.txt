@@ -1,0 +1,8 @@
+• Dodano brakujące tłumaczenia
+• Nowe efekty karty głównej
+• Nowe ustawienia motywu
+• Ulepszenia interfejsu
+• Zaktualizowano ustawienia korekty skali mocy
+• Zaktualizowano działanie kafelka szybkich ustawień
+• Dodano tłumaczenie brazylijskie, dzięki @WaggBR
+• Dodano czas włączonego ekranu, dzięki @ryosoftware

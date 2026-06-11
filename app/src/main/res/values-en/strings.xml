@@ -81,6 +81,13 @@
     <string name="licenseCopyright" translatable="false">MIT · © 2026 Francesco Montalegni</string>
     <string name="batteryUsage">System Battery Usage</string>
     <string name="batteryUsageDesc">Open Android\'s battery usage screen</string>
+    <string name="vendorBatteryTitle">Background restrictions</string>
+    <string name="vendorBatteryDesc">Allow Beam to start automatically and exempt it from battery restrictions so the notification keeps running</string>
+    <string name="vendorBatteryRestricted">Background usage is currently restricted — the notification may stop updating</string>
+    <string name="vendorHintTitle">Keep Beam running</string>
+    <string name="vendorHintBody">%1$s aggressively stops background apps. To keep the battery notification alive, enable autostart and remove battery restrictions for Beam in system settings.</string>
+    <string name="vendorHintOpenSettings">Open settings</string>
+    <string name="learnMore">Learn more</string>
     <string name="systemNotificationSettings">System Notification Settings</string>
     <string name="systemNotificationSettingsDesc">Open Android\'s notification settings</string>
     <string name="screenTime">Screen Time</string>

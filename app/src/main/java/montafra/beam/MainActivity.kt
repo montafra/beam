@@ -13,11 +13,6 @@ import android.os.IBinder
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.core.FastOutLinearInEasing
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideIn
-import androidx.compose.animation.slideOut
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -27,15 +22,13 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.unit.IntOffset
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import montafra.beam.ui.MainScreen
 import montafra.beam.ui.NotificationSettingsScreen
+import montafra.beam.ui.PredictiveNavHost
 import montafra.beam.ui.SettingsScreen
 import montafra.beam.ui.ThemeSettingsScreen
 import montafra.beam.ui.WorkaroundsSettingsScreen
+import montafra.beam.ui.rememberBeamNavController
 import montafra.beam.ui.theme.BeamTheme
 import montafra.beam.ui.theme.rememberThemePrefs
 
@@ -144,28 +137,15 @@ class MainActivity : ComponentActivity() {
                     LocalHapticFeedback provides if (hapticsEnabled.value) realHaptic else NoOpHapticFeedback,
                     LocalHapticsEnabled provides hapticsEnabled.value,
                 ) {
-                val navController = rememberNavController()
-                NavHost(
-                    navController = navController,
-                    startDestination = "main",
-                    enterTransition = {
-                        slideIn(tween(340, easing = LinearOutSlowInEasing)) { IntOffset(it.width, 0) }
-                    },
-                    exitTransition = {
-                        slideOut(tween(280, easing = FastOutLinearInEasing)) { IntOffset(-it.width / 3, 0) }
-                    },
-                    popEnterTransition = {
-                        slideIn(tween(340, easing = LinearOutSlowInEasing)) { IntOffset(-it.width / 3, 0) }
-                    },
-                    popExitTransition = {
-                        slideOut(tween(280, easing = FastOutLinearInEasing)) { IntOffset(it.width, 0) }
-                    },
-                ) {
-                    composable("main") { MainScreen(navController) }
-                    composable("settings") { SettingsScreen(navController) }
-                    composable("settings/theme") { ThemeSettingsScreen(navController) }
-                    composable("settings/notification") { NotificationSettingsScreen(navController) }
-                    composable("settings/workarounds") { WorkaroundsSettingsScreen(navController) }
+                val navController = rememberBeamNavController(startRoute = "main")
+                PredictiveNavHost(navController) { route ->
+                    when (route) {
+                        "main" -> MainScreen(navController)
+                        "settings" -> SettingsScreen(navController)
+                        "settings/theme" -> ThemeSettingsScreen(navController)
+                        "settings/notification" -> NotificationSettingsScreen(navController)
+                        "settings/workarounds" -> WorkaroundsSettingsScreen(navController)
+                    }
                 }
                 } // CompositionLocalProvider
             }

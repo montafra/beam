@@ -80,6 +80,13 @@
     <string name="byAuthor">od %1$s</string>
     <string name="batteryUsage">Využití baterie systému</string>
     <string name="batteryUsageDesc">Otevřít obrazovku využití baterie systému Android</string>
+    <string name="vendorBatteryTitle">Omezení na pozadí</string>
+    <string name="vendorBatteryDesc">Povolte aplikaci Beam automatické spuštění a vyjměte ji z omezení baterie, aby oznámení zůstalo aktivní</string>
+    <string name="vendorBatteryRestricted">Běh na pozadí je momentálně omezen — oznámení se může přestat aktualizovat</string>
+    <string name="vendorHintTitle">Udržet Beam spuštěný</string>
+    <string name="vendorHintBody">%1$s agresivně ukončuje aplikace na pozadí. Aby oznámení o baterii zůstalo aktivní, povolte v nastavení systému automatické spuštění a odeberte omezení baterie pro Beam.</string>
+    <string name="vendorHintOpenSettings">Otevřít nastavení</string>
+    <string name="learnMore">Zjistit více</string>
     <string name="systemNotificationSettings">Systémová nastavení oznámení</string>
     <string name="systemNotificationSettingsDesc">Otevřít nastavení oznámení systému Android</string>
     <string name="screenTime">Doba zapnuté obrazovky</string>

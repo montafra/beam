@@ -66,7 +66,7 @@
     <string name="advancedSection">Avanzate</string>
     <string name="tweaks">Regolazioni</string>
     <string name="pollInterval">Intervallo di aggiornamento</string>
-    <string name="hapticsEnabled">Feedback vibrotattile</string>
+    <string name="hapticsEnabled">Feedback aptico</string>
     <string name="hapticsEnabledDesc">Vibra al tocco e alla pressione</string>
     <string name="whatsNew">Novità</string>
     <string name="font">Font</string>
@@ -83,6 +83,13 @@
     <string name="byAuthor">di %1$s</string>
     <string name="batteryUsage">Utilizzo batteria di sistema</string>
     <string name="batteryUsageDesc">Apri la schermata di utilizzo della batteria</string>
+    <string name="vendorBatteryTitle">Restrizioni in background</string>
+    <string name="vendorBatteryDesc">Consenti a Beam l\'avvio automatico ed escludilo dalle restrizioni della batteria per mantenere attiva la notifica</string>
+    <string name="vendorBatteryRestricted">L\'utilizzo in background è attualmente limitato — la notifica potrebbe smettere di aggiornarsi</string>
+    <string name="vendorHintTitle">Mantieni Beam attivo</string>
+    <string name="vendorHintBody">%1$s interrompe in modo aggressivo le app in background. Per mantenere attiva la notifica della batteria, abilita l\'avvio automatico e rimuovi le restrizioni della batteria per Beam nelle impostazioni di sistema.</string>
+    <string name="vendorHintOpenSettings">Apri impostazioni</string>
+    <string name="learnMore">Scopri di più</string>
     <string name="systemNotificationSettings">Impostazioni di notifica di sistema</string>
     <string name="systemNotificationSettingsDesc">Apri le impostazioni di notifica di Android</string>
 </resources>
