@@ -18,6 +18,8 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -72,6 +74,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalView
@@ -82,7 +86,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
@@ -90,13 +93,14 @@ import montafra.beam.BatteryData
 import montafra.beam.BatteryViewModel
 import montafra.beam.LocalHapticsEnabled
 import montafra.beam.R
+import montafra.beam.VendorBatteryHints
 import montafra.beam.settingsName
 import montafra.beam.ui.theme.BeamCard
 import montafra.beam.ui.theme.heroNumberFontFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(navController: NavController, vm: BatteryViewModel = viewModel()) {
+fun MainScreen(navController: BeamNavController, vm: BatteryViewModel = viewModel()) {
     val data by vm.data.collectAsState()
     val primary = MaterialTheme.colorScheme.primary
     val background = MaterialTheme.colorScheme.background
@@ -167,6 +171,7 @@ fun MainScreen(navController: NavController, vm: BatteryViewModel = viewModel())
     }
     var showChangelog by remember { mutableStateOf(false) }
     var changelogEntries by remember { mutableStateOf(emptyList<ChangelogEntry>()) }
+    var showVendorHint by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         val prefs = context.getSharedPreferences(settingsName, Context.MODE_PRIVATE)
         val lastSeen = prefs.getInt("lastSeenVersionCode", 0)
@@ -178,6 +183,13 @@ fun MainScreen(navController: NavController, vm: BatteryViewModel = viewModel())
             } else {
                 prefs.edit().putInt("lastSeenVersionCode", currentVersionCode).apply()
             }
+        }
+        // Skipped when the changelog sheet shows to avoid stacking; the seen flag
+        // stays false so the hint appears on the next launch instead.
+        if (VendorBatteryHints.current?.promptOnFirstLaunch == true && !showChangelog &&
+            !prefs.getBoolean("vendorBatteryHintSeen", false)
+        ) {
+            showVendorHint = true
         }
     }
 
@@ -413,6 +425,18 @@ fun MainScreen(navController: NavController, vm: BatteryViewModel = viewModel())
             },
         )
     }
+
+    val hintVendor = VendorBatteryHints.current
+    if (showVendorHint && hintVendor != null) {
+        VendorBatteryHintSheet(
+            vendor = hintVendor,
+            onDismiss = {
+                showVendorHint = false
+                context.getSharedPreferences(settingsName, Context.MODE_PRIVATE)
+                    .edit().putBoolean("vendorBatteryHintSeen", true).apply()
+            },
+        )
+    }
 }
 
 // AGSL domain-warp that melts the rendered number while it's held. The text is
@@ -452,6 +476,10 @@ private fun HeroCard(data: BatteryData, showChargeLevel: Boolean, fontKey: Strin
     val tapWeight = remember { Animatable(700f) }
     var holdActive by remember { mutableStateOf(false) }
     val lastTapMs = remember { LongArray(1) }
+    // The press target is the number Box, but a hold stays alive while the finger
+    // remains anywhere inside the card — these track both bounds for that check.
+    var cardCoords by remember { mutableStateOf<LayoutCoordinates?>(null) }
+    var heroBoxCoords by remember { mutableStateOf<LayoutCoordinates?>(null) }
 
     // Liquify hold (API 33+ only): a RuntimeShader melts the rendered number while
     // held, then un-melts on release. `warpProgress` is the 0..1 amount of melt;
@@ -564,7 +592,9 @@ private fun HeroCard(data: BatteryData, showChargeLevel: Boolean, fontKey: Strin
     )
 
     BeamCard(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .onGloballyPositioned { cardCoords = it },
         shape = RoundedCornerShape(40.dp),
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.45f),
     ) {
@@ -576,43 +606,67 @@ private fun HeroCard(data: BatteryData, showChargeLevel: Boolean, fontKey: Strin
         ) {
             Box(
                 modifier = Modifier
+                    .onGloballyPositioned { heroBoxCoords = it }
                     .pointerInput(Unit) {
                         val longPressTimeout = viewConfiguration.longPressTimeoutMillis
-                        detectTapGestures(
-                            onPress = { _ ->
-                                val now = System.currentTimeMillis()
-                                val isDouble = (now - lastTapMs[0]) < 300L
-                                lastTapMs[0] = now
-                                if (isDouble) {
+                        // The press must start on the number, but from there the gesture is
+                        // tracked manually: it survives outside this Box and only ends when
+                        // the finger lifts or leaves the card bounds. detectTapGestures can't
+                        // do this — it cancels as soon as the pointer exits its own node.
+                        awaitEachGesture {
+                            val down = awaitFirstDown()
+                            val now = System.currentTimeMillis()
+                            val isDouble = (now - lastTapMs[0]) < 300L
+                            lastTapMs[0] = now
+                            if (isDouble) {
+                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            } else {
+                                if (hapticsEnabled) {
                                     haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                } else {
-                                    if (hapticsEnabled) {
-                                        haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                    }
-                                    scope.launch {
-                                        tapWeight.animateTo(
-                                            200f,
-                                            spring(stiffness = 1000f, dampingRatio = 0.65f),
-                                        )
-                                    }
                                 }
-                                val longPressJob = scope.launch {
-                                    delay(longPressTimeout)
-                                    holdActive = true
-                                }
-                                tryAwaitRelease()
-                                longPressJob.cancel()
-                                holdActive = false
-                                if (!isDouble) {
-                                    scope.launch {
-                                        tapWeight.animateTo(
-                                            700f,
-                                            spring(stiffness = 500f, dampingRatio = 0.4f),
-                                        )
-                                    }
+                                scope.launch {
+                                    tapWeight.animateTo(
+                                        200f,
+                                        spring(stiffness = 1000f, dampingRatio = 0.65f),
+                                    )
                                 }
                             }
-                        )
+                            val longPressJob = scope.launch {
+                                delay(longPressTimeout)
+                                holdActive = true
+                            }
+                            while (true) {
+                                val event = awaitPointerEvent()
+                                val change = event.changes.firstOrNull { it.id == down.id } ?: break
+                                if (!change.pressed) break
+                                // Card bounds in this Box's coordinate space; if the layout
+                                // isn't resolved yet, err on keeping the gesture alive.
+                                val inCard = run {
+                                    val card = cardCoords?.takeIf { it.isAttached } ?: return@run true
+                                    val box = heroBoxCoords?.takeIf { it.isAttached } ?: return@run true
+                                    box.localBoundingBoxOf(card, clipBounds = false)
+                                        .contains(change.position)
+                                }
+                                if (!inCard) break
+                                if (holdActive) {
+                                    // Own the gesture during a hold so the list doesn't scroll.
+                                    change.consume()
+                                } else if (change.isConsumed) {
+                                    // A scroll container stole the gesture before the hold began.
+                                    break
+                                }
+                            }
+                            longPressJob.cancel()
+                            holdActive = false
+                            if (!isDouble) {
+                                scope.launch {
+                                    tapWeight.animateTo(
+                                        700f,
+                                        spring(stiffness = 500f, dampingRatio = 0.4f),
+                                    )
+                                }
+                            }
+                        }
                     }
                     .padding(horizontal = 32.dp, vertical = 20.dp),
                 contentAlignment = Alignment.Center,

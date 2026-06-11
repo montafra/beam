@@ -1,0 +1,7 @@
+1.7
+• Added Polish translation
+• Fixed missing pt-BR translation
+• UI improvements
+• Updated donation icons
+• Updated predictive transitions
+• Added "Background restrictions" warning

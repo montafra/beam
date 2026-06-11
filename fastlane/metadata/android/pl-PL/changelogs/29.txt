@@ -1,0 +1,6 @@
+• Dodano polskie tłumaczenie
+• Naprawiono brakujące tłumaczenie pt-BR
+• Ulepszenia interfejsu
+• Zaktualizowano ikony dotacji
+• Zaktualizowano przejścia predykcyjne
+• Dodano ostrzeżenie „Ograniczenia w tle”

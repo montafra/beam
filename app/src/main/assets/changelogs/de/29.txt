@@ -1,0 +1,7 @@
+1.7
+• Polnische Übersetzung hinzugefügt
+• Fehlende pt-BR-Übersetzung korrigiert
+• UI-Verbesserungen
+• Spenden-Symbole aktualisiert
+• Vorausschauende Übergänge aktualisiert
+• Warnung „Hintergrund-Einschränkungen“ hinzugefügt

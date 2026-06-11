@@ -1,0 +1,7 @@
+1.7
+• Adicionada tradução para o polonês
+• Corrigida tradução pt-BR ausente
+• Melhorias na interface
+• Atualizados os ícones de doação
+• Atualizadas as transições preditivas
+• Adicionado o aviso "Restrições em segundo plano"

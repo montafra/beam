@@ -1,0 +1,7 @@
+Pierwsze wydanie Beam.
+• Konfigurowalny wskaźnik na pasku stanu (W, A, Ah, V, Wh, °C, %)
+• Szczegółowy podgląd danych baterii w aplikacji, w tym typ ładowarki i oś czasu ładowania
+• Motywy Material You, niestandardowy kolor bazowy i czarny OLED
+• Karty w stylu matowego szkła z opcjonalną poświatą i wibracjami
+• Obejścia dla urządzeń zgłaszających µA, odwrócony prąd lub nietypową częstotliwość odczytu
+• Otwarte oprogramowanie z adresami do dotacji w sekcji „O aplikacji”

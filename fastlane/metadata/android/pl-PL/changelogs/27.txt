@@ -1,0 +1,8 @@
+• Dodano opcję motywu „karty z samym obramowaniem”
+• Dodano czeskie tłumaczenie
+• Poprawki błędów
+• Naprawiono błędne wykrywanie stanu ładowania na niektórych urządzeniach
+• Poprawiono niektóre tłumaczenia
+• Ulepszenia interfejsu
+• Zaktualizowano efekt podświetlenia
+• Zaktualizowano wibracje na ekranie głównym

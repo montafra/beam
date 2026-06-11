@@ -85,6 +85,13 @@
     <string name="byAuthor">von %1$s</string>
     <string name="batteryUsage">Systemakkuverbrauch</string>
     <string name="batteryUsageDesc">Android-Akkuverbrauchsbildschirm öffnen</string>
+    <string name="vendorBatteryTitle">Hintergrund-Einschränkungen</string>
+    <string name="vendorBatteryDesc">Erlaube Beam den Autostart und nimm es von Akku-Einschränkungen aus, damit die Benachrichtigung aktiv bleibt</string>
+    <string name="vendorBatteryRestricted">Hintergrundnutzung ist derzeit eingeschränkt — die Benachrichtigung wird möglicherweise nicht mehr aktualisiert</string>
+    <string name="vendorHintTitle">Beam aktiv halten</string>
+    <string name="vendorHintBody">%1$s beendet Hintergrund-Apps aggressiv. Damit die Akku-Benachrichtigung aktiv bleibt, aktiviere den Autostart und entferne Akku-Einschränkungen für Beam in den Systemeinstellungen.</string>
+    <string name="vendorHintOpenSettings">Einstellungen öffnen</string>
+    <string name="learnMore">Mehr erfahren</string>
     <string name="systemNotificationSettings">System-Benachrichtigungseinstellungen</string>
     <string name="systemNotificationSettingsDesc">Android-Benachrichtigungseinstellungen öffnen</string>
 </resources>

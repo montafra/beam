@@ -1,0 +1,6 @@
+• Ajout de la traduction polonaise
+• Correction de la traduction pt-BR manquante
+• Améliorations de l'interface
+• Icônes de don mises à jour
+• Transitions prédictives mises à jour
+• Ajout de l'avertissement « Restrictions en arrière-plan »

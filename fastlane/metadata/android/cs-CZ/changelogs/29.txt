@@ -1,0 +1,6 @@
+• Přidán polský překlad
+• Opraven chybějící překlad pt-BR
+• Vylepšení uživatelského rozhraní
+• Aktualizovány ikony darů
+• Aktualizovány prediktivní přechody
+• Přidáno upozornění „Omezení na pozadí“

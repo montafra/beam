@@ -28,12 +28,12 @@ configure<ApplicationExtension> {
         applicationId = "montafra.beam"
         minSdk = 28 // BatteryManager.computeChargeTimeRemaining()
         targetSdk = 36
-        versionCode = 28
-        versionName = "1.6"
+        versionCode = 29
+        versionName = "1.7"
     }
 
     androidResources {
-        localeFilters.addAll(listOf("en", "es", "it", "de", "fr", "uk", "cs", "pt"))
+        localeFilters.addAll(listOf("en", "es", "it", "de", "fr", "uk", "cs", "pl", "pt"))
     }
 
     buildFeatures {

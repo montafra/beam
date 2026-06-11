@@ -1,0 +1,36 @@
+<i>Beam</i> to lekki monitor baterii. Przypina do paska stanu bieżący odczyt mocy, natężenia, napięcia lub poziomu naładowania, a po otwarciu pokazuje pełny zestaw danych baterii w przejrzystej aplikacji z konfigurowalnym motywem.
+
+Wybierz, która jednostka ma być widoczna w ikonie na pasku stanu (W, A, Ah, V, Wh, °C, %), albo wyświetl kilka wartości naraz w treści powiadomienia.
+
+Prywatność przede wszystkim:
+• Bez reklam
+• Bez śledzenia
+• Bez zbierania danych
+• Bez udostępniania danych podmiotom trzecim
+• Bez zbędnych uprawnień
+
+Dane baterii w aplikacji:
+• Moc (waty)
+• Natężenie (ampery)
+• Napięcie (wolty)
+• Energia (watogodziny)
+• Temperatura (°C)
+• Poziom naładowania (procent)
+• Stan ładowania i typ ładowarki
+• Ładowanie od (data / godzina)
+• Czas do pełnego naładowania
+
+Personalizacja:
+• Dynamiczne kolory Material You (Android 12+) lub niestandardowy kolor bazowy z 12-kolorowej palety
+• Motywy: jasny, ciemny, systemowy i czarny OLED
+• Opcjonalna animowana poświata karty głównej i wibracje dotykowe
+
+Zgodność z urządzeniami:
+• Korekta skali mocy dla telefonów zgłaszających µA zamiast mA
+• Przełącznik odwróconego prądu dla telefonów odwracających kierunek ładowania
+• Regulowana częstotliwość odświeżania
+
+Otwarte oprogramowanie na GitHubie: https://github.com/montafra/beam
+Każda dotacja jest mile widziana i pomaga wspierać moje przyszłe projekty — adresy kryptowalut znajdziesz w sekcji „O aplikacji”.
+
+Uwaga: do wyświetlania wskaźnika na pasku stanu wymagane jest uprawnienie do powiadomień. Otwórz aplikację raz, aby uruchomić usługę wskaźnika.

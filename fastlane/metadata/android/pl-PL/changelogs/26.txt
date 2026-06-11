@@ -1,0 +1,4 @@
+• Dodano stronę z informacjami o aplikacji
+• Dodano nowy wybór czcionki
+• Dodano opcję języka w ustawieniach
+• Ulepszenia układu

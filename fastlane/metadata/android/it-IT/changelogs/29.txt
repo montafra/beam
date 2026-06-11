@@ -1,0 +1,6 @@
+• Aggiunta la traduzione polacca
+• Corretta la traduzione pt-BR mancante
+• Miglioramenti all'interfaccia
+• Aggiornate le icone delle donazioni
+• Aggiornate le transizioni predittive
+• Aggiunto l'avviso "Restrizioni in background"

@@ -1,5 +1,7 @@
 package montafra.beam.ui
 
+import android.app.ActivityManager
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -9,30 +11,25 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Slider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -50,10 +47,13 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import montafra.beam.BatteryViewModel
 import montafra.beam.R
+import montafra.beam.VendorBatteryHints
 import montafra.beam.settingsName
 import montafra.beam.settingsUpdateInd
 import montafra.beam.ui.theme.BeamCard
@@ -61,11 +61,26 @@ import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WorkaroundsSettingsScreen(navController: NavController, vm: BatteryViewModel = viewModel()) {
+fun WorkaroundsSettingsScreen(navController: BeamNavController, vm: BatteryViewModel = viewModel()) {
     val data by vm.data.collectAsState()
     val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
     val prefs = remember { context.getSharedPreferences(settingsName, Context.MODE_PRIVATE) }
+
+    // Refreshed on resume so the warning clears when the user returns from the
+    // system settings page they just fixed.
+    var backgroundRestricted by remember { mutableStateOf(false) }
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                val am = context.getSystemService(ActivityManager::class.java)
+                backgroundRestricted = am?.isBackgroundRestricted == true
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
     val pollIntervals = listOf(1_250L, 1_750L, 2_500L, 3_500L, 5_000L, 7_500L, 10_000L)
     val pollLabels = listOf("1.25s", "1.75s", "2.5s", "3.5s", "5s", "7.5s", "10s")
@@ -87,32 +102,10 @@ fun WorkaroundsSettingsScreen(navController: NavController, vm: BatteryViewModel
         )
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.workarounds)) },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        navController.popBackStack()
-                    }) {
-                        Icon(
-                            painter = painterResource(R.drawable.ico_back),
-                            contentDescription = stringResource(R.string.back),
-                            tint = MaterialTheme.colorScheme.onSurface,
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                ),
-            )
-        },
-    ) { padding ->
-        LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
+    SettingsScaffold(
+        title = stringResource(R.string.workarounds),
+        onBack = { navController.popBackStack() },
+    ) {
             item { Spacer(Modifier.height(4.dp)) }
             item {
                 Text(
@@ -257,20 +250,87 @@ fun WorkaroundsSettingsScreen(navController: NavController, vm: BatteryViewModel
                         modifier = Modifier.clickable {
                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             try {
-                                context.startActivity(Intent(Intent.ACTION_POWER_USAGE_SUMMARY))
-                            } catch (_: Exception) {
+                                // Battery usage screen (per-app breakdown); AOSP/Pixel only,
+                                // there is no public intent action for it
                                 context.startActivity(
-                                    Intent(
-                                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                                        Uri.fromParts("package", context.packageName, null),
+                                    Intent().setComponent(
+                                        ComponentName(
+                                            "com.android.settings",
+                                            "com.android.settings.Settings\$PowerUsageAdvancedActivity",
+                                        )
                                     )
                                 )
+                            } catch (_: Exception) {
+                                try {
+                                    context.startActivity(Intent(Intent.ACTION_POWER_USAGE_SUMMARY))
+                                } catch (_: Exception) {
+                                    context.startActivity(
+                                        Intent(
+                                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                            Uri.fromParts("package", context.packageName, null),
+                                        )
+                                    )
+                                }
+                            }
+                        },
+                    )
+                }
+            }
+            if (VendorBatteryHints.current != null) item {
+                BeamCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                ) {
+                    ListItem(
+                        headlineContent = { Text(stringResource(R.string.vendorBatteryTitle)) },
+                        supportingContent = {
+                            if (backgroundRestricted) {
+                                Text(
+                                    text = stringResource(R.string.vendorBatteryRestricted),
+                                    color = MaterialTheme.colorScheme.error,
+                                )
+                            } else {
+                                Text(stringResource(R.string.vendorBatteryDesc))
+                            }
+                        },
+                        trailingContent = {
+                            Icon(
+                                painter = painterResource(R.drawable.ico_open_in_new),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(24.dp),
+                            )
+                        },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                        modifier = Modifier.clickable {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            VendorBatteryHints.openVendorSettings(context)
+                        },
+                    )
+                    HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+                    ListItem(
+                        headlineContent = { Text(stringResource(R.string.learnMore)) },
+                        trailingContent = {
+                            Icon(
+                                painter = painterResource(R.drawable.ico_open_in_new),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(24.dp),
+                            )
+                        },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                        modifier = Modifier.clickable {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            try {
+                                context.startActivity(
+                                    Intent(Intent.ACTION_VIEW, Uri.parse(VendorBatteryHints.dontKillUrl()))
+                                )
+                            } catch (_: Exception) {
                             }
                         },
                     )
                 }
             }
             item { Spacer(Modifier.height(16.dp)) }
-        }
     }
 }

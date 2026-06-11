@@ -1,0 +1,3 @@
+• Dodano widżet „Temperatura” na ekran główny
+• Dodano tłumaczenia: francuskie, niemieckie i ukraińskie
+• Poprawki błędów

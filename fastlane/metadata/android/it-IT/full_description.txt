@@ -23,7 +23,7 @@ Metriche della batteria nell'app:
 Personalizzazione:
 • Colori dinamici Material You (Android 12+) o un colore personalizzato da una palette di 12 tonalità
 • Temi Chiaro, Scuro, Sistema e OLED
-• Bagliore hero animato e feedback vibrotattile opzionali
+• Bagliore hero animato e feedback aptico opzionali
 
 Compatibilità del dispositivo:
 • Correzione della scala di potenza per dispositivi che riportano µA invece di mA
