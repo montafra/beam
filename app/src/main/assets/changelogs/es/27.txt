@@ -1,0 +1,9 @@
+1.5
+• Añadida la opción de tema «Tarjetas con borde»
+• Añadida la traducción al checo
+• Corrección de errores
+• Corregida la detección incorrecta del estado de carga en algunos dispositivos
+• Corregidas algunas traducciones
+• Mejoras en la interfaz
+• Actualizado el efecto de retroiluminación
+• Actualizada la respuesta háptica de la pantalla de inicio

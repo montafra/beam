@@ -1,0 +1,9 @@
+1.6
+• Añadidas traducciones faltantes
+• Nuevos efectos de la tarjeta hero
+• Nuevos ajustes de tema
+• Mejoras en la interfaz
+• Actualizados los ajustes de la escala de potencia alternativa
+• Actualizado el comportamiento del mosaico de ajustes rápidos
+• Añadidas traducciones al portugués de Brasil, gracias a @WaggBR
+• Añadido el tiempo de pantalla encendida, gracias a @ryosoftware

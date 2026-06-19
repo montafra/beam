@@ -1,0 +1,4 @@
+1.3
+• Añadido el widget «Temperatura» para la pantalla de inicio
+• Añadidas las traducciones al francés, alemán y ucraniano
+• Corrección de errores

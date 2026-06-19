@@ -1,0 +1,5 @@
+1.2
+• Añadida la opción «Mantener pantalla encendida»
+• Añadida una opción de fuente monoespaciada
+• Corregida la solicitud de permiso de notificaciones
+• Corregido el interruptor de respuesta háptica que no funcionaba con todos los efectos
