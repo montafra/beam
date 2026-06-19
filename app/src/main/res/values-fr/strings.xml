@@ -93,4 +93,27 @@
     <string name="learnMore">En savoir plus</string>
     <string name="systemNotificationSettings">Paramètres de notification du système</string>
     <string name="systemNotificationSettingsDesc">Ouvrir les paramètres de notification d\'Android</string>
+
+    <!-- battery alarms -->
+    <string name="alarms">Alarmes de batterie</string>
+    <string name="alarmsShortDesc">Alertes de charge, décharge et température</string>
+    <string name="alarmsDesc">Recevez une notification lorsque la batterie atteint un niveau ou une température que vous définissez. Les alarmes fonctionnent même lorsque l\'écran est éteint.</string>
+    <string name="alarmLow">Batterie faible</string>
+    <string name="alarmLowDesc">Alerter lorsque le niveau descend à ce pourcentage hors charge</string>
+    <string name="alarmHigh">Charge cible</string>
+    <string name="alarmHighDesc">Alerter lorsque la charge atteint ce pourcentage</string>
+    <string name="alarmTemp">Température élevée</string>
+    <string name="alarmTempDesc">Alerter lorsque la batterie atteint cette température</string>
+    <string name="alarmThreshold">Seuil</string>
+    <string name="alarmRepeat">Répéter jusqu\'à résolution</string>
+    <string name="alarmRepeatDesc">Continuer d\'alerter tant que la condition persiste</string>
+    <string name="alarmRepeatInterval">Intervalle de répétition</string>
+    <string name="alarmChannelName">Alertes de batterie</string>
+    <string name="alarmChannelDesc">Notifications lorsqu\'un seuil d\'alarme de batterie est atteint</string>
+    <string name="alarmLowTitle">Batterie faible</string>
+    <string name="alarmHighTitle">Niveau de charge atteint</string>
+    <string name="alarmTempTitle">Température de batterie élevée</string>
+    <string name="alarmLowText">Batterie tombée à %1$d%%</string>
+    <string name="alarmHighText">La charge a atteint %1$d%%</string>
+    <string name="alarmTempText">La température a atteint %1$d°C</string>
 </resources>

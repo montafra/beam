@@ -1,0 +1,3 @@
+• Přidána nastavení upozornění baterie
+• Přidán ruský překlad, díky @xxkfqz
+• Opraveny chybějící překlady

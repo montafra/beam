@@ -1,0 +1,4 @@
+1.8
+• Akku-Alarm-Einstellungen hinzugefügt
+• Russische Übersetzung hinzugefügt, danke an @xxkfqz
+• Fehlende Übersetzungen korrigiert

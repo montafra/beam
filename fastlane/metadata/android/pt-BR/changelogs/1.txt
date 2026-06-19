@@ -1,0 +1,7 @@
+Primeira versão do Beam.
+• Indicador configurável na barra de status (W, A, Ah, V, Wh, °C, %)
+• Visão detalhada da bateria no app, incluindo tipo de conector e linha do tempo de carregamento
+• Temas Material You, cor personalizada e OLED preto
+• Design de cartões em vidro fosco com brilho hero opcional e vibração
+• Soluções para dispositivos que relatam µA, corrente invertida ou cadência de sondagem incomum
+• Código aberto com endereços de doação na seção Sobre do app

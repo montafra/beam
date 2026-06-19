@@ -1,0 +1,7 @@
+Erste Beam-Veröffentlichung.
+• Konfigurierbare Statusleisten-Anzeige (W, A, Ah, V, Wh, °C, %)
+• Detaillierte Akku-Übersicht in der App mit Anschlusstyp und Ladeverlauf
+• Material You, eigene Akzentfarbe und OLED-schwarze Themes
+• Milchglas-Kartendesign mit optionalem Hero-Leuchten und Haptik
+• Workarounds für Geräte, die µA, invertierten Strom oder ungewöhnliche Abfrageintervalle melden
+• Open Source mit Spendenadressen im Bereich „Über" in der App

@@ -1,0 +1,3 @@
+• Ajout des paramètres d'alarmes de batterie
+• Ajout de la traduction russe, merci à @xxkfqz
+• Correction des traductions manquantes

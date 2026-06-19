@@ -94,4 +94,27 @@
     <string name="learnMore">Mehr erfahren</string>
     <string name="systemNotificationSettings">System-Benachrichtigungseinstellungen</string>
     <string name="systemNotificationSettingsDesc">Android-Benachrichtigungseinstellungen öffnen</string>
+
+    <!-- battery alarms -->
+    <string name="alarms">Akku-Alarme</string>
+    <string name="alarmsShortDesc">Warnungen zu Ladestand und Temperatur</string>
+    <string name="alarmsDesc">Lass dich benachrichtigen, wenn der Akku einen von dir festgelegten Stand oder eine Temperatur erreicht. Alarme funktionieren auch bei ausgeschaltetem Bildschirm.</string>
+    <string name="alarmLow">Niedriger Akkustand</string>
+    <string name="alarmLowDesc">Benachrichtigen, wenn der Stand auf diesen Prozentwert fällt und nicht geladen wird</string>
+    <string name="alarmHigh">Ziel-Ladestand</string>
+    <string name="alarmHighDesc">Benachrichtigen, wenn der Ladevorgang diesen Prozentwert erreicht</string>
+    <string name="alarmTemp">Hohe Temperatur</string>
+    <string name="alarmTempDesc">Benachrichtigen, wenn der Akku so heiß wird</string>
+    <string name="alarmThreshold">Schwellenwert</string>
+    <string name="alarmRepeat">Wiederholen bis behoben</string>
+    <string name="alarmRepeatDesc">Weiter benachrichtigen, solange der Zustand anhält</string>
+    <string name="alarmRepeatInterval">Wiederholungsintervall</string>
+    <string name="alarmChannelName">Akku-Warnungen</string>
+    <string name="alarmChannelDesc">Benachrichtigungen, wenn ein Akku-Alarm-Schwellenwert erreicht wird</string>
+    <string name="alarmLowTitle">Akku niedrig</string>
+    <string name="alarmHighTitle">Ladestand erreicht</string>
+    <string name="alarmTempTitle">Akkutemperatur hoch</string>
+    <string name="alarmLowText">Akku auf %1$d%% gefallen</string>
+    <string name="alarmHighText">Ladung hat %1$d%% erreicht</string>
+    <string name="alarmTempText">Temperatur hat %1$d°C erreicht</string>
 </resources>

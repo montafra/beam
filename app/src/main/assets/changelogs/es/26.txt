@@ -1,0 +1,5 @@
+1.4
+• Añadida la página de información de la app
+• Añadido un nuevo selector de fuentes
+• Añadida la opción de idioma en los ajustes
+• Mejoras de diseño

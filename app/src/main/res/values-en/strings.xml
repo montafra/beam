@@ -93,4 +93,27 @@
     <string name="screenTime">Screen Time</string>
     <string name="screenTimeFormat">%1$s (%2$d%%)</string>
     <string name="screenTimeShowInNotificationDesc">Show screen-on time since last charge</string>
+
+    <!-- battery alarms -->
+    <string name="alarms">Battery Alarms</string>
+    <string name="alarmsShortDesc">Low, full &amp; temperature alerts</string>
+    <string name="alarmsDesc">Get notified when the battery reaches a level or temperature you set. Alarms work even while the screen is off.</string>
+    <string name="alarmLow">Low Battery</string>
+    <string name="alarmLowDesc">Alert when the level drops to this percentage while unplugged</string>
+    <string name="alarmHigh">Target Charge</string>
+    <string name="alarmHighDesc">Alert when charging reaches this percentage</string>
+    <string name="alarmTemp">High Temperature</string>
+    <string name="alarmTempDesc">Alert when the battery gets this hot</string>
+    <string name="alarmThreshold">Threshold</string>
+    <string name="alarmRepeat">Repeat until resolved</string>
+    <string name="alarmRepeatDesc">Keep alerting while the condition lasts</string>
+    <string name="alarmRepeatInterval">Repeat interval</string>
+    <string name="alarmChannelName">Battery alerts</string>
+    <string name="alarmChannelDesc">Notifications when a battery alarm threshold is reached</string>
+    <string name="alarmLowTitle">Battery low</string>
+    <string name="alarmHighTitle">Charge level reached</string>
+    <string name="alarmTempTitle">Battery temperature high</string>
+    <string name="alarmLowText">Battery dropped to %1$d%%</string>
+    <string name="alarmHighText">Charge reached %1$d%%</string>
+    <string name="alarmTempText">Temperature reached %1$d°C</string>
 </resources>

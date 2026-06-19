@@ -22,6 +22,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import montafra.beam.ui.AlarmsSettingsScreen
 import montafra.beam.ui.MainScreen
 import montafra.beam.ui.NotificationSettingsScreen
 import montafra.beam.ui.PredictiveNavHost
@@ -38,6 +39,10 @@ const val batteryDataResp = "$namespace.battery-data-resp"
 const val intervalMs = 1_250L
 const val noteChannelId = "$namespace.status.v6"
 const val noteId = 1
+const val alarmChannelId = "$namespace.alarms.v1"
+const val alarmLowNoteId = 2
+const val alarmHighNoteId = 3
+const val alarmTempNoteId = 4
 const val settingsName = "settings"
 const val settingsUpdateInd = "$namespace.settings-update-ind"
 
@@ -144,6 +149,7 @@ class MainActivity : ComponentActivity() {
                         "settings" -> SettingsScreen(navController)
                         "settings/theme" -> ThemeSettingsScreen(navController)
                         "settings/notification" -> NotificationSettingsScreen(navController)
+                        "settings/alarms" -> AlarmsSettingsScreen(navController)
                         "settings/workarounds" -> WorkaroundsSettingsScreen(navController)
                     }
                 }

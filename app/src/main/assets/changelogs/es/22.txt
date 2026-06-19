@@ -1,0 +1,8 @@
+1.1
+Primera versión en F-Droid.
+• Rediseño de la pantalla principal, los ajustes y las notificaciones
+• Nuevos ajustes de tema con color personalizado y modo OLED
+• Respuesta háptica en toda la aplicación
+• Localización al italiano (it-IT)
+• Opción de donación con Liberapay en el menú Apoyar el desarrollo
+• Icono de la app y capturas de pantalla actualizados

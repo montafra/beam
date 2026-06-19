@@ -1,0 +1,4 @@
+1.8
+• Dodano ustawienia alarmów baterii
+• Dodano rosyjskie tłumaczenie, dzięki @xxkfqz
+• Naprawiono brakujące tłumaczenia
