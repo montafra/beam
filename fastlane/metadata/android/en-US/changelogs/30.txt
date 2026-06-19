@@ -1,0 +1,3 @@
+• Added battery alarms settings
+• Added Russian translation, thanks to @xxkfqz
+• Fixed missing translations
