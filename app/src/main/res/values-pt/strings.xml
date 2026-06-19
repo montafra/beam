@@ -92,4 +92,27 @@
     <string name="screenTime">Tempo de tela</string>
     <string name="screenTimeFormat">%1$s (%2$d%%)</string>
     <string name="screenTimeShowInNotificationDesc">Exibir o tempo de tela ligada desde a última carga</string>
+
+    <!-- battery alarms -->
+    <string name="alarms">Alarmes de bateria</string>
+    <string name="alarmsShortDesc">Alertas de carga, descarga e temperatura</string>
+    <string name="alarmsDesc">Receba uma notificação quando a bateria atingir um nível ou temperatura definidos. Os alarmes funcionam mesmo com a tela desligada.</string>
+    <string name="alarmLow">Bateria fraca</string>
+    <string name="alarmLowDesc">Avisar quando o nível cair para esta porcentagem sem estar carregando</string>
+    <string name="alarmHigh">Carga desejada</string>
+    <string name="alarmHighDesc">Avisar quando o carregamento atingir esta porcentagem</string>
+    <string name="alarmTemp">Temperatura alta</string>
+    <string name="alarmTempDesc">Avisar quando a bateria atingir esta temperatura</string>
+    <string name="alarmThreshold">Limite</string>
+    <string name="alarmRepeat">Repetir até resolver</string>
+    <string name="alarmRepeatDesc">Continuar avisando enquanto a condição persistir</string>
+    <string name="alarmRepeatInterval">Intervalo de repetição</string>
+    <string name="alarmChannelName">Alertas de bateria</string>
+    <string name="alarmChannelDesc">Notificações quando um limite de alarme de bateria é atingido</string>
+    <string name="alarmLowTitle">Bateria fraca</string>
+    <string name="alarmHighTitle">Nível de carga atingido</string>
+    <string name="alarmTempTitle">Temperatura da bateria alta</string>
+    <string name="alarmLowText">A bateria caiu para %1$d%%</string>
+    <string name="alarmHighText">A carga atingiu %1$d%%</string>
+    <string name="alarmTempText">A temperatura atingiu %1$d°C</string>
 </resources>

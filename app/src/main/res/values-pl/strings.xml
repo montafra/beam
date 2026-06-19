@@ -92,4 +92,27 @@
     <string name="screenTime">Czas włączonego ekranu</string>
     <string name="screenTimeFormat">%1$s (%2$d%%)</string>
     <string name="screenTimeShowInNotificationDesc">Pokazuj czas włączonego ekranu od ostatniego ładowania</string>
+
+    <!-- battery alarms -->
+    <string name="alarms">Alarmy baterii</string>
+    <string name="alarmsShortDesc">Alerty poziomu naładowania i temperatury</string>
+    <string name="alarmsDesc">Otrzymuj powiadomienie, gdy bateria osiągnie ustawiony poziom lub temperaturę. Alarmy działają nawet przy wyłączonym ekranie.</string>
+    <string name="alarmLow">Niski poziom baterii</string>
+    <string name="alarmLowDesc">Powiadom, gdy poziom spadnie do tej wartości procentowej, a bateria się nie ładuje</string>
+    <string name="alarmHigh">Docelowe naładowanie</string>
+    <string name="alarmHighDesc">Powiadom, gdy ładowanie osiągnie tę wartość procentową</string>
+    <string name="alarmTemp">Wysoka temperatura</string>
+    <string name="alarmTempDesc">Powiadom, gdy bateria osiągnie tę temperaturę</string>
+    <string name="alarmThreshold">Próg</string>
+    <string name="alarmRepeat">Powtarzaj do rozwiązania</string>
+    <string name="alarmRepeatDesc">Powiadamiaj, dopóki stan się utrzymuje</string>
+    <string name="alarmRepeatInterval">Interwał powtarzania</string>
+    <string name="alarmChannelName">Alerty baterii</string>
+    <string name="alarmChannelDesc">Powiadomienia po osiągnięciu progu alarmu baterii</string>
+    <string name="alarmLowTitle">Niski poziom baterii</string>
+    <string name="alarmHighTitle">Osiągnięto poziom naładowania</string>
+    <string name="alarmTempTitle">Wysoka temperatura baterii</string>
+    <string name="alarmLowText">Bateria spadła do %1$d%%</string>
+    <string name="alarmHighText">Naładowanie osiągnęło %1$d%%</string>
+    <string name="alarmTempText">Temperatura osiągnęła %1$d°C</string>
 </resources>

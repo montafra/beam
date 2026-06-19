@@ -74,6 +74,30 @@ fun NotificationSettingsScreen(navController: BeamNavController) {
     ) {
             item { Spacer(Modifier.height(4.dp)) }
             item {
+                BeamCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                ) {
+                    ListItem(
+                        headlineContent = { Text(stringResource(R.string.alarms)) },
+                        supportingContent = { Text(stringResource(R.string.alarmsShortDesc)) },
+                        leadingContent = {
+                            Icon(
+                                painter = painterResource(R.drawable.ico_alarm),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(24.dp),
+                            )
+                        },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                        modifier = Modifier.clickable {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            navController.navigate("settings/alarms")
+                        },
+                    )
+                }
+            }
+            item {
                 val metricLabels = remember { listOf("W", "A", "Ah", "°C", "V", "Wh", "%") }
                 val metricKeys   = remember { listOf("W", "A", "Ah", "C",  "V", "Wh", "%") }
                 SubLabel(stringResource(R.string.notificationIcon))

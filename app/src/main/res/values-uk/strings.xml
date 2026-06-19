@@ -94,4 +94,27 @@
     <string name="learnMore">Дізнатися більше</string>
     <string name="systemNotificationSettings">Системні налаштування сповіщень</string>
     <string name="systemNotificationSettingsDesc">Відкрити налаштування сповіщень Android</string>
+
+    <!-- battery alarms -->
+    <string name="alarms">Сигнали акумулятора</string>
+    <string name="alarmsShortDesc">Сигнали про заряд і температуру</string>
+    <string name="alarmsDesc">Отримуйте сповіщення, коли акумулятор досягає заданого рівня або температури. Сигнали працюють навіть із вимкненим екраном.</string>
+    <string name="alarmLow">Низький заряд</string>
+    <string name="alarmLowDesc">Сповіщати, коли рівень знижується до цього відсотка та акумулятор не заряджається</string>
+    <string name="alarmHigh">Цільовий заряд</string>
+    <string name="alarmHighDesc">Сповіщати, коли заряджання досягає цього відсотка</string>
+    <string name="alarmTemp">Висока температура</string>
+    <string name="alarmTempDesc">Сповіщати, коли акумулятор нагрівається до цієї температури</string>
+    <string name="alarmThreshold">Поріг</string>
+    <string name="alarmRepeat">Повторювати до усунення</string>
+    <string name="alarmRepeatDesc">Продовжувати сповіщати, поки триває умова</string>
+    <string name="alarmRepeatInterval">Інтервал повторення</string>
+    <string name="alarmChannelName">Сигнали акумулятора</string>
+    <string name="alarmChannelDesc">Сповіщення, коли досягнуто порогу сигналу акумулятора</string>
+    <string name="alarmLowTitle">Низький заряд</string>
+    <string name="alarmHighTitle">Рівень заряду досягнуто</string>
+    <string name="alarmTempTitle">Висока температура акумулятора</string>
+    <string name="alarmLowText">Заряд упав до %1$d%%</string>
+    <string name="alarmHighText">Заряд досяг %1$d%%</string>
+    <string name="alarmTempText">Температура досягла %1$d°C</string>
 </resources>

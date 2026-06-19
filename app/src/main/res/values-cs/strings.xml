@@ -92,4 +92,27 @@
     <string name="screenTime">Doba zapnuté obrazovky</string>
     <string name="screenTimeFormat">%1$s (%2$d%%)</string>
     <string name="screenTimeShowInNotificationDesc">Zobrazit dobu zapnuté obrazovky od posledního nabití</string>
+
+    <!-- battery alarms -->
+    <string name="alarms">Upozornění baterie</string>
+    <string name="alarmsShortDesc">Upozornění na vybití, nabití a teplotu</string>
+    <string name="alarmsDesc">Dostávejte upozornění, když baterie dosáhne nastavené úrovně nebo teploty. Upozornění fungují i při vypnuté obrazovce.</string>
+    <string name="alarmLow">Nízká baterie</string>
+    <string name="alarmLowDesc">Upozornit, když úroveň klesne na toto procento a baterie se nenabíjí</string>
+    <string name="alarmHigh">Cílové nabití</string>
+    <string name="alarmHighDesc">Upozornit, když nabíjení dosáhne tohoto procenta</string>
+    <string name="alarmTemp">Vysoká teplota</string>
+    <string name="alarmTempDesc">Upozornit, když se baterie zahřeje na tuto teplotu</string>
+    <string name="alarmThreshold">Práh</string>
+    <string name="alarmRepeat">Opakovat do vyřešení</string>
+    <string name="alarmRepeatDesc">Upozorňovat opakovaně, dokud stav trvá</string>
+    <string name="alarmRepeatInterval">Interval opakování</string>
+    <string name="alarmChannelName">Upozornění baterie</string>
+    <string name="alarmChannelDesc">Oznámení při dosažení prahu upozornění baterie</string>
+    <string name="alarmLowTitle">Nízká baterie</string>
+    <string name="alarmHighTitle">Dosažena úroveň nabití</string>
+    <string name="alarmTempTitle">Vysoká teplota baterie</string>
+    <string name="alarmLowText">Baterie klesla na %1$d%%</string>
+    <string name="alarmHighText">Nabití dosáhlo %1$d%%</string>
+    <string name="alarmTempText">Teplota dosáhla %1$d°C</string>
 </resources>

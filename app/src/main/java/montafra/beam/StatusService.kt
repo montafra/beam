@@ -15,11 +15,17 @@ import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import androidx.core.content.edit
+import kotlin.math.roundToInt
 
 
 class StatusService : Service() {
     companion object {
         private val dateFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+    }
+
+    private class AlarmRuntime {
+        var fired = false
+        var lastMs = 0L
     }
 
     private lateinit var battery: Battery
@@ -35,6 +41,19 @@ class StatusService : Service() {
     private var showTimeToFull: Boolean = true
     private var showScreenTimeInNotification: Boolean = false
     private var pollIntervalMs: Long = intervalMs
+    private var alarmLowEnabled = false
+    private var alarmLowThreshold = 20
+    private var alarmLowRepeat = false
+    private var alarmHighEnabled = false
+    private var alarmHighThreshold = 85
+    private var alarmHighRepeat = false
+    private var alarmTempEnabled = false
+    private var alarmTempThreshold = 40
+    private var alarmTempRepeat = false
+    private var alarmRepeatIntervalMs = 15 * 60_000L
+    private val alarmLowState = AlarmRuntime()
+    private val alarmHighState = AlarmRuntime()
+    private val alarmTempState = AlarmRuntime()
     private var screenTimeSessionStart = 0L
     private var screenTimeOnTotal = 0L
     private var screenTimeOnStart = 0L
@@ -60,6 +79,16 @@ class StatusService : Service() {
                 settingsUpdateInd -> {
                     loadSettings()
                     update()
+                }
+                Intent.ACTION_BATTERY_CHANGED -> {
+                    // Driven by the OS even while the screen is off (the PeriodicTask is
+                    // paused then), so alarms still fire. Only refresh the snapshot + check
+                    // thresholds here; the status notification is left untouched. Skipped
+                    // entirely when no alarm is enabled, so non-users don't wake on every change.
+                    if (alarmLowEnabled || alarmHighEnabled || alarmTempEnabled) {
+                        snapshot = battery.snapshot()
+                        checkAlarms()
+                    }
                 }
                 Intent.ACTION_POWER_CONNECTED -> {
                     pluggedInAt = ZonedDateTime.now()
@@ -111,6 +140,22 @@ class StatusService : Service() {
         showTimeToFull = settings.getBoolean("showTimeToFull", true)
         showScreenTimeInNotification = settings.getBoolean("showScreenTimeInNotification", false)
         pollIntervalMs = settings.getLong("pollIntervalMs", intervalMs)
+        alarmLowEnabled = settings.getBoolean("alarmLowEnabled", false)
+        alarmLowThreshold = settings.getInt("alarmLowThreshold", 20)
+        alarmLowRepeat = settings.getBoolean("alarmLowRepeat", false)
+        alarmHighEnabled = settings.getBoolean("alarmHighEnabled", false)
+        alarmHighThreshold = settings.getInt("alarmHighThreshold", 85)
+        alarmHighRepeat = settings.getBoolean("alarmHighRepeat", false)
+        alarmTempEnabled = settings.getBoolean("alarmTempEnabled", false)
+        alarmTempThreshold = settings.getInt("alarmTempThreshold", 40)
+        alarmTempRepeat = settings.getBoolean("alarmTempRepeat", false)
+        alarmRepeatIntervalMs = settings.getInt("alarmRepeatIntervalMin", 15) * 60_000L
+        alarmLowState.fired = settings.getBoolean("alarmLowFired", false)
+        alarmLowState.lastMs = settings.getLong("alarmLowLastMs", 0L)
+        alarmHighState.fired = settings.getBoolean("alarmHighFired", false)
+        alarmHighState.lastMs = settings.getLong("alarmHighLastMs", 0L)
+        alarmTempState.fired = settings.getBoolean("alarmTempFired", false)
+        alarmTempState.lastMs = settings.getLong("alarmTempLastMs", 0L)
         screenTimeSessionStart = settings.getLong("screenTimeSessionStart", 0L)
         screenTimeOnTotal = settings.getLong("screenTimeOnTotal", 0L)
         screenTimeOnStart = settings.getLong("screenTimeOnStart", 0L)
@@ -173,6 +218,15 @@ class StatusService : Service() {
                 description = "Continuously displays current battery power consumption"
             }
         )
+        noteMgr.createNotificationChannel(
+            NotificationChannel(
+                alarmChannelId,
+                getString(R.string.alarmChannelName),
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = getString(R.string.alarmChannelDesc)
+            }
+        )
 
         noteIntent = PendingIntent.getActivity(
             this,
@@ -189,6 +243,7 @@ class StatusService : Service() {
             IntentFilter().apply {
                 addAction(batteryDataReq)
                 addAction(settingsUpdateInd)
+                addAction(Intent.ACTION_BATTERY_CHANGED)
                 addAction(Intent.ACTION_POWER_CONNECTED)
                 addAction(Intent.ACTION_POWER_DISCONNECTED)
                 addAction(Intent.ACTION_SCREEN_OFF)
@@ -350,6 +405,119 @@ class StatusService : Service() {
 
         snapshot = battery.snapshot()
         if (notificationEnabled) noteMgr.notify(noteId, buildNotification())
+        checkAlarms()
         updateData()
+    }
+
+    private fun checkAlarms() {
+        // Cheap when alarms are disabled (runAlarm just keeps their state cleared); this also
+        // lets the update()/settings-update path reset state when an alarm is turned off.
+        val now = System.currentTimeMillis()
+        val charging = snapshot.charging
+        var changed = false
+
+        snapshot.levelPercent?.roundToInt()?.let { level ->
+            if (runAlarm(
+                    alarmLowState, alarmLowEnabled,
+                    active = !charging && level <= alarmLowThreshold,
+                    rearmed = charging || level > alarmLowThreshold,
+                    repeat = alarmLowRepeat, noteId = alarmLowNoteId, now = now,
+                ) {
+                    buildAlarmNotification(
+                        getString(R.string.alarmLowTitle),
+                        getString(R.string.alarmLowText, level),
+                    )
+                }
+            ) changed = true
+
+            if (runAlarm(
+                    alarmHighState, alarmHighEnabled,
+                    active = charging && level >= alarmHighThreshold,
+                    rearmed = !charging || level < alarmHighThreshold,
+                    repeat = alarmHighRepeat, noteId = alarmHighNoteId, now = now,
+                ) {
+                    buildAlarmNotification(
+                        getString(R.string.alarmHighTitle),
+                        getString(R.string.alarmHighText, level),
+                    )
+                }
+            ) changed = true
+        }
+
+        snapshot.celsius?.let { temp ->
+            if (runAlarm(
+                    alarmTempState, alarmTempEnabled,
+                    active = temp >= alarmTempThreshold,
+                    rearmed = temp <= alarmTempThreshold - 2,
+                    repeat = alarmTempRepeat, noteId = alarmTempNoteId, now = now,
+                ) {
+                    buildAlarmNotification(
+                        getString(R.string.alarmTempTitle),
+                        getString(R.string.alarmTempText, temp.roundToInt()),
+                    )
+                }
+            ) changed = true
+        }
+
+        if (changed) persistAlarmState()
+    }
+
+    /**
+     * Runs one alarm's state machine. Fires (or re-fires, when [repeat] is set) the notification
+     * built by [build] on transition into the alarm condition, and re-arms once the value has
+     * recovered ([rearmed]). Returns true if the persisted runtime state changed.
+     */
+    private fun runAlarm(
+        state: AlarmRuntime,
+        enabled: Boolean,
+        active: Boolean,
+        rearmed: Boolean,
+        repeat: Boolean,
+        noteId: Int,
+        now: Long,
+        build: () -> Notification,
+    ): Boolean {
+        val prevFired = state.fired
+        val prevLast = state.lastMs
+        if (!enabled) {
+            state.fired = false
+            state.lastMs = 0L
+        } else {
+            if (rearmed) {
+                state.fired = false
+                state.lastMs = 0L
+            }
+            if (active) {
+                val shouldFire = !state.fired ||
+                    (repeat && now - state.lastMs >= alarmRepeatIntervalMs)
+                if (shouldFire) {
+                    noteMgr.notify(noteId, build())
+                    state.fired = true
+                    state.lastMs = now
+                }
+            }
+        }
+        return state.fired != prevFired || state.lastMs != prevLast
+    }
+
+    private fun buildAlarmNotification(title: String, text: String): Notification =
+        Notification.Builder(this, alarmChannelId)
+            .setContentTitle(title)
+            .setContentText(text)
+            .setSmallIcon(R.drawable.ico_alarm)
+            .setContentIntent(noteIntent)
+            .setAutoCancel(true)
+            .setCategory(Notification.CATEGORY_ALARM)
+            .build()
+
+    private fun persistAlarmState() {
+        getSharedPreferences(settingsName, MODE_MULTI_PROCESS).edit {
+            putBoolean("alarmLowFired", alarmLowState.fired)
+            putLong("alarmLowLastMs", alarmLowState.lastMs)
+            putBoolean("alarmHighFired", alarmHighState.fired)
+            putLong("alarmHighLastMs", alarmHighState.lastMs)
+            putBoolean("alarmTempFired", alarmTempState.fired)
+            putLong("alarmTempLastMs", alarmTempState.lastMs)
+        }
     }
 }

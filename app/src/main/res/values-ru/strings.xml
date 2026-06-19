@@ -92,4 +92,27 @@
     <string name="screenTimeFormat">%1$s (%2$d%%)</string>
     <string name="screenTimeShowInNotificationDesc">Показывать экранное время с последней зарядки</string>
     <string name="byAuthor">от %1$s</string>
+
+    <!-- battery alarms -->
+    <string name="alarms">Оповещения батареи</string>
+    <string name="alarmsShortDesc">Оповещения о заряде и температуре</string>
+    <string name="alarmsDesc">Получайте уведомление, когда батарея достигает заданного уровня или температуры. Оповещения работают даже при выключенном экране.</string>
+    <string name="alarmLow">Низкий заряд</string>
+    <string name="alarmLowDesc">Уведомлять, когда уровень опускается до этого процента и батарея не заряжается</string>
+    <string name="alarmHigh">Целевой заряд</string>
+    <string name="alarmHighDesc">Уведомлять, когда зарядка достигает этого процента</string>
+    <string name="alarmTemp">Высокая температура</string>
+    <string name="alarmTempDesc">Уведомлять, когда батарея нагревается до этой температуры</string>
+    <string name="alarmThreshold">Порог</string>
+    <string name="alarmRepeat">Повторять до устранения</string>
+    <string name="alarmRepeatDesc">Продолжать уведомлять, пока сохраняется условие</string>
+    <string name="alarmRepeatInterval">Интервал повтора</string>
+    <string name="alarmChannelName">Оповещения о батарее</string>
+    <string name="alarmChannelDesc">Уведомления при достижении порога оповещения батареи</string>
+    <string name="alarmLowTitle">Низкий заряд</string>
+    <string name="alarmHighTitle">Уровень заряда достигнут</string>
+    <string name="alarmTempTitle">Высокая температура батареи</string>
+    <string name="alarmLowText">Заряд упал до %1$d%%</string>
+    <string name="alarmHighText">Заряд достиг %1$d%%</string>
+    <string name="alarmTempText">Температура достигла %1$d°C</string>
 </resources>
