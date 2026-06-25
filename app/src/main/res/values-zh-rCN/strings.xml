@@ -9,7 +9,7 @@
     <string name="energy">剩余</string>
     <string name="fullyCharged">已充满</string>
     <string name="indeterminate">-</string>
-    <string name="statusBarIndicator">通知条目</string>
+    <string name="statusBarIndicator">通知内容</string>
     <string name="notificationIcon">通知图标</string>
     <string name="no">否</string>
     <string name="power">功率</string>
@@ -29,14 +29,14 @@
     <string name="themeModeLight">浅色</string>
     <string name="themeModeDark">深色</string>
     <string name="themeModeOled">OLED</string>
-    <string name="currentScalar">功率标量变通</string>
-    <string name="currentScalarDesc">未插电时，调整此标量直到 \u0022功率\u0022 大于 0W 但小于约 10W。</string>
+    <string name="currentScalar">功率系数</string>
+    <string name="currentScalarDesc">未插电时，调整此系数直到 \u0022功率\u0022 大于 0W 但小于约 10W。</string>
     <string name="invertCurrent">反转充电指示</string>
-    <string name="invertCurrentDesc">未插电时，如果 \u0022充电中\u0022 显示为 \u0022是\u0022，请启用此开关。</string>
+    <string name="invertCurrentDesc">未插电时，如果 \u0022充电\u0022 显示为 \u0022是\u0022，请启用此开关。</string>
     <string name="workarounds">兼容处理</string>
-    <string name="workaroundsDesc">许多手机未正确实现 Android BatteryManager 接口，默认会报告错误的电池指标。如有需要，可使用以下设置来规避您手机的实现缺陷。</string>
+    <string name="workaroundsDesc">部分 机型/系统 并未正确实现 Android BatteryManager 接口，可能会导致错误的电池数据。如有需要，可调整以下设置进行修正。</string>
     <string name="supportMe">支持开发</string>
-    <string name="supportMeDesc">帮助支持我的项目 🐢</string>
+    <string name="supportMeDesc">支持我的项目 🐢</string>
     <string name="openInBrowser">在浏览器中打开</string>
     <string name="copy">复制</string>
     <string name="about">关于</string>
@@ -60,7 +60,7 @@
     <string name="home">主屏幕</string>
     <string name="notificationDesc">图标、条目</string>
     <string name="notificationEnableDesc">持久电池通知</string>
-    <string name="workaroundsShortDesc">设备特定修复</string>
+    <string name="workaroundsShortDesc">特定设备修复</string>
     <string name="sourceCode">源代码</string>
     <string name="advancedSettings">高级设置</string>
     <string name="advancedSection">高级</string>
@@ -72,8 +72,8 @@
     <string name="font">字体</string>
     <string name="fontDefault">默认</string>
     <string name="fontDesc">应用内使用的字体</string>
-    <string name="outlinedCards">仅轮廓卡片</string>
-    <string name="outlinedCardsDesc">显示带边框的卡片，而非填充背景</string>
+    <string name="outlinedCards">轮廓卡片</string>
+    <string name="outlinedCardsDesc">显示带边框的卡片，不填充背景</string>
     <string name="widgetTempLabel">电池温度</string>
     <string name="versionLicenseLinks">版本、许可和链接</string>
     <string name="privacyStatement">无广告 · 无追踪 · 无数据收集</string>
@@ -82,7 +82,7 @@
     <string name="batteryUsage">系统电池使用情况</string>
     <string name="batteryUsageDesc">打开 Android 电池使用详情界面</string>
     <string name="vendorBatteryTitle">后台限制</string>
-    <string name="vendorBatteryDesc">允许 Beam 自动启动并免除电池限制，以使通知持续运行</string>
+    <string name="vendorBatteryDesc">允许 Beam 自启动并忽略电池优化，以保持持续运行</string>
     <string name="vendorBatteryRestricted">后台使用当前受限制 — 通知可能停止更新</string>
     <string name="vendorHintTitle">保持 Beam 运行</string>
     <string name="vendorHintBody">%1$s 会激进地停止后台应用。为使电池通知保持活跃，请在系统设置中为 Beam 启用自启动并移除电池限制。</string>
