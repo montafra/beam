@@ -1,0 +1,4 @@
+1.9
+• Přidána možnost stupňů Fahrenheita
+• Přidán zjednodušený čínský překlad, díky @lanlan3292
+• Obecná vylepšení

@@ -1,0 +1,4 @@
+1.9
+• Added Fahrenheit degrees option
+• Added Simplified Chinese translation, thanks to @lanlan3292
+• General improvements

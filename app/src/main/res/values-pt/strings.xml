@@ -33,6 +33,8 @@
     <string name="currentScalarDesc">Quando desconectado da carga, ajuste este valor até que \u0022Potência\u0022 seja maior que 0W, mas menor que cerca de 10W.</string>
     <string name="invertCurrent">Inverter indicador de carga</string>
     <string name="invertCurrentDesc">Quando desconectado da carga, ative esta opção se \u0022Carregando\u0022 exibir \u0022sim\u0022.</string>
+    <string name="useFahrenheit">Fahrenheit</string>
+    <string name="useFahrenheitDesc">Mostrar a temperatura da bateria em °F em vez de °C.</string>
     <string name="workarounds">Correções de compatibilidade</string>
     <string name="workaroundsDesc">Muitos dispositivos não implementam corretamente a interface BatteryManager do Android e reportam métricas de bateria incorretas por padrão. Se necessário, use as configurações abaixo para contornar problemas específicos do seu dispositivo.</string>
     <string name="supportMe">Apoiar o desenvolvimento</string>
@@ -115,4 +117,5 @@
     <string name="alarmLowText">A bateria caiu para %1$d%%</string>
     <string name="alarmHighText">A carga atingiu %1$d%%</string>
     <string name="alarmTempText">A temperatura atingiu %1$d°C</string>
+    <string name="alarmTempTextF">A temperatura atingiu %1$d°F</string>
 </resources>

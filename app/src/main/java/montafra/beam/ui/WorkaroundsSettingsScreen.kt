@@ -26,7 +26,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -87,6 +86,7 @@ fun WorkaroundsSettingsScreen(navController: BeamNavController, vm: BatteryViewM
 
     var currentScalar by remember { mutableFloatStateOf(prefs.getFloat("currentScalar", 1f)) }
     var invertCurrent by remember { mutableStateOf(prefs.getBoolean("invertCurrent", false)) }
+    var useFahrenheit by remember { mutableStateOf(prefs.getBoolean("useFahrenheit", false)) }
     var pollIndex by remember {
         mutableIntStateOf(pollIntervals.indexOf(prefs.getLong("pollIntervalMs", 1_750L)).coerceAtLeast(0))
     }
@@ -95,6 +95,7 @@ fun WorkaroundsSettingsScreen(navController: BeamNavController, vm: BatteryViewM
         prefs.edit()
             .putFloat("currentScalar", currentScalar)
             .putBoolean("invertCurrent", invertCurrent)
+            .putBoolean("useFahrenheit", useFahrenheit)
             .putLong("pollIntervalMs", pollIntervals[pollIndex])
             .commit()
         context.sendBroadcast(
@@ -140,23 +141,12 @@ fun WorkaroundsSettingsScreen(navController: BeamNavController, vm: BatteryViewM
                     shape = RoundedCornerShape(20.dp),
                 ) {
                     Column {
-                        ListItem(
-                            headlineContent = { Text(stringResource(R.string.invertCurrent)) },
-                            supportingContent = { Text(stringResource(R.string.invertCurrentDesc)) },
-                            trailingContent = {
-                                Switch(
-                                    checked = invertCurrent,
-                                    onCheckedChange = {
-                                        haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                        invertCurrent = it
-                                        saveWorkarounds()
-                                    },
-                                )
-                            },
-                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                            modifier = Modifier.clickable {
-                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                invertCurrent = !invertCurrent
+                        ToggleSettingRow(
+                            title = stringResource(R.string.invertCurrent),
+                            description = stringResource(R.string.invertCurrentDesc),
+                            checked = invertCurrent,
+                            onCheckedChange = {
+                                invertCurrent = it
                                 saveWorkarounds()
                             },
                         )
@@ -231,9 +221,28 @@ fun WorkaroundsSettingsScreen(navController: BeamNavController, vm: BatteryViewM
                 }
             }
             item {
+                val hasVendor = VendorBatteryHints.current != null
                 BeamCard(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(20.dp),
+                    shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 4.dp, bottomEnd = 4.dp),
+                ) {
+                    ToggleSettingRow(
+                        title = stringResource(R.string.useFahrenheit),
+                        description = stringResource(R.string.useFahrenheitDesc),
+                        checked = useFahrenheit,
+                        onCheckedChange = {
+                            useFahrenheit = it
+                            saveWorkarounds()
+                        },
+                    )
+                }
+                Spacer(Modifier.height(4.dp))
+                BeamCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = if (hasVendor)
+                        RoundedCornerShape(4.dp)
+                    else
+                        RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 20.dp, bottomEnd = 20.dp),
                 ) {
                     ListItem(
                         headlineContent = { Text(stringResource(R.string.batteryUsage)) },
@@ -275,60 +284,61 @@ fun WorkaroundsSettingsScreen(navController: BeamNavController, vm: BatteryViewM
                         },
                     )
                 }
-            }
-            if (VendorBatteryHints.current != null) item {
-                BeamCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(20.dp),
-                ) {
-                    ListItem(
-                        headlineContent = { Text(stringResource(R.string.vendorBatteryTitle)) },
-                        supportingContent = {
-                            if (backgroundRestricted) {
-                                Text(
-                                    text = stringResource(R.string.vendorBatteryRestricted),
-                                    color = MaterialTheme.colorScheme.error,
+                if (hasVendor) {
+                    Spacer(Modifier.height(4.dp))
+                    BeamCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 20.dp, bottomEnd = 20.dp),
+                    ) {
+                        ListItem(
+                            headlineContent = { Text(stringResource(R.string.vendorBatteryTitle)) },
+                            supportingContent = {
+                                if (backgroundRestricted) {
+                                    Text(
+                                        text = stringResource(R.string.vendorBatteryRestricted),
+                                        color = MaterialTheme.colorScheme.error,
+                                    )
+                                } else {
+                                    Text(stringResource(R.string.vendorBatteryDesc))
+                                }
+                            },
+                            trailingContent = {
+                                Icon(
+                                    painter = painterResource(R.drawable.ico_open_in_new),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(24.dp),
                                 )
-                            } else {
-                                Text(stringResource(R.string.vendorBatteryDesc))
-                            }
-                        },
-                        trailingContent = {
-                            Icon(
-                                painter = painterResource(R.drawable.ico_open_in_new),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(24.dp),
-                            )
-                        },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        modifier = Modifier.clickable {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            VendorBatteryHints.openVendorSettings(context)
-                        },
-                    )
-                    HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-                    ListItem(
-                        headlineContent = { Text(stringResource(R.string.learnMore)) },
-                        trailingContent = {
-                            Icon(
-                                painter = painterResource(R.drawable.ico_open_in_new),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(24.dp),
-                            )
-                        },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        modifier = Modifier.clickable {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            try {
-                                context.startActivity(
-                                    Intent(Intent.ACTION_VIEW, Uri.parse(VendorBatteryHints.dontKillUrl()))
+                            },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                            modifier = Modifier.clickable {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                VendorBatteryHints.openVendorSettings(context)
+                            },
+                        )
+                        HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+                        ListItem(
+                            headlineContent = { Text(stringResource(R.string.learnMore)) },
+                            trailingContent = {
+                                Icon(
+                                    painter = painterResource(R.drawable.ico_open_in_new),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(24.dp),
                                 )
-                            } catch (_: Exception) {
-                            }
-                        },
-                    )
+                            },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                            modifier = Modifier.clickable {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                try {
+                                    context.startActivity(
+                                        Intent(Intent.ACTION_VIEW, Uri.parse(VendorBatteryHints.dontKillUrl()))
+                                    )
+                                } catch (_: Exception) {
+                                }
+                            },
+                        )
+                    }
                 }
             }
             item { Spacer(Modifier.height(16.dp)) }

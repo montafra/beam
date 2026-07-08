@@ -1,0 +1,4 @@
+1.9
+• Dodano opcję stopni Fahrenheita
+• Dodano uproszczone chińskie tłumaczenie, dzięki @lanlan3292
+• Ogólne ulepszenia

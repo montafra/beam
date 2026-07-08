@@ -1,0 +1,4 @@
+1.9
+• Option für Grad Fahrenheit hinzugefügt
+• Vereinfachte chinesische Übersetzung hinzugefügt, danke an @lanlan3292
+• Allgemeine Verbesserungen

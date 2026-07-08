@@ -33,6 +33,8 @@
     <string name="currentScalarDesc">未插电时，调整此系数直到 \u0022功率\u0022 大于 0W 但小于约 10W。</string>
     <string name="invertCurrent">反转充电指示</string>
     <string name="invertCurrentDesc">未插电时，如果 \u0022充电\u0022 显示为 \u0022是\u0022，请启用此开关。</string>
+    <string name="useFahrenheit">华氏度</string>
+    <string name="useFahrenheitDesc">以 °F 代替 °C 显示电池温度。</string>
     <string name="workarounds">兼容处理</string>
     <string name="workaroundsDesc">部分 机型/系统 并未正确实现 Android BatteryManager 接口，可能会导致错误的电池数据。如有需要，可调整以下设置进行修正。</string>
     <string name="supportMe">支持开发</string>
@@ -116,4 +118,5 @@
     <string name="alarmLowText">电量降至 %1$d%%</string>
     <string name="alarmHighText">充电已达 %1$d%%</string>
     <string name="alarmTempText">温度已达 %1$d°C</string>
+    <string name="alarmTempTextF">温度已达 %1$d°F</string>
 </resources>

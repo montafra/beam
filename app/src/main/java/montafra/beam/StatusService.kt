@@ -58,6 +58,7 @@ class StatusService : Service() {
     private var screenTimeOnTotal = 0L
     private var screenTimeOnStart = 0L
     private var notificationEnabled = true
+    private var useFahrenheit = false
     private var initialized = false
     private lateinit var msgReceiver: MsgReceiver
     private val metricOrder = listOf("W", "A", "Ah", "C", "V", "Wh", "%")
@@ -135,6 +136,7 @@ class StatusService : Service() {
         if (!notificationEnabled) stopForeground(STOP_FOREGROUND_REMOVE)
         battery.currentScalar = settings.getFloat("currentScalar", 1f).toDouble()
         battery.invertCurrent = settings.getBoolean("invertCurrent", false)
+        useFahrenheit = settings.getBoolean("useFahrenheit", false)
         indicatorEntries = settings.getStringSet("indicatorEntries", null) ?: emptySet()
         notificationIndicator = settings.getString("notificationIndicator", "W") ?: "W"
         showTimeToFull = settings.getBoolean("showTimeToFull", true)
@@ -187,19 +189,25 @@ class StatusService : Service() {
         else       -> R.string.power
     })
 
+    // Temperature is stored/derived in Celsius; convert to the user's chosen unit at display time.
+    private fun displayTemp(celsius: Double?) =
+        if (useFahrenheit) celsius?.let { cToF(it) } else celsius
+
+    private fun tempUnit() = if (useFahrenheit) "°F" else "°C"
+
     private fun metricValue(key: String) = when (key) {
         "%"  -> fmtPercent(snapshot.levelPercent)
         else -> fmt(when (key) {
             "A"  -> snapshot.amps
             "Ah" -> snapshot.energyAmpHours
-            "C"  -> snapshot.celsius
+            "C"  -> displayTemp(snapshot.celsius)
             "V"  -> snapshot.volts
             "Wh" -> snapshot.energyWattHours
             else -> snapshot.watts
         })
     }
 
-    private fun metricUnit(key: String) = if (key == "C") "°C" else key
+    private fun metricUnit(key: String) = if (key == "C") tempUnit() else key
 
     private fun init() {
         if (initialized) return
@@ -386,7 +394,7 @@ class StatusService : Service() {
                 "${fmt(snapshot.energyWattHours)}Wh (${fmt(snapshot.energyAmpHours)}Ah)"
             )
             .putExtra("power", fmt(snapshot.watts) + "W")
-            .putExtra("temperature", fmt(snapshot.celsius) + "°C")
+            .putExtra("temperature", fmt(displayTemp(snapshot.celsius)) + tempUnit())
             .putExtra("timeToFullCharge",
                 when (val seconds = snapshot.secondsUntilCharged) {
                     null -> indeterminate
@@ -453,7 +461,10 @@ class StatusService : Service() {
                 ) {
                     buildAlarmNotification(
                         getString(R.string.alarmTempTitle),
-                        getString(R.string.alarmTempText, temp.roundToInt()),
+                        getString(
+                            if (useFahrenheit) R.string.alarmTempTextF else R.string.alarmTempText,
+                            (if (useFahrenheit) cToF(temp) else temp).roundToInt(),
+                        ),
                     )
                 }
             ) changed = true

@@ -33,6 +33,8 @@
     <string name="currentScalarDesc">Wenn nicht angeschlossen, ändere diesen Skalar, bis \u0022Leistung\u0022 größer als 0W, aber kleiner als etwa 10W ist.</string>
     <string name="invertCurrent">Ladeanzeige umkehren</string>
     <string name="invertCurrentDesc">Wenn nicht angeschlossen, aktiviere diese Option, falls \u0022Lädt\u0022 \u0022ja\u0022 anzeigt.</string>
+    <string name="useFahrenheit">Fahrenheit</string>
+    <string name="useFahrenheitDesc">Akkutemperatur in °F statt °C anzeigen.</string>
     <string name="workarounds">Workarounds</string>
     <string name="workaroundsDesc">Viele Telefone implementieren die Android-BatteryManager-Schnittstelle nicht korrekt und melden standardmäßig falsche Akkuwerte. Verwende bei Bedarf die folgenden Einstellungen, um Implementierungsfehler deines Telefons zu umgehen.</string>
     <string name="supportMe">Entwicklung unterstützen</string>
@@ -117,4 +119,5 @@
     <string name="alarmLowText">Akku auf %1$d%% gefallen</string>
     <string name="alarmHighText">Ladung hat %1$d%% erreicht</string>
     <string name="alarmTempText">Temperatur hat %1$d°C erreicht</string>
+    <string name="alarmTempTextF">Temperatur hat %1$d°F erreicht</string>
 </resources>

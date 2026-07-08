@@ -33,6 +33,8 @@
     <string name="currentScalarDesc">When not plugged in, change this scalar until \u0022Power\u0022 is greater than 0W, but less than about 10W.</string>
     <string name="invertCurrent">Invert Charging Indicator</string>
     <string name="invertCurrentDesc">When not plugged in, enable this toggle if \u0022Charging\u0022 says \u0022yes\u0022.</string>
+    <string name="useFahrenheit">Fahrenheit</string>
+    <string name="useFahrenheitDesc">Show battery temperature in °F instead of °C.</string>
     <string name="workarounds">Workarounds</string>
     <string name="workaroundsDesc">Many phones do not correctly implement the Android BatteryManager interface, and will report incorrect battery metrics by default. If needed, use the following settings to workaround implementation defects on your phone.</string>
     <string name="supportMe">Support development</string>
@@ -116,4 +118,5 @@
     <string name="alarmLowText">Battery dropped to %1$d%%</string>
     <string name="alarmHighText">Charge reached %1$d%%</string>
     <string name="alarmTempText">Temperature reached %1$d°C</string>
+    <string name="alarmTempTextF">Temperature reached %1$d°F</string>
 </resources>

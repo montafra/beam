@@ -33,6 +33,8 @@
     <string name="currentScalarDesc">Když není připojeno k napájení, měňte tento násobitel, dokud nebude hodnota Výkon větší než 0 W, ale menší než přibližně 10 W.</string>
     <string name="invertCurrent">Obrátit indikátor nabíjení</string>
     <string name="invertCurrentDesc">Když není připojeno k napájení, zapněte tuto možnost, pokud se u položky Nabíjení zobrazuje ano.</string>
+    <string name="useFahrenheit">Fahrenheit</string>
+    <string name="useFahrenheitDesc">Zobrazit teplotu baterie ve °F místo °C.</string>
     <string name="workarounds">Náhradní řešení</string>
     <string name="workaroundsDesc">Mnoho telefonů správně neimplementuje rozhraní Android BatteryManager a ve výchozím nastavení hlásí nesprávné metriky baterie. V případě potřeby použijte následující možnosti k obejití chyb implementace ve vašem zařízení.</string>
     <string name="supportMe">Podpořit vývoj</string>
@@ -115,4 +117,5 @@
     <string name="alarmLowText">Baterie klesla na %1$d%%</string>
     <string name="alarmHighText">Nabití dosáhlo %1$d%%</string>
     <string name="alarmTempText">Teplota dosáhla %1$d°C</string>
+    <string name="alarmTempTextF">Teplota dosáhla %1$d°F</string>
 </resources>

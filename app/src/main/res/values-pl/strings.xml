@@ -33,6 +33,8 @@
     <string name="currentScalarDesc">Gdy telefon nie jest podłączony do ładowarki, zmieniaj tę wartość, aż „Moc” będzie większa niż 0W, ale mniejsza niż około 10W.</string>
     <string name="invertCurrent">Odwróć wskaźnik ładowania</string>
     <string name="invertCurrentDesc">Gdy telefon nie jest podłączony do ładowarki, włącz tę opcję, jeśli „Ładowanie” pokazuje „tak”.</string>
+    <string name="useFahrenheit">Fahrenheit</string>
+    <string name="useFahrenheitDesc">Wyświetlaj temperaturę baterii w °F zamiast w °C.</string>
     <string name="workarounds">Obejścia problemów</string>
     <string name="workaroundsDesc">Wiele telefonów nie implementuje poprawnie interfejsu BatteryManager Androida i domyślnie zgłasza błędne dane baterii. W razie potrzeby użyj poniższych ustawień, aby obejść wady implementacji w swoim telefonie.</string>
     <string name="supportMe">Wesprzyj rozwój</string>
@@ -115,4 +117,5 @@
     <string name="alarmLowText">Bateria spadła do %1$d%%</string>
     <string name="alarmHighText">Naładowanie osiągnęło %1$d%%</string>
     <string name="alarmTempText">Temperatura osiągnęła %1$d°C</string>
+    <string name="alarmTempTextF">Temperatura osiągnęła %1$d°F</string>
 </resources>
