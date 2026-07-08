@@ -13,6 +13,8 @@ fun fmt(v: Double?): String {
     return "%.1f".format(Locale.ROOT, v)
 }
 
+fun cToF(celsius: Double): Double = celsius * 9.0 / 5.0 + 32.0
+
 fun fmtPercent(v: Double?): String {
     if (v == null)
         return "- "

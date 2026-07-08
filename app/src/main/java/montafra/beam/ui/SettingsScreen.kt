@@ -41,7 +41,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -149,32 +148,13 @@ fun SettingsScreen(navController: BeamNavController) {
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 4.dp, bottomEnd = 4.dp),
                 ) {
-                    ListItem(
-                        headlineContent = { Text(stringResource(R.string.notification)) },
-                        supportingContent = { Text(stringResource(R.string.notificationEnableDesc)) },
-                        leadingContent = {
-                            Icon(
-                                painter = painterResource(R.drawable.ico_notification),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(24.dp),
-                            )
-                        },
-                        trailingContent = {
-                            Switch(
-                                checked = notificationEnabled,
-                                onCheckedChange = { enabled ->
-                                    notificationToggleHaptic(enabled)
-                                    setNotificationEnabled(enabled)
-                                },
-                            )
-                        },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        modifier = Modifier.clickable {
-                            val next = !notificationEnabled
-                            notificationToggleHaptic(next)
-                            setNotificationEnabled(next)
-                        },
+                    ToggleSettingRow(
+                        title = stringResource(R.string.notification),
+                        description = stringResource(R.string.notificationEnableDesc),
+                        checked = notificationEnabled,
+                        onCheckedChange = setNotificationEnabled,
+                        leadingIcon = painterResource(R.drawable.ico_notification),
+                        onHaptic = notificationToggleHaptic,
                     )
                 }
                 Spacer(Modifier.height(4.dp))

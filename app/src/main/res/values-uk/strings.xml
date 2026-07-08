@@ -33,6 +33,8 @@
     <string name="currentScalarDesc">Коли не підключено, змініть цей масштаб, доки \u0022Потужність\u0022 не стане більшою за 0 Вт, але меншою за приблизно 10 Вт.</string>
     <string name="invertCurrent">Інвертувати індикатор заряджання</string>
     <string name="invertCurrentDesc">Коли не підключено, увімкніть цей перемикач, якщо \u0022Заряджається\u0022 показує \u0022так\u0022.</string>
+    <string name="useFahrenheit">Фаренгейт</string>
+    <string name="useFahrenheitDesc">Показувати температуру батареї у °F замість °C.</string>
     <string name="workarounds">Обхідні рішення</string>
     <string name="workaroundsDesc">Багато телефонів некоректно реалізують інтерфейс Android BatteryManager і за замовчуванням повідомляють неправильні показники акумулятора. За потреби скористайтеся наведеними нижче параметрами, щоб обійти недоліки реалізації на своєму телефоні.</string>
     <string name="supportMe">Підтримати розробку</string>
@@ -117,4 +119,5 @@
     <string name="alarmLowText">Заряд упав до %1$d%%</string>
     <string name="alarmHighText">Заряд досяг %1$d%%</string>
     <string name="alarmTempText">Температура досягла %1$d°C</string>
+    <string name="alarmTempTextF">Температура досягла %1$d°F</string>
 </resources>

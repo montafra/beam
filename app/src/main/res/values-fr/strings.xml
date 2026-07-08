@@ -33,6 +33,8 @@
     <string name="currentScalarDesc">Lorsque l\'appareil n\'est pas branché, modifie cette échelle jusqu\'à ce que \u0022Puissance\u0022 soit supérieure à 0W, mais inférieure à environ 10W.</string>
     <string name="invertCurrent">Inverser l\'indicateur de charge</string>
     <string name="invertCurrentDesc">Lorsque l\'appareil n\'est pas branché, active cette option si \u0022En charge\u0022 affiche \u0022oui\u0022.</string>
+    <string name="useFahrenheit">Fahrenheit</string>
+    <string name="useFahrenheitDesc">Afficher la température de la batterie en °F au lieu de °C.</string>
     <string name="workarounds">Solutions de contournement</string>
     <string name="workaroundsDesc">De nombreux téléphones n\'implémentent pas correctement l\'interface Android BatteryManager et signalent par défaut des mesures de batterie incorrectes. Si nécessaire, utilise les paramètres suivants pour contourner les défauts d\'implémentation de ton téléphone.</string>
     <string name="supportMe">Soutenir le développement</string>
@@ -116,4 +118,5 @@
     <string name="alarmLowText">Batterie tombée à %1$d%%</string>
     <string name="alarmHighText">La charge a atteint %1$d%%</string>
     <string name="alarmTempText">La température a atteint %1$d°C</string>
+    <string name="alarmTempTextF">La température a atteint %1$d°F</string>
 </resources>

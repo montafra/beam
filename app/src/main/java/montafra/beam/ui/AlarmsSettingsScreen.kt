@@ -18,8 +18,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -35,7 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -44,6 +41,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import montafra.beam.R
+import montafra.beam.cToF
 import montafra.beam.settingsName
 import montafra.beam.settingsUpdateInd
 import montafra.beam.ui.theme.BeamCard
@@ -67,6 +65,8 @@ fun AlarmsSettingsScreen(navController: BeamNavController) {
     var tempEnabled by remember { mutableStateOf(prefs.getBoolean("alarmTempEnabled", false)) }
     var tempThreshold by remember { mutableIntStateOf(prefs.getInt("alarmTempThreshold", 40)) }
     var tempRepeat by remember { mutableStateOf(prefs.getBoolean("alarmTempRepeat", false)) }
+    // Threshold is stored/compared in Celsius; only its label converts for display.
+    val useFahrenheit = remember { prefs.getBoolean("useFahrenheit", false) }
 
     val repeatOptions = remember { listOf(5, 15, 30, 60) }
     val repeatLabels = remember { listOf("5m", "15m", "30m", "60m") }
@@ -145,7 +145,7 @@ fun AlarmsSettingsScreen(navController: BeamNavController) {
                 description = stringResource(R.string.alarmTempDesc),
                 enabled = tempEnabled,
                 onEnabledChange = { tempEnabled = it; saveAlarms() },
-                valueLabel = "$tempThreshold°C",
+                valueLabel = if (useFahrenheit) "${cToF(tempThreshold.toDouble()).roundToInt()}°F" else "$tempThreshold°C",
                 sliderValue = tempThreshold.toFloat(),
                 valueRange = 35f..55f,
                 steps = 19,
@@ -202,23 +202,11 @@ private fun AlarmCard(
         shape = shape,
     ) {
         Column {
-            ListItem(
-                headlineContent = { Text(title) },
-                supportingContent = { Text(description) },
-                trailingContent = {
-                    Switch(
-                        checked = enabled,
-                        onCheckedChange = {
-                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                            onEnabledChange(it)
-                        },
-                    )
-                },
-                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                modifier = Modifier.clickable {
-                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                    onEnabledChange(!enabled)
-                },
+            ToggleSettingRow(
+                title = title,
+                description = description,
+                checked = enabled,
+                onCheckedChange = onEnabledChange,
             )
             AnimatedVisibility(
                 visible = enabled,

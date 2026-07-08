@@ -20,7 +20,6 @@ import androidx.compose.material3.MultiChoiceSegmentedButtonRow
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -57,6 +56,7 @@ fun NotificationSettingsScreen(navController: BeamNavController) {
     var showScreenTimeInNotification by remember {
         mutableStateOf(prefs.getBoolean("showScreenTimeInNotification", false))
     }
+    val useFahrenheit = remember { prefs.getBoolean("useFahrenheit", false) }
 
     fun saveIndicatorEntries() {
         prefs.edit().putStringSet("indicatorEntries", indicatorEntries).commit()
@@ -98,7 +98,9 @@ fun NotificationSettingsScreen(navController: BeamNavController) {
                 }
             }
             item {
-                val metricLabels = remember { listOf("W", "A", "Ah", "°C", "V", "Wh", "%") }
+                val metricLabels = remember(useFahrenheit) {
+                    listOf("W", "A", "Ah", if (useFahrenheit) "°F" else "°C", "V", "Wh", "%")
+                }
                 val metricKeys   = remember { listOf("W", "A", "Ah", "C",  "V", "Wh", "%") }
                 SubLabel(stringResource(R.string.notificationIcon))
                 Spacer(Modifier.height(8.dp))
@@ -147,27 +149,13 @@ fun NotificationSettingsScreen(navController: BeamNavController) {
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 4.dp, bottomEnd = 4.dp),
                 ) {
-                    ListItem(
-                        headlineContent = { Text(stringResource(R.string.showTimeToFull)) },
-                        supportingContent = { Text(stringResource(R.string.showTimeToFullDesc)) },
-                        trailingContent = {
-                            Switch(
-                                checked = showTimeToFull,
-                                onCheckedChange = {
-                                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                    showTimeToFull = it
-                                    prefs.edit().putBoolean("showTimeToFull", it).commit()
-                                    context.sendBroadcast(
-                                        Intent().setPackage(context.packageName).setAction(settingsUpdateInd)
-                                    )
-                                },
-                            )
-                        },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        modifier = Modifier.clickable {
-                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                            showTimeToFull = !showTimeToFull
-                            prefs.edit().putBoolean("showTimeToFull", showTimeToFull).commit()
+                    ToggleSettingRow(
+                        title = stringResource(R.string.showTimeToFull),
+                        description = stringResource(R.string.showTimeToFullDesc),
+                        checked = showTimeToFull,
+                        onCheckedChange = {
+                            showTimeToFull = it
+                            prefs.edit().putBoolean("showTimeToFull", it).commit()
                             context.sendBroadcast(
                                 Intent().setPackage(context.packageName).setAction(settingsUpdateInd)
                             )
@@ -179,27 +167,13 @@ fun NotificationSettingsScreen(navController: BeamNavController) {
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(4.dp),
                 ) {
-                    ListItem(
-                        headlineContent = { Text(stringResource(R.string.screenTime)) },
-                        supportingContent = { Text(stringResource(R.string.screenTimeShowInNotificationDesc)) },
-                        trailingContent = {
-                            Switch(
-                                checked = showScreenTimeInNotification,
-                                onCheckedChange = {
-                                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                    showScreenTimeInNotification = it
-                                    prefs.edit().putBoolean("showScreenTimeInNotification", it).commit()
-                                    context.sendBroadcast(
-                                        Intent().setPackage(context.packageName).setAction(settingsUpdateInd)
-                                    )
-                                },
-                            )
-                        },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        modifier = Modifier.clickable {
-                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                            showScreenTimeInNotification = !showScreenTimeInNotification
-                            prefs.edit().putBoolean("showScreenTimeInNotification", showScreenTimeInNotification).commit()
+                    ToggleSettingRow(
+                        title = stringResource(R.string.screenTime),
+                        description = stringResource(R.string.screenTimeShowInNotificationDesc),
+                        checked = showScreenTimeInNotification,
+                        onCheckedChange = {
+                            showScreenTimeInNotification = it
+                            prefs.edit().putBoolean("showScreenTimeInNotification", it).commit()
                             context.sendBroadcast(
                                 Intent().setPackage(context.packageName).setAction(settingsUpdateInd)
                             )
