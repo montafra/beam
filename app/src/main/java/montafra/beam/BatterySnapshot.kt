@@ -70,6 +70,24 @@ class BatterySnapshot(
         if (ms == -1L)
             return null
 
+        // on some devices, chargeTimeRemainingRaw is always 0, even when the device is charging
+        // in this case, we calculate the expected charge duration manually by
+        // assuming a linear curve (which is not really correct practically, but
+        // modeling battery charge curves is too complex for doing it here
+        if (ms == 0L && level != null && level < 0.99) {
+            if (watts != null && watts!! > 0) {
+                // energyWattHours contains the energy currently charged in the battery
+                val batteryCapacityWattHours = energyWattHours?.div(level)
+                val fullChargeDurationHours = batteryCapacityWattHours?.div(watts)
+
+                val remainingChargePercentage = 1.0 - level
+                val hoursUntilCharged = fullChargeDurationHours?.times(remainingChargePercentage)
+                return hoursUntilCharged?.times(3600)
+            }
+
+            return null
+        }
+
         return fromMillis(ms.toDouble())
     }
 }
