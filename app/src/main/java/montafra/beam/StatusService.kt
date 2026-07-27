@@ -10,17 +10,30 @@ import android.graphics.drawable.Icon
 import android.os.Binder
 import android.os.IBinder
 import android.os.PowerManager
+import android.os.SystemClock
 import android.util.Log
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import androidx.core.content.edit
+import kotlin.math.abs
 import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 
 
 class StatusService : Service() {
     companion object {
         private val dateFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+
+        // How often an in-flight screen-on period is folded into the persisted total, so a
+        // process kill loses at most this much instead of the whole period. It doubles as the
+        // recovery bound: a live period is never older than this (plus one poll), so anything
+        // beyond it is a gap the process slept through, not screen-on time.
+        private const val screenTimeCheckpointMs = 60_000L
+        // Tolerance when matching a persisted elapsedRealtime base against the current one.
+        private const val screenTimeBootSlackMs = 5_000L
+        // Below this much session time the on-time share is noise, so it is left out.
+        private const val screenTimeSessionMinMs = 60_000L
     }
 
     private class AlarmRuntime {
@@ -54,9 +67,14 @@ class StatusService : Service() {
     private val alarmLowState = AlarmRuntime()
     private val alarmHighState = AlarmRuntime()
     private val alarmTempState = AlarmRuntime()
-    private var screenTimeSessionStart = 0L
+    // Screen-time bookkeeping. Accumulated durations run off SystemClock.elapsedRealtime(),
+    // which is monotonic and immune to NTP corrections and clock changes; only the session
+    // baseline is wall clock, because it has to survive reboots. screenTimeOnStart is
+    // therefore meaningful only within the boot that wrote it — see loadSettings().
+    private var screenTimeSessionStart = 0L // wall clock, last unplug
     private var screenTimeOnTotal = 0L
-    private var screenTimeOnStart = 0L
+    private var screenTimeOnStart = 0L      // elapsedRealtime, 0 when the screen is off
+    private var screenTimeCheckpoint = 0L   // elapsedRealtime of the last flush to prefs
     private var notificationEnabled = true
     private var useFahrenheit = false
     private var initialized = false
@@ -97,34 +115,37 @@ class StatusService : Service() {
                 }
                 Intent.ACTION_POWER_DISCONNECTED -> {
                     pluggedInAt = null
-                    val now = System.currentTimeMillis()
-                    screenTimeSessionStart = now
+                    screenTimeSessionStart = System.currentTimeMillis()
                     screenTimeOnTotal = 0L
-                    screenTimeOnStart = if ((getSystemService(Context.POWER_SERVICE) as PowerManager).isInteractive) now else 0L
-                    getSharedPreferences(settingsName, MODE_MULTI_PROCESS).edit {
-                        putLong("screenTimeSessionStart", screenTimeSessionStart)
-                            .putLong("screenTimeOnTotal", screenTimeOnTotal)
-                            .putLong("screenTimeOnStart", screenTimeOnStart)
-                    }
+                    screenTimeOnStart = 0L
+                    screenTimeCheckpoint = 0L
+                    if (screenInUse()) openScreenOnPeriod()
+                    persistScreenTime()
                     update()
                 }
                 Intent.ACTION_SCREEN_OFF -> {
-                    if (screenTimeOnStart > 0L) {
-                        screenTimeOnTotal += System.currentTimeMillis() - screenTimeOnStart
-                        screenTimeOnStart = 0L
-                        getSharedPreferences(settingsName, MODE_MULTI_PROCESS).edit {
-                            putLong("screenTimeOnTotal", screenTimeOnTotal)
-                            putLong("screenTimeOnStart", screenTimeOnStart)
-                        }
-                    }
+                    closeScreenOnPeriod()
+                    persistScreenTime()
                     task.stop()
                 }
                 Intent.ACTION_SCREEN_ON -> {
-                    screenTimeOnStart = System.currentTimeMillis()
-                    getSharedPreferences(settingsName, MODE_MULTI_PROCESS).edit {
-                        putLong("screenTimeOnStart", screenTimeOnStart)
-                    }
+                    // Only counts as screen time once the device is actually usable. On a locked
+                    // device that is ACTION_USER_PRESENT below, not this; on one with no keyguard
+                    // the two coincide and screenInUse() is already true here.
+                    if (screenInUse()) openScreenOnPeriod()
+                    persistScreenTime()
                     task.start()
+                }
+                Intent.ACTION_USER_PRESENT -> {
+                    openScreenOnPeriod()
+                    persistScreenTime()
+                }
+                // Android does not send ACTION_SCREEN_OFF on the way down, so without this the
+                // open period would outlive the boot and loadSettings() would have to throw it
+                // away wholesale. Closing it here keeps the pre-shutdown on-time.
+                Intent.ACTION_SHUTDOWN -> {
+                    closeScreenOnPeriod()
+                    persistScreenTime()
                 }
             }
         }
@@ -161,23 +182,89 @@ class StatusService : Service() {
         screenTimeSessionStart = settings.getLong("screenTimeSessionStart", 0L)
         screenTimeOnTotal = settings.getLong("screenTimeOnTotal", 0L)
         screenTimeOnStart = settings.getLong("screenTimeOnStart", 0L)
-        if (screenTimeSessionStart == 0L) {
+        screenTimeCheckpoint = screenTimeOnStart
+
+        // A persisted screenTimeOnStart is an elapsedRealtime value, so it only means anything
+        // within the boot that wrote it. If the boot base moved (reboot, or a clock adjustment
+        // large enough that we can no longer tell), or the value sits in the future, drop it:
+        // crediting it would bill the entire powered-off gap as screen-on time.
+        val storedBootBase = settings.getLong("screenTimeBootBase", 0L)
+        if (screenTimeOnStart > 0L &&
+            (storedBootBase == 0L ||
+                abs(bootBase() - storedBootBase) > screenTimeBootSlackMs ||
+                screenTimeOnStart > SystemClock.elapsedRealtime())
+        ) {
+            debug("discarding screen-on period from another boot")
+            screenTimeOnStart = 0L
+            screenTimeCheckpoint = 0L
+        }
+
+        if (screenTimeSessionStart == 0L || screenTimeSessionStart > System.currentTimeMillis()) {
             screenTimeSessionStart = System.currentTimeMillis()
-            settings.edit { putLong("screenTimeSessionStart", screenTimeSessionStart) }
         }
+
+        // Any period still open here was left by a process that is no longer running its poll
+        // loop, so its age is only trustworthy up to one checkpoint plus a poll; beyond that the
+        // screen may have gone off unobserved. Close it under that bound, then reopen from now if
+        // the screen is currently on. In a live process the period is always within the bound, so
+        // this is just an early checkpoint.
+        closeScreenOnPeriod(screenTimeCheckpointMs + pollIntervalMs)
+        if (screenInUse()) openScreenOnPeriod()
+        persistScreenTime()
+    }
+
+    /**
+     * Whether the device is awake *and* past the keyguard, i.e. in use. Waking to the lock screen
+     * without unlocking is not screen time, which is how the system counts it too.
+     */
+    private fun screenInUse(): Boolean {
         val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
-        if (pm.isInteractive) {
-            if (screenTimeOnStart == 0L) screenTimeOnStart = System.currentTimeMillis()
-        } else {
-            if (screenTimeOnStart > 0L) {
-                screenTimeOnTotal += System.currentTimeMillis() - screenTimeOnStart
-                screenTimeOnStart = 0L
-                settings.edit {
-                    putLong("screenTimeOnTotal", screenTimeOnTotal)
-                    putLong("screenTimeOnStart", screenTimeOnStart)
-                }
-            }
+        val km = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+        return pm.isInteractive && !km.isKeyguardLocked
+    }
+
+    private fun bootBase() = System.currentTimeMillis() - SystemClock.elapsedRealtime()
+
+    private fun persistScreenTime() {
+        getSharedPreferences(settingsName, MODE_MULTI_PROCESS).edit {
+            putLong("screenTimeSessionStart", screenTimeSessionStart)
+            putLong("screenTimeOnTotal", screenTimeOnTotal)
+            putLong("screenTimeOnStart", screenTimeOnStart)
+            putLong("screenTimeBootBase", bootBase())
         }
+    }
+
+    /**
+     * Folds the in-flight screen-on period into the total and marks the screen as off.
+     * No-op when no period is open. [maxSliceMs] caps how much of the period is credited.
+     */
+    private fun closeScreenOnPeriod(maxSliceMs: Long = Long.MAX_VALUE) {
+        if (screenTimeOnStart == 0L) return
+        screenTimeOnTotal +=
+            (SystemClock.elapsedRealtime() - screenTimeOnStart).coerceIn(0L, maxSliceMs)
+        screenTimeOnStart = 0L
+        screenTimeCheckpoint = 0L
+    }
+
+    /** Starts a screen-on period, leaving an already-running one alone. */
+    private fun openScreenOnPeriod() {
+        if (screenTimeOnStart > 0L) return
+        screenTimeOnStart = SystemClock.elapsedRealtime()
+        screenTimeCheckpoint = screenTimeOnStart
+    }
+
+    /**
+     * Rebases the open period onto the persisted total every [screenTimeCheckpointMs], bounding
+     * both what a process kill can lose and how much of a stale period recovery has to trust.
+     */
+    private fun checkpointScreenTime() {
+        if (screenTimeOnStart == 0L) return
+        val elapsed = SystemClock.elapsedRealtime()
+        if (elapsed - screenTimeCheckpoint < screenTimeCheckpointMs) return
+        screenTimeOnTotal += (elapsed - screenTimeOnStart).coerceAtLeast(0L)
+        screenTimeOnStart = elapsed
+        screenTimeCheckpoint = elapsed
+        persistScreenTime()
     }
 
     private fun metricLabel(key: String) = getString(when (key) {
@@ -256,6 +343,8 @@ class StatusService : Service() {
                 addAction(Intent.ACTION_POWER_DISCONNECTED)
                 addAction(Intent.ACTION_SCREEN_OFF)
                 addAction(Intent.ACTION_SCREEN_ON)
+                addAction(Intent.ACTION_USER_PRESENT)
+                addAction(Intent.ACTION_SHUTDOWN)
             },
             RECEIVER_NOT_EXPORTED,
         )
@@ -356,12 +445,20 @@ class StatusService : Service() {
     }
 
     private fun screenTimeFormatted(): String {
-        val now = System.currentTimeMillis()
-        val currentOnMs = screenTimeOnTotal +
-            (if (screenTimeOnStart > 0L) now - screenTimeOnStart else 0L)
-        val totalElapsedMs = (now - screenTimeSessionStart).coerceAtLeast(1)
-        val percent = ((currentOnMs * 100) / totalElapsedMs).coerceIn(0, 100)
-        return getString(R.string.screenTimeFormat, fmtDurationHms(currentOnMs / 1000), percent)
+        val onMs = screenTimeOnTotal + if (screenTimeOnStart > 0L) {
+            (SystemClock.elapsedRealtime() - screenTimeOnStart).coerceAtLeast(0L)
+        } else 0L
+        val onText = fmtDurationHms(onMs / 1000)
+
+        // Wall clock, since the session spans reboots and time the device spent powered off.
+        // Just after an unplug the denominator is too small for the share to mean anything, and a
+        // clock that moved backwards makes it negative; report the duration alone in both cases
+        // rather than a bogus percentage.
+        val sessionMs = System.currentTimeMillis() - screenTimeSessionStart
+        if (sessionMs < screenTimeSessionMinMs) return onText
+
+        val percent = (onMs * 100.0 / sessionMs).roundToLong().coerceIn(0L, 100L)
+        return getString(R.string.screenTimeFormat, onText, percent.toInt())
     }
 
     private fun updateData() {
@@ -412,6 +509,7 @@ class StatusService : Service() {
         debug("update()")
 
         snapshot = battery.snapshot()
+        checkpointScreenTime()
         if (notificationEnabled) noteMgr.notify(noteId, buildNotification())
         checkAlarms()
         updateData()

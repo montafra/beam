@@ -1,0 +1,4 @@
+1.9.1
+• Ajout de l'estimation du temps de charge restant sur les appareils qui ne la fournissent pas, merci à @Bnyro
+• Traduction en chinois simplifié améliorée, merci à @lanlan3292
+• Correction de la précision du temps d'écran allumé après un redémarrage ou un réveil sur l'écran de verrouillage

@@ -1,0 +1,4 @@
+1.9.1
+• Přidán odhad zbývající doby nabíjení na zařízeních, která jej neposkytují, díky @Bnyro
+• Vylepšen zjednodušený čínský překlad, díky @lanlan3292
+• Opravena přesnost doby zapnuté obrazovky po restartu a probuzení na uzamčené obrazovce
