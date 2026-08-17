@@ -411,7 +411,7 @@ class StatusService : Service() {
         val timeText = if (!showTimeToFull) "" else when (val seconds = snapshot.secondsUntilCharged) {
             null -> ""
             0.0  -> getString(R.string.fullyCharged)
-            else -> "${fmtSeconds(seconds)} until full charge"
+            else -> getString(R.string.untilFullCharge, fmtSeconds(seconds))
         }
 
         val builder = Notification.Builder(this, noteChannelId)

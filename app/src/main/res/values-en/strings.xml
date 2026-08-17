@@ -16,6 +16,7 @@
     <string name="settings">Settings</string>
     <string name="temperature">Temperature</string>
     <string name="timeToFullCharge">Time to Full Charge</string>
+    <string name="untilFullCharge">%1$s until full charge</string>
     <string name="voltage">Voltage</string>
     <string name="units">Units</string>
     <string name="yes">yes</string>

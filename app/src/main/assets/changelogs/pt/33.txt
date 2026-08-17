@@ -1,0 +1,3 @@
+1.9.2
+• Corrigida a mensagem "totalmente carregada" com a bateria quase vazia
+• A estimativa do tempo de carregamento na notificação agora é traduzível

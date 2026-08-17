@@ -1,0 +1,3 @@
+1.9.2
+• Correction de l’affichage « entièrement chargée » sur une batterie presque vide
+• L’estimation du temps de charge dans la notification est désormais traduisible
