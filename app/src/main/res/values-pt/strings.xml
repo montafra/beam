@@ -68,6 +68,8 @@
     <string name="pollInterval">Intervalo de atualização</string>
     <string name="hapticsEnabled">Vibração tátil</string>
     <string name="hapticsEnabledDesc">Vibrar ao tocar e pressionar</string>
+    <string name="soundEnabled">Sons de toque</string>
+    <string name="soundEnabledDesc">Reproduzir um clique ao tocar</string>
     <string name="whatsNew">Novidades</string>
     <string name="font">Fonte</string>
     <string name="fontDefault">Padrão</string>

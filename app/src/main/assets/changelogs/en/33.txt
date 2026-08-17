@@ -1,3 +1,4 @@
 1.9.2
+• Added Tap Sounds in Theme settings
 • Fixed "fully charged" being shown on an almost empty battery
 • The charging time estimate in the notification is now translatable

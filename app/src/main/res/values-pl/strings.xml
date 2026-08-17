@@ -70,6 +70,8 @@
     <string name="pollInterval">Częstotliwość odświeżania</string>
     <string name="hapticsEnabled">Wibracje dotykowe</string>
     <string name="hapticsEnabledDesc">Wibruj przy dotknięciu i naciśnięciu</string>
+    <string name="soundEnabled">Dźwięki dotyku</string>
+    <string name="soundEnabledDesc">Odtwarzaj dźwięk kliknięcia przy dotknięciu</string>
     <string name="whatsNew">Co nowego</string>
     <string name="font">Czcionka</string>
     <string name="fontDefault">Domyślna</string>

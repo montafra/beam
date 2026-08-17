@@ -1,3 +1,4 @@
 1.9.2
+• Dodano dźwięki dotyku w ustawieniach Motywu
 • Naprawiono wyświetlanie „w pełni naładowana” przy niemal pustej baterii
 • Szacowany czas ładowania w powiadomieniu można teraz przetłumaczyć

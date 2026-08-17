@@ -1,2 +1,3 @@
+• Aggiunti i suoni al tocco nelle impostazioni del Tema
 • Corretta la scritta "completamente carica" con la batteria quasi scarica
 • La stima del tempo di ricarica nella notifica è ora traducibile

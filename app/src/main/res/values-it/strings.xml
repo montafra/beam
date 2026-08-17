@@ -70,6 +70,8 @@
     <string name="pollInterval">Intervallo di aggiornamento</string>
     <string name="hapticsEnabled">Feedback aptico</string>
     <string name="hapticsEnabledDesc">Vibra al tocco e alla pressione</string>
+    <string name="soundEnabled">Suoni al tocco</string>
+    <string name="soundEnabledDesc">Riproduci un clic al tocco</string>
     <string name="whatsNew">Novità</string>
     <string name="font">Font</string>
     <string name="fontDefault">Predefinito</string>

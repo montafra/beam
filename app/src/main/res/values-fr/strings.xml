@@ -71,6 +71,8 @@
     <string name="pollInterval">Intervalle de mise à jour</string>
     <string name="hapticsEnabled">Retour haptique</string>
     <string name="hapticsEnabledDesc">Vibrer lors d\'une touche ou d\'une pression</string>
+    <string name="soundEnabled">Sons au toucher</string>
+    <string name="soundEnabledDesc">Émettre un clic lors d\'une touche</string>
     <string name="whatsNew">Nouveautés</string>
     <string name="font">Police</string>
     <string name="fontDefault">Par défaut</string>

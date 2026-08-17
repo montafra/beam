@@ -72,6 +72,8 @@
     <string name="pollInterval">Aktualisierungsintervall</string>
     <string name="hapticsEnabled">Haptisches Feedback</string>
     <string name="hapticsEnabledDesc">Vibrieren bei Berührung und Druck</string>
+    <string name="soundEnabled">Tastentöne</string>
+    <string name="soundEnabledDesc">Klickton bei Berührung abspielen</string>
     <string name="whatsNew">Neuigkeiten</string>
     <string name="font">Schriftart</string>
     <string name="fontDefault">Standard</string>

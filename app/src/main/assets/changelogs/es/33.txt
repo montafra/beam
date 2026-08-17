@@ -1,3 +1,4 @@
 1.9.2
+• Añadidos sonidos táctiles en los ajustes de Tema
 • Corregido el mensaje «Completamente cargado» con la batería casi vacía
 • La estimación del tiempo de carga en la notificación ahora se puede traducir

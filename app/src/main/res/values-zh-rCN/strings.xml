@@ -70,6 +70,8 @@
     <string name="pollInterval">更新间隔</string>
     <string name="hapticsEnabled">触感反馈</string>
     <string name="hapticsEnabledDesc">点击和按压时振动</string>
+    <string name="soundEnabled">触摸音效</string>
+    <string name="soundEnabledDesc">点击时播放提示音</string>
     <string name="whatsNew">新功能</string>
     <string name="font">字体</string>
     <string name="fontDefault">默认</string>

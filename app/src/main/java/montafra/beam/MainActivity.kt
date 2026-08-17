@@ -19,14 +19,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.hapticfeedback.HapticFeedback
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalView
 import montafra.beam.ui.AlarmsSettingsScreen
+import montafra.beam.ui.LocalSilentHaptics
+import montafra.beam.ui.LocalSoundEnabled
 import montafra.beam.ui.MainScreen
+import montafra.beam.ui.NoOpHapticFeedback
 import montafra.beam.ui.NotificationSettingsScreen
 import montafra.beam.ui.PredictiveNavHost
 import montafra.beam.ui.SettingsScreen
+import montafra.beam.ui.TapFeedback
 import montafra.beam.ui.ThemeSettingsScreen
 import montafra.beam.ui.WorkaroundsSettingsScreen
 import montafra.beam.ui.rememberBeamNavController
@@ -45,10 +48,6 @@ const val alarmHighNoteId = 3
 const val alarmTempNoteId = 4
 const val settingsName = "settings"
 const val settingsUpdateInd = "$namespace.settings-update-ind"
-
-private object NoOpHapticFeedback : HapticFeedback {
-    override fun performHapticFeedback(hapticFeedbackType: HapticFeedbackType) {}
-}
 
 val LocalHapticsEnabled = staticCompositionLocalOf { true }
 
@@ -128,19 +127,35 @@ class MainActivity : ComponentActivity() {
             val hapticsEnabled = remember {
                 mutableStateOf(getSharedPreferences(settingsName, MODE_PRIVATE).getBoolean("hapticsEnabled", true))
             }
+            val soundEnabled = remember {
+                mutableStateOf(getSharedPreferences(settingsName, MODE_PRIVATE).getBoolean("soundEnabled", true))
+            }
             DisposableEffect(Unit) {
                 val prefs = getSharedPreferences(settingsName, MODE_PRIVATE)
                 val listener = SharedPreferences.OnSharedPreferenceChangeListener { p, key ->
-                    if (key == "hapticsEnabled") hapticsEnabled.value = p.getBoolean(key, true)
+                    when (key) {
+                        "hapticsEnabled" -> hapticsEnabled.value = p.getBoolean(key, true)
+                        "soundEnabled" -> soundEnabled.value = p.getBoolean(key, true)
+                    }
                 }
                 prefs.registerOnSharedPreferenceChangeListener(listener)
                 onDispose { prefs.unregisterOnSharedPreferenceChangeListener(listener) }
             }
             val realHaptic = LocalHapticFeedback.current
+            val view = LocalView.current
+            // Every haptic call site also gets the platform tap sound; the two are gated separately.
+            val tapFeedback = remember(realHaptic, view, hapticsEnabled.value, soundEnabled.value) {
+                TapFeedback(
+                    haptics = realHaptic.takeIf { hapticsEnabled.value },
+                    view = view.takeIf { soundEnabled.value },
+                )
+            }
             BeamTheme(themePrefs) {
                 CompositionLocalProvider(
-                    LocalHapticFeedback provides if (hapticsEnabled.value) realHaptic else NoOpHapticFeedback,
+                    LocalHapticFeedback provides tapFeedback,
                     LocalHapticsEnabled provides hapticsEnabled.value,
+                    LocalSoundEnabled provides soundEnabled.value,
+                    LocalSilentHaptics provides if (hapticsEnabled.value) realHaptic else NoOpHapticFeedback,
                 ) {
                 val navController = rememberBeamNavController(startRoute = "main")
                 PredictiveNavHost(navController) { route ->

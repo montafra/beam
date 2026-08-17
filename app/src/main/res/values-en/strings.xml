@@ -71,6 +71,8 @@
     <string name="pollInterval">Update Interval</string>
     <string name="hapticsEnabled">Haptic Feedback</string>
     <string name="hapticsEnabledDesc">Vibrate on tap and press</string>
+    <string name="soundEnabled">Tap Sounds</string>
+    <string name="soundEnabledDesc">Play a click sound on tap</string>
     <string name="whatsNew">What\'s New</string>
     <string name="font">Font</string>
     <string name="fontDefault">Default</string>

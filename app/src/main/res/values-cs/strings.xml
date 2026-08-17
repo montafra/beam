@@ -70,6 +70,8 @@
     <string name="pollInterval">Interval aktualizace</string>
     <string name="hapticsEnabled">Haptická odezva</string>
     <string name="hapticsEnabledDesc">Vibrace při klepnutí a stisknutí</string>
+    <string name="soundEnabled">Zvuky dotyku</string>
+    <string name="soundEnabledDesc">Přehrát zvuk kliknutí při klepnutí</string>
     <string name="whatsNew">Co je nového</string>
     <string name="font">Písmo</string>
     <string name="fontDefault">Výchozí</string>

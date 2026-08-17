@@ -1,3 +1,4 @@
 1.9.2
+• Adicionados sons de toque nas configurações de Tema
 • Corrigida a mensagem "totalmente carregada" com a bateria quase vazia
 • A estimativa do tempo de carregamento na notificação agora é traduzível
