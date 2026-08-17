@@ -1,0 +1,4 @@
+1.9.1
+• Dodano szacowany pozostały czas ładowania na urządzeniach, które go nie podają, dzięki @Bnyro
+• Ulepszono uproszczone chińskie tłumaczenie, dzięki @lanlan3292
+• Poprawiono dokładność czasu włączonego ekranu po ponownym uruchomieniu i wybudzeniu na ekranie blokady

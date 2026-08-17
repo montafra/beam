@@ -1,0 +1,3 @@
+• Added remaining charging time estimate on devices that don't provide one, thanks to @Bnyro
+• Improved Simplified Chinese translation, thanks to @lanlan3292
+• Fixed Screen Time accuracy across reboots and lock-screen wakes

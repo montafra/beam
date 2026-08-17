@@ -1,0 +1,4 @@
+1.9.1
+• Aggiunta la stima del tempo di ricarica rimanente sui dispositivi che non la forniscono, grazie a @Bnyro
+• Migliorata la traduzione in cinese semplificato, grazie a @lanlan3292
+• Corretta l'accuratezza di "Schermo acceso da" dopo i riavvii e le riattivazioni sulla schermata di blocco

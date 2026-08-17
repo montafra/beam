@@ -1,0 +1,3 @@
+• Adicionada estimativa do tempo restante de carregamento em dispositivos que não a fornecem, obrigado a @Bnyro
+• Melhorada a tradução para o chinês simplificado, obrigado a @lanlan3292
+• Corrigida a precisão do tempo de tela após reinicializações e ativações na tela de bloqueio

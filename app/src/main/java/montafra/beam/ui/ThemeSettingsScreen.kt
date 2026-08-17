@@ -57,6 +57,7 @@ fun ThemeSettingsScreen(navController: BeamNavController) {
     var heroBacklight by remember { mutableStateOf(prefs.getBoolean("heroBacklight", true)) }
     var showChargeLevel by remember { mutableStateOf(prefs.getBoolean("showChargeLevel", true)) }
     var hapticsEnabled by remember { mutableStateOf(prefs.getBoolean("hapticsEnabled", true)) }
+    var soundEnabled by remember { mutableStateOf(prefs.getBoolean("soundEnabled", true)) }
     var keepScreenOn by remember { mutableStateOf(prefs.getBoolean("keepScreenOn", false)) }
     var fontFamily by remember { mutableStateOf(prefs.getString("fontFamily", "default") ?: "default") }
     var outlineOnlyCards by remember { mutableStateOf(prefs.getBoolean("outlineOnlyCards", false)) }
@@ -212,10 +213,7 @@ fun ThemeSettingsScreen(navController: BeamNavController) {
                     )
                 }
                 Spacer(Modifier.height(4.dp))
-                BeamCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 20.dp, bottomEnd = 20.dp),
-                ) {
+                BeamCard(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(4.dp)) {
                     ThemeToggleRow(
                         title = stringResource(R.string.hapticsEnabled),
                         description = stringResource(R.string.hapticsEnabledDesc),
@@ -223,6 +221,21 @@ fun ThemeSettingsScreen(navController: BeamNavController) {
                         onToggle = {
                             hapticsEnabled = it
                             prefs.edit().putBoolean("hapticsEnabled", it).commit()
+                        },
+                    )
+                }
+                Spacer(Modifier.height(4.dp))
+                BeamCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 20.dp, bottomEnd = 20.dp),
+                ) {
+                    ThemeToggleRow(
+                        title = stringResource(R.string.soundEnabled),
+                        description = stringResource(R.string.soundEnabledDesc),
+                        checked = soundEnabled,
+                        onToggle = {
+                            soundEnabled = it
+                            prefs.edit().putBoolean("soundEnabled", it).commit()
                         },
                     )
                 }

@@ -1,0 +1,3 @@
+• Schätzung der verbleibenden Ladezeit auf Geräten hinzugefügt, die keine liefern, danke an @Bnyro
+• Vereinfachte chinesische Übersetzung verbessert, danke an @lanlan3292
+• Genauigkeit der Bildschirm-Einschaltzeit nach Neustarts und Aufwachen im Sperrbildschirm korrigiert

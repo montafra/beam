@@ -179,12 +179,13 @@ fun WorkaroundsSettingsScreen(navController: BeamNavController, vm: BatteryViewM
                         )
                     }
                     Spacer(Modifier.height(8.dp))
+                    val sliderHaptic = LocalSilentHaptics.current
                     Slider(
                         value = pollIndex.toFloat(),
                         onValueChange = {
                             val new = it.roundToInt()
                             if (new != pollIndex) {
-                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                sliderHaptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                 pollIndex = new
                             }
                         },

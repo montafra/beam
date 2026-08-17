@@ -1,0 +1,3 @@
+• Přidány zvuky dotyku v nastavení Motivu
+• Opraveno zobrazování „plně nabito“ u téměř vybité baterie
+• Odhad doby nabíjení v oznámení je nyní přeložitelný

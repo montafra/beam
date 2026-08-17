@@ -226,11 +226,12 @@ private fun AlarmCard(
                         )
                     }
                     Spacer(Modifier.height(8.dp))
+                    val sliderHaptic = LocalSilentHaptics.current
                     Slider(
                         value = sliderValue,
                         onValueChange = {
                             if (it.roundToInt() != sliderValue.roundToInt()) {
-                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                sliderHaptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                             }
                             onSliderChange(it)
                         },

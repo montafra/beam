@@ -1,0 +1,4 @@
+1.9.2
+• Tastentöne in den Design-Einstellungen hinzugefügt
+• Anzeige von „vollständig geladen“ bei fast leerem Akku korrigiert
+• Die Ladezeitschätzung in der Benachrichtigung ist jetzt übersetzbar

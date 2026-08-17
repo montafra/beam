@@ -70,6 +70,8 @@
     <string name="pollInterval">Период обновления</string>
     <string name="hapticsEnabled">Вибрация</string>
     <string name="hapticsEnabledDesc">Вибрировать при нажатии и удержании</string>
+    <string name="soundEnabled">Звуки нажатия</string>
+    <string name="soundEnabledDesc">Воспроизводить щелчок при нажатии</string>
     <string name="whatsNew">Что нового?</string>
     <string name="font">Шрифт</string>
     <string name="fontDefault">По умолчанию</string>

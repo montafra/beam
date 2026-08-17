@@ -78,8 +78,11 @@ fun SettingsScreen(navController: BeamNavController) {
     val prefs = remember { context.getSharedPreferences(settingsName, Context.MODE_PRIVATE) }
 
     val hapticsEnabled = LocalHapticsEnabled.current
+    val playTapSound = rememberTapSound()
     val notificationToggleHaptic = { enabled: Boolean ->
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // This branch bypasses LocalHapticFeedback, so the tap sound has to be played by hand.
+            playTapSound()
             if (hapticsEnabled) {
                 view.performHapticFeedback(
                     if (enabled) HapticFeedbackConstants.CONFIRM else HapticFeedbackConstants.REJECT

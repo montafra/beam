@@ -1,0 +1,4 @@
+1.9.1
+• Añadida la estimación del tiempo de carga restante en dispositivos que no la proporcionan, gracias a @Bnyro
+• Mejorada la traducción al chino simplificado, gracias a @lanlan3292
+• Corregida la precisión del tiempo de pantalla encendida tras reinicios y activaciones en la pantalla de bloqueo

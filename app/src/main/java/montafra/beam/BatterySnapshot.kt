@@ -74,18 +74,24 @@ class BatterySnapshot(
         // in this case, we calculate the expected charge duration manually by
         // assuming a linear curve (which is not really correct practically, but
         // modeling battery charge curves is too complex for doing it here
-        if (ms == 0L && level != null && level in 0.01..0.99) {
-            // watts is negative while charging (see the sign convention above), so use
-            // its magnitude as the charge power.
+        if (ms == 0L && level != null && level < 0.99) {
+            // Whether the current is reported positive or negative while charging depends
+            // on the device and on the invertCurrent workaround, so only its magnitude is
+            // usable here; the charging check above has already established the direction.
             val chargePower = watts?.let { kotlin.math.abs(it) }
-            if (chargePower != null && chargePower > 0) {
+
+            // Below ~1% the capacity extrapolation divides by a near-zero level and yields
+            // Infinity/NaN, and a zero charge counter yields a bogus 0s. Give up in both
+            // cases: falling through to fromMillis(0) below would report "fully charged".
+            val energy = energyWattHours
+            if (chargePower != null && chargePower > 0 && level >= 0.01 && energy != null && energy > 0) {
                 // energyWattHours contains the energy currently charged in the battery
-                val batteryCapacityWattHours = energyWattHours?.div(level)
-                val fullChargeDurationHours = batteryCapacityWattHours?.div(chargePower)
+                val batteryCapacityWattHours = energy / level
+                val fullChargeDurationHours = batteryCapacityWattHours / chargePower
 
                 val remainingChargePercentage = 1.0 - level
-                val hoursUntilCharged = fullChargeDurationHours?.times(remainingChargePercentage)
-                return hoursUntilCharged?.times(3600)
+                val hoursUntilCharged = fullChargeDurationHours * remainingChargePercentage
+                return hoursUntilCharged * 3600
             }
 
             return null
