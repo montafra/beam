@@ -1,0 +1,5 @@
+1.9.3
+• The app font now also applies to the status bar notification icon
+• Fixed some fonts not being applied correctly
+• Updated the behaviour of pull-up sheets
+• General improvements

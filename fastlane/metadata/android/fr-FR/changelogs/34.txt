@@ -1,0 +1,4 @@
+• La police de l’application s’applique désormais aussi à l’icône de notification de la barre d’état
+• Correction de certaines polices qui ne s’appliquaient pas correctement
+• Comportement des panneaux coulissants mis à jour
+• Améliorations générales

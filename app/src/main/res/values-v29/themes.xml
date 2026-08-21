@@ -1,0 +1,9 @@
+<resources>
+    <!--
+        API 29+ only: without this the framework paints its own translucent strip behind 3-button
+        navigation, which a transparent navigationBarColor alone does not remove.
+    -->
+    <style name="Theme.Wattz" parent="Base.Theme.Wattz">
+        <item name="android:enforceNavigationBarContrast">false</item>
+    </style>
+</resources>

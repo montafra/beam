@@ -1,0 +1,4 @@
+• Il font dell'app viene ora applicato anche all'icona della notifica nella barra di stato
+• Corretta l'applicazione errata di alcuni font
+• Aggiornato il comportamento dei pannelli a scorrimento
+• Miglioramenti generali

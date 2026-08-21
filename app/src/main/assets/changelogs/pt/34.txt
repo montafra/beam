@@ -1,0 +1,5 @@
+1.9.3
+• A fonte do aplicativo agora também é aplicada ao ícone de notificação na barra de status
+• Corrigida a aplicação incorreta de algumas fontes
+• Atualizado o comportamento dos painéis deslizantes
+• Melhorias gerais

@@ -1,6 +1,7 @@
 package montafra.beam.ui
 
 import android.content.Context
+import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -39,9 +40,11 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import montafra.beam.BeamFont
 import montafra.beam.R
 import montafra.beam.applyNightMode
 import montafra.beam.settingsName
+import montafra.beam.settingsUpdateInd
 import montafra.beam.ui.theme.BeamCard
 import montafra.beam.ui.theme.fontFamilyFor
 
@@ -138,12 +141,14 @@ fun ThemeSettingsScreen(navController: BeamNavController) {
             item {
                 SubLabel(stringResource(R.string.customization))
                 Spacer(Modifier.height(8.dp))
-                val fontKeys = listOf("default", "inter", "gantari", "dm_sans", "space_grotesk", "jetbrains_mono", "ubuntu_sans_mono")
-                val fontLabels = listOf(
-                    stringResource(R.string.fontDefault), "Inter", "Gantari", "DM Sans", "Space Grotesk", "JetBrains Mono", "Ubuntu Sans Mono",
-                )
+                val fontKeys = remember { listOf("default") + BeamFont.entries.map { it.key } }
+                val fontLabels = listOf(stringResource(R.string.fontDefault)) + BeamFont.entries.map { it.label }
+                // Each entry previews itself, so the families are built once rather than on
+                // every recomposition of the row and of every open menu item.
+                val fontFamilies = remember { fontKeys.map { fontFamilyFor(it) } }
                 var fontMenuExpanded by remember { mutableStateOf(false) }
-                val selectedFontLabel = fontLabels[fontKeys.indexOf(fontFamily).takeIf { it >= 0 } ?: 0]
+                val selectedFontIndex = fontKeys.indexOf(fontFamily).takeIf { it >= 0 } ?: 0
+                val selectedFontLabel = fontLabels[selectedFontIndex]
                 BeamCard(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 4.dp, bottomEnd = 4.dp),
@@ -170,7 +175,7 @@ fun ThemeSettingsScreen(navController: BeamNavController) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
                                     selectedFontLabel,
-                                    fontFamily = fontFamilyFor(fontFamily),
+                                    fontFamily = fontFamilies[selectedFontIndex],
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     maxLines = 1,
                                 )
@@ -186,12 +191,17 @@ fun ThemeSettingsScreen(navController: BeamNavController) {
                             ) {
                                 fontKeys.forEachIndexed { i, key ->
                                     DropdownMenuItem(
-                                        text = { Text(fontLabels[i], fontFamily = fontFamilyFor(key)) },
+                                        text = { Text(fontLabels[i], fontFamily = fontFamilies[i]) },
                                         onClick = {
                                             haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                             fontFamily = key
                                             prefs.edit().putString("fontFamily", key).commit()
                                             montafra.beam.BeamTempWidgetProvider.requestUpdate(context)
+                                            // The notification icon is drawn in the :batteryStatus
+                                            // process, which only re-reads settings on this.
+                                            context.sendBroadcast(
+                                                Intent(settingsUpdateInd).setPackage(context.packageName)
+                                            )
                                             fontMenuExpanded = false
                                         },
                                     )

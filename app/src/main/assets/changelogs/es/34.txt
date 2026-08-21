@@ -1,0 +1,5 @@
+1.9.3
+• La fuente de la aplicación ahora también se aplica al icono de notificación de la barra de estado
+• Corregida la aplicación incorrecta de algunas fuentes
+• Actualizado el comportamiento de los paneles deslizantes
+• Mejoras generales

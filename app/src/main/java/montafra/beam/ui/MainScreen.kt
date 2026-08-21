@@ -97,6 +97,7 @@ import montafra.beam.VendorBatteryHints
 import montafra.beam.settingsName
 import montafra.beam.ui.theme.BeamCard
 import montafra.beam.ui.theme.heroNumberFontFamily
+import montafra.beam.ui.theme.heroWeightFor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -673,11 +674,13 @@ private fun HeroCard(data: BatteryData, showChargeLevel: Boolean, fontKey: Strin
             ) {
             // Press thins the number (variable-font weight morph) like the
             // Android 16 lock-screen clock; it stays thin through a hold and
-            // springs back to bold on release.
-            val numberWeight = tapWeight.value.roundToInt()
+            // springs back to bold on release. heroWeightFor remaps the sweep onto
+            // whatever the selected font's wght axis can reach, and the same value
+            // feeds both the family and the style so they can't disagree.
+            val numberWeight = heroWeightFor(fontKey, tapWeight.value.roundToInt())
             val heroStyle = MaterialTheme.typography.displayLarge.copy(
                 fontFamily = heroNumberFontFamily(fontKey, numberWeight),
-                fontWeight = FontWeight(numberWeight.coerceIn(1, 1000)),
+                fontWeight = FontWeight(numberWeight),
             )
             Row(
                 modifier = Modifier

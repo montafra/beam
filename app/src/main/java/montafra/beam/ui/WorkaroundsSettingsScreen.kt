@@ -166,66 +166,70 @@ fun WorkaroundsSettingsScreen(navController: BeamNavController, vm: BatteryViewM
                 }
             }
             item {
-                Column(modifier = Modifier.padding(horizontal = 4.dp)) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                    ) {
-                        SubLabel(stringResource(R.string.pollInterval))
-                        Text(
-                            text = pollLabels[pollIndex],
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.primary,
+                BeamCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 4.dp, bottomEnd = 4.dp),
+                ) {
+                    Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            SubLabel(stringResource(R.string.pollInterval))
+                            Text(
+                                text = pollLabels[pollIndex],
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                        }
+                        Spacer(Modifier.height(8.dp))
+                        val sliderHaptic = LocalSilentHaptics.current
+                        Slider(
+                            value = pollIndex.toFloat(),
+                            onValueChange = {
+                                val new = it.roundToInt()
+                                if (new != pollIndex) {
+                                    sliderHaptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                    pollIndex = new
+                                }
+                            },
+                            onValueChangeFinished = { saveWorkarounds() },
+                            valueRange = 0f..6f,
+                            steps = 5,
+                            modifier = Modifier.fillMaxWidth(),
                         )
-                    }
-                    Spacer(Modifier.height(8.dp))
-                    val sliderHaptic = LocalSilentHaptics.current
-                    Slider(
-                        value = pollIndex.toFloat(),
-                        onValueChange = {
-                            val new = it.roundToInt()
-                            if (new != pollIndex) {
-                                sliderHaptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                pollIndex = new
-                            }
-                        },
-                        onValueChangeFinished = { saveWorkarounds() },
-                        valueRange = 0f..6f,
-                        steps = 5,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                    Layout(
-                        content = {
-                            pollLabels.forEach { label ->
-                                Text(
-                                    text = label,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                    ) { measurables, constraints ->
-                        val placeables = measurables.map { it.measure(Constraints()) }
-                        val width = constraints.maxWidth
-                        val height = placeables.maxOf { it.height }
-                        val n = placeables.size
-                        layout(width, height) {
-                            placeables.forEachIndexed { i, placeable ->
-                                val center = (width * i.toFloat() / (n - 1)).roundToInt()
-                                val x = (center - placeable.width / 2)
-                                    .coerceIn(0, width - placeable.width)
-                                placeable.placeRelative(x, 0)
+                        Layout(
+                            content = {
+                                pollLabels.forEach { label ->
+                                    Text(
+                                        text = label,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                        ) { measurables, constraints ->
+                            val placeables = measurables.map { it.measure(Constraints()) }
+                            val width = constraints.maxWidth
+                            val height = placeables.maxOf { it.height }
+                            val n = placeables.size
+                            layout(width, height) {
+                                placeables.forEachIndexed { i, placeable ->
+                                    val center = (width * i.toFloat() / (n - 1)).roundToInt()
+                                    val x = (center - placeable.width / 2)
+                                        .coerceIn(0, width - placeable.width)
+                                    placeable.placeRelative(x, 0)
+                                }
                             }
                         }
                     }
                 }
-            }
-            item {
+                Spacer(Modifier.height(4.dp))
                 val hasVendor = VendorBatteryHints.current != null
                 BeamCard(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 4.dp, bottomEnd = 4.dp),
+                    shape = RoundedCornerShape(4.dp),
                 ) {
                     ToggleSettingRow(
                         title = stringResource(R.string.useFahrenheit),

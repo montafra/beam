@@ -1,0 +1,4 @@
+• Die App-Schriftart gilt jetzt auch für das Benachrichtigungssymbol in der Statusleiste
+• Behoben, dass einige Schriftarten nicht korrekt angewendet wurden
+• Verhalten der ausklappbaren Menüs aktualisiert
+• Allgemeine Verbesserungen
