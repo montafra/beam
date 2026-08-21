@@ -2,14 +2,27 @@
     <color name="background">#ffffff</color>
     <color name="foreground">#212121</color>
     <color name="foreground_strong">#000000</color>
-    <style name="Theme.Wattz" parent="Theme.Material3.Light.NoActionBar">
+    <!--
+        Everything config-dependent lives on the Base style so the values-v29 overlay only has to add
+        the contrast flag on top of it (styles resolve their parent at runtime, so Base still picks
+        up the values-night variant in dark mode).
+    -->
+    <style name="Base.Theme.Wattz" parent="Theme.Material3.Light.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorOnPrimary">@color/text_on_primary</item>
         <item name="android:statusBarColor">?attr/colorPrimary</item>
+        <!--
+            Declared here rather than only in code so it also covers windows enableEdgeToEdge() never
+            touches - notably the ModalBottomSheet dialog window, which would otherwise fall back to
+            the Material3 default of ?android:attr/colorBackground and tint the nav bar area whenever
+            a sheet opens.
+        -->
+        <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:textSize">@dimen/text_size</item>
         <item name="android:textColor">@color/foreground</item>
         <item name="android:windowBackground">@color/background</item>
     </style>
+    <style name="Theme.Wattz" parent="Base.Theme.Wattz" />
     <style name="ThemeOverlay.Wattz.Oled" parent="">
         <item name="android:windowBackground">@color/oled_black</item>
         <item name="colorSurface">@color/oled_black</item>

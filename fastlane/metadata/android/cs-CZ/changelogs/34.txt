@@ -1,0 +1,4 @@
+• Písmo aplikace se nyní použije i na ikonu oznámení ve stavovém řádku
+• Opraveno nesprávné použití některých písem
+• Upraveno chování vysouvacích panelů
+• Obecná vylepšení

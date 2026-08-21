@@ -12,7 +12,6 @@ import android.graphics.Paint
 import android.graphics.Typeface
 import android.view.View
 import android.widget.RemoteViews
-import androidx.core.content.res.ResourcesCompat
 import kotlin.math.ceil
 
 class BeamTempWidgetProvider : AppWidgetProvider() {
@@ -22,17 +21,10 @@ class BeamTempWidgetProvider : AppWidgetProvider() {
         private const val VALUE_COLOR = 0xFFFFFFFF.toInt()
         private const val LABEL_COLOR = 0x99FFFFFF.toInt()
 
-        // The selectable app fonts (res/font) keyed the same way as the Compose theme
-        // (see ui/theme/Type.kt#fontFamilyFor). "default" and unknown keys → null (system font).
-        private fun fontResFor(key: String?): Int? = when (key) {
-            "inter" -> R.font.inter
-            "dm_sans" -> R.font.dm_sans
-            "space_grotesk" -> R.font.space_grotesk
-            "jetbrains_mono" -> R.font.jetbrains_mono
-            "gantari" -> R.font.gantari
-            "ubuntu_sans_mono" -> R.font.ubuntu_sans_mono
-            else -> null
-        }
+        // Matches android:textStyle="normal" on the TextViews the default-font path uses,
+        // so both paths draw at the same weight. Without pinning it the variable fonts fall
+        // back to their default instance, which is Light 300 for Space Grotesk.
+        private const val TEXT_WEIGHT = 400
 
         // RemoteViews can't apply a bundled res/font typeface to a TextView before API 31,
         // so for a custom font we draw the text to a bitmap (same approach as the
@@ -57,9 +49,7 @@ class BeamTempWidgetProvider : AppWidgetProvider() {
 
             val fontKey = context.getSharedPreferences(settingsName, Context.MODE_MULTI_PROCESS)
                 .getString("fontFamily", "default")
-            val typeface = fontResFor(fontKey)?.let {
-                try { ResourcesCompat.getFont(context, it) } catch (_: Exception) { null }
-            }
+            val typeface = BeamFont.forKey(fontKey)?.typeface(context, TEXT_WEIGHT)
 
             if (typeface == null) {
                 // Default font: keep the native, scalable TextViews.

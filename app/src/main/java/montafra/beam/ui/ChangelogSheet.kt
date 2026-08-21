@@ -9,9 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.animation.core.Animatable
@@ -37,7 +35,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -112,98 +109,92 @@ fun ChangelogSheet(entries: List<ChangelogEntry>, onDismiss: () -> Unit) {
             }
         }
     }
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
+    BeamSheet(
+        onDismiss = onDismiss,
         sheetState = sheetState,
+        contentModifier = Modifier.nestedScroll(pullConn),
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .nestedScroll(pullConn)
-                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ico_info),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(24.dp),
-                )
+            Icon(
+                painter = painterResource(R.drawable.ico_info),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(24.dp),
+            )
+            Text(
+                text = stringResource(R.string.whatsNew),
+                style = MaterialTheme.typography.titleLarge,
+            )
+        }
+        Spacer(Modifier.height(8.dp))
+        entries.forEachIndexed { index, entry ->
+            if (index == 0) {
+                OutlinedCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.outlinedCardColors(containerColor = Color.Transparent),
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        if (entry.versionName.isNotEmpty()) {
+                            Text(
+                                text = "v${entry.versionName}",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                            Spacer(Modifier.height(8.dp))
+                        }
+                        Text(
+                            text = entry.body,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+            } else {
+                if (entry.versionName.isNotEmpty()) {
+                    Text(
+                        text = "v${entry.versionName}",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 4.dp),
+                    )
+                }
                 Text(
-                    text = stringResource(R.string.whatsNew),
-                    style = MaterialTheme.typography.titleLarge,
+                    text = entry.body,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
                 )
             }
             Spacer(Modifier.height(8.dp))
-            entries.forEachIndexed { index, entry ->
-                if (index == 0) {
-                    OutlinedCard(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.outlinedCardColors(containerColor = Color.Transparent),
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            if (entry.versionName.isNotEmpty()) {
-                                Text(
-                                    text = "v${entry.versionName}",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = MaterialTheme.colorScheme.primary,
-                                )
-                                Spacer(Modifier.height(8.dp))
-                            }
-                            Text(
-                                text = entry.body,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
-                    }
-                } else {
-                    if (entry.versionName.isNotEmpty()) {
-                        Text(
-                            text = "v${entry.versionName}",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(horizontal = 24.dp, vertical = 4.dp),
-                        )
-                    }
-                    Text(
-                        text = entry.body,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
-                    )
-                }
-                Spacer(Modifier.height(8.dp))
-            }
-            Box(
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 24.dp)
+                .padding(vertical = 16.dp),
+        ) {
+            Text(
+                text = "¯\\_(ツ)_/¯",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(min = 24.dp)
-                    .padding(vertical = 16.dp),
-            ) {
-                Text(
-                    text = "¯\\_(ツ)_/¯",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .graphicsLayer {
-                            val reveal = (pull.value / threshold).coerceIn(0f, 1f)
-                            alpha = reveal
-                            translationY = (1f - reveal) * 12.dp.toPx()
-                        },
-                )
-            }
+                    .graphicsLayer {
+                        val reveal = (pull.value / threshold).coerceIn(0f, 1f)
+                        alpha = reveal
+                        translationY = (1f - reveal) * 12.dp.toPx()
+                    },
+            )
         }
     }
 }

@@ -40,7 +40,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -332,8 +331,8 @@ fun SettingsScreen(navController: BeamNavController) {
     }
 
     if (showDonateDialog) {
-        ModalBottomSheet(
-            onDismissRequest = { showDonateDialog = false },
+        BeamSheet(
+            onDismiss = { showDonateDialog = false },
             sheetState = sheetState,
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
@@ -404,8 +403,8 @@ fun SettingsScreen(navController: BeamNavController) {
     }
 
     if (showAppInfo) {
-        ModalBottomSheet(
-            onDismissRequest = { showAppInfo = false },
+        BeamSheet(
+            onDismiss = { showAppInfo = false },
             sheetState = appInfoSheetState,
         ) {
             Column(
@@ -756,6 +755,7 @@ private fun DonateCard(
                     painter = painterResource(actionIconRes),
                     contentDescription = stringResource(actionContentDescRes),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(20.dp),
                 )
             }
         }

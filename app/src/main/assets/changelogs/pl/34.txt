@@ -1,0 +1,5 @@
+1.9.3
+• Czcionka aplikacji jest teraz stosowana także do ikony powiadomienia na pasku stanu
+• Naprawiono nieprawidłowe stosowanie niektórych czcionek
+• Zaktualizowano zachowanie wysuwanych paneli
+• Ogólne ulepszenia

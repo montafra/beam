@@ -2,10 +2,11 @@
     <color name="background">#121212</color>
     <color name="foreground">#e0e0e0</color>
     <color name="foreground_strong">#ffffff</color>
-    <style name="Theme.Wattz" parent="Theme.Material3.Dark.NoActionBar">
+    <style name="Base.Theme.Wattz" parent="Theme.Material3.Dark.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorOnPrimary">@color/text_on_primary</item>
         <item name="android:statusBarColor">?attr/colorPrimary</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:textSize">@dimen/text_size</item>
         <item name="android:textColor">@color/foreground</item>
         <item name="android:windowBackground">@color/background</item>

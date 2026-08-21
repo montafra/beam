@@ -34,6 +34,9 @@ class StatusService : Service() {
         private const val screenTimeBootSlackMs = 5_000L
         // Below this much session time the on-time share is noise, so it is left out.
         private const val screenTimeSessionMinMs = 60_000L
+        // Weight of the notification icon text, matching Typeface.DEFAULT_BOLD. Fonts whose
+        // wght axis stops lower are clamped to their own ceiling.
+        private const val iconWeight = 700
     }
 
     private class AlarmRuntime {
@@ -43,6 +46,8 @@ class StatusService : Service() {
 
     private lateinit var battery: Battery
     private var iconBitmap: Bitmap? = null
+    // The typeface follows the selected app font and is (re)applied in loadSettings();
+    // DEFAULT_BOLD is both the initial value and the fallback for the system font.
     private val iconPaint = Paint().apply {
         typeface = Typeface.DEFAULT_BOLD
         style = Paint.Style.FILL
@@ -160,6 +165,12 @@ class StatusService : Service() {
         useFahrenheit = settings.getBoolean("useFahrenheit", false)
         indicatorEntries = settings.getStringSet("indicatorEntries", null) ?: emptySet()
         notificationIndicator = settings.getString("notificationIndicator", "W") ?: "W"
+        // The icon is a small ALPHA_8 bitmap, so it needs a bold weight to stay legible.
+        // Pinning it matters: without it the variable fonts draw their default instance,
+        // which is Light 300 for Space Grotesk.
+        iconPaint.typeface = BeamFont.forKey(settings.getString("fontFamily", "default"))
+            ?.typeface(this, iconWeight)
+            ?: Typeface.DEFAULT_BOLD
         showTimeToFull = settings.getBoolean("showTimeToFull", true)
         showScreenTimeInNotification = settings.getBoolean("showScreenTimeInNotification", false)
         pollIntervalMs = settings.getLong("pollIntervalMs", intervalMs)
