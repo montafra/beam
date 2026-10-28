@@ -1,0 +1,3 @@
+• Fixed several app crashes (RuntimeShader, renderIcon)
+• Selected colour in theme palette now features an outline
+• General improvements

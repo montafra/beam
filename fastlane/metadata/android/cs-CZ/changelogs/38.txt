@@ -1,0 +1,3 @@
+• Opraveno několik pádů aplikace (RuntimeShader, renderIcon)
+• Vybraná barva v paletě motivu je nyní zvýrazněna obrysem
+• Obecná vylepšení

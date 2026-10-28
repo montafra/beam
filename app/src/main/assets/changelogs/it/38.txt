@@ -1,0 +1,4 @@
+2.2
+• Risolti diversi crash dell'app (RuntimeShader, renderIcon)
+• Il colore selezionato nella tavolozza del tema ora ha un contorno
+• Miglioramenti generali

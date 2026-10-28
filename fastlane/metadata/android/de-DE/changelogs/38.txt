@@ -1,0 +1,3 @@
+• Mehrere App-Abstürze behoben (RuntimeShader, renderIcon)
+• Die ausgewählte Farbe in der Design-Farbpalette hat jetzt eine Umrandung
+• Allgemeine Verbesserungen
