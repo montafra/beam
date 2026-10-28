@@ -1,0 +1,3 @@
+• Naprawiono kilka awarii aplikacji (RuntimeShader, renderIcon)
+• Wybrany kolor w palecie motywu ma teraz obramowanie
+• Ogólne ulepszenia

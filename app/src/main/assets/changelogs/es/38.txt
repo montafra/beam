@@ -1,0 +1,4 @@
+2.2
+• Corregidos varios cierres inesperados de la app (RuntimeShader, renderIcon)
+• El color seleccionado en la paleta del tema ahora tiene un contorno
+• Mejoras generales

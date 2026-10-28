@@ -539,7 +539,10 @@ fun SettingsScreen(navController: BeamNavController) {
                                     painter = painterResource(R.drawable.ico_chevron_right),
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.size(20.dp),
+                                    // Full size, unlike the 18dp open-in-new glyphs below: the
+                                    // chevron only fills a third of its viewport, so any smaller
+                                    // and it reads as a speck next to them.
+                                    modifier = Modifier.size(24.dp),
                                 )
                             }
                         }
@@ -897,8 +900,43 @@ internal fun swatchCornerRadius(selected: Boolean): Dp {
     return radius.coerceAtMost(SwatchHeight / 2)
 }
 
+/** Width of the ring a selected swatch wears - the same ring ColorStyleChip draws on its preview. */
+private val SwatchRingWidth = 3.dp
+
 /**
- * A pill at rest that squares off into a rounded rectangle when selected, with a check inside.
+ * Shapes and fills a swatch: the [swatchCornerRadius] morph, plus an onSurface ring that grows in
+ * as it squares off. Shared by the grid swatches and the custom colour button's dot, so every
+ * selection on the Theme page - the colour style chips included - is marked the same way.
+ *
+ * The ring is ColorStyleChip's double clip rather than a border: an onSurface fill behind, inset,
+ * then the colour clipped over it. A border can't animate down to nothing, since a 0dp one is
+ * drawn as a hairline, and its width snaps to whole pixels on the way. The ring drawn inside the
+ * shape's own bounds keeps the layout still while it grows.
+ *
+ * Critically damped where the corner spring bounces: an overshoot would push the width below zero
+ * on the way out. Same stiffness, so the two still land together.
+ */
+@Composable
+internal fun Modifier.swatchShape(selected: Boolean, color: Color): Modifier {
+    val radius = swatchCornerRadius(selected)
+    val ring by animateDpAsState(
+        targetValue = if (selected) SwatchRingWidth else 0.dp,
+        animationSpec = spring(dampingRatio = 1f, stiffness = 800f),
+        label = "swatchRing",
+    )
+    return this
+        .clip(RoundedCornerShape(radius))
+        // Transparent at rest, not hidden under the colour: the clip's anti-aliased edge would
+        // otherwise let a faint onSurface fringe through round every unselected swatch.
+        .background(if (ring > 0.dp) MaterialTheme.colorScheme.onSurface else Color.Transparent)
+        .padding(ring)
+        .clip(RoundedCornerShape((radius - ring).coerceAtLeast(0.dp)))
+        .background(color)
+}
+
+/**
+ * A pill at rest that squares off into a rounded rectangle when selected, ringed, with a check
+ * inside.
  *
  * The outer Box is the tap target and draws nothing; the ripple is drawn by the shaped Box inside
  * so it stays clipped to the swatch while the hit box stays taller than the shape.
@@ -926,8 +964,7 @@ internal fun ColorSwatch(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(SwatchHeight)
-                .clip(RoundedCornerShape(swatchCornerRadius(selected)))
-                .background(swatch)
+                .swatchShape(selected, swatch)
                 .indication(interaction, ripple()),
             contentAlignment = Alignment.Center,
         ) {

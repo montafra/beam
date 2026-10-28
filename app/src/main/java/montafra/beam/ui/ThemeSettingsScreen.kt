@@ -409,8 +409,8 @@ fun ThemeSettingsScreen(navController: BeamNavController) {
 /**
  * Opens the full picker. The leading dot is the live seed, so the button doubles as an answer to
  * "which colour is Custom on right now" when the seed isn't one of the twelve swatches above -
- * and [selected] squares the dot off the way a selected swatch is, since in that case nothing in
- * the grid is marking the selection.
+ * and [selected] squares and rings the dot the way a selected swatch is, since in that case
+ * nothing in the grid is marking the selection.
  */
 @Composable
 private fun CustomColorButton(color: Int, selected: Boolean, onClick: () -> Unit) {
@@ -440,8 +440,7 @@ private fun CustomColorButton(color: Int, selected: Boolean, onClick: () -> Unit
         Box(
             modifier = Modifier
                 .size(SwatchHeight)
-                .clip(RoundedCornerShape(swatchCornerRadius(selected)))
-                .background(seed),
+                .swatchShape(selected, seed),
             contentAlignment = Alignment.Center,
         ) {
             Icon(
@@ -515,7 +514,7 @@ private fun ColorStyleChip(
     ) {
         Box(
             // A double-clip ring: an onSurface disc behind, inset, then the preview clipped over
-            // the top of it.
+            // the top of it. swatchShape draws the same ring on the colour swatches above.
             modifier = Modifier
                 .size(64.dp)
                 .clip(RoundedCornerShape(20.dp))

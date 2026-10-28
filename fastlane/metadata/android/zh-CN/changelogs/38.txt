@@ -1,0 +1,3 @@
+• 修复了多个应用崩溃问题（RuntimeShader、renderIcon）
+• 主题色板中选中的颜色现在带有轮廓
+• 常规改进

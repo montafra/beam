@@ -495,7 +495,7 @@ class StatusService : Service() {
             try {
                 startForeground(noteId, buildNotification())
             } catch (e: Exception) {
-                error("Failed to foreground StatusService: ${e.message}")
+                Log.e(this::class.java.name, "Failed to foreground StatusService", e)
             }
         }
 
@@ -515,7 +515,9 @@ class StatusService : Service() {
         val density = resources.displayMetrics.density
         val w = (48f * density).toInt()
         val bitmap = iconBitmap?.takeIf { it.width == w } ?: run {
-            Bitmap.createBitmap(w, w, Bitmap.Config.ALPHA_8).also { iconBitmap = it }
+            // ARGB_8888, not ALPHA_8: Notification.build() copies and scales the icon, and
+            // some ROMs return null from Bitmap.copy for ALPHA_8 (NPE in Icon.setBitmap).
+            Bitmap.createBitmap(w, w, Bitmap.Config.ARGB_8888).also { iconBitmap = it }
         }
         bitmap.eraseColor(Color.TRANSPARENT)
         val canvas = Canvas(bitmap)
@@ -529,7 +531,8 @@ class StatusService : Service() {
         iconPaint.textSize = 18f * density
         canvas.drawText(unit, w / 2f, w * 0.94f, iconPaint)
 
-        return Icon.createWithBitmap(bitmap)
+        // Hand over an immutable snapshot: the reused bitmap is erased on the next tick.
+        return Icon.createWithBitmap(bitmap.copy(Bitmap.Config.ARGB_8888, false) ?: bitmap)
     }
 
     private fun buildNotification(): Notification {
@@ -568,7 +571,14 @@ class StatusService : Service() {
             builder.setStyle(null).setContentText(timeText)
         }
 
-        return builder.build()
+        return try {
+            builder.build()
+        } catch (e: RuntimeException) {
+            // Some ROMs still reject the rendered bitmap icon while copying/scaling it;
+            // fall back to a static icon rather than kill the service.
+            Log.w(this::class.java.name, "Rendered notification icon rejected", e)
+            builder.setSmallIcon(R.drawable.ico_lightning).build()
+        }
     }
 
     private fun screenTimeFormatted(): String {

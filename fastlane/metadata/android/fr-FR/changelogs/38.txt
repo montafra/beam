@@ -1,0 +1,3 @@
+• Correction de plusieurs plantages de l'application (RuntimeShader, renderIcon)
+• La couleur sélectionnée dans le nuancier du thème est désormais entourée d'un contour
+• Améliorations générales

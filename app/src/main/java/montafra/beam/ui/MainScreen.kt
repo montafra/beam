@@ -50,9 +50,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import android.content.Context
 import android.content.SharedPreferences
-import android.graphics.RenderEffect
 import android.graphics.RuntimeShader
-import android.graphics.Shader
+import androidx.annotation.RequiresApi
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -75,7 +74,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.asComposeRenderEffect
+import androidx.compose.ui.graphics.BlurEffect
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.RenderEffect
+import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.graphics.StrokeCap
@@ -362,9 +364,7 @@ fun MainScreen(navController: BeamNavController, vm: BatteryViewModel = viewMode
                         ) {
                             val glowMod = Modifier.matchParentSize().let { m ->
                                 if (Build.VERSION.SDK_INT >= 31) m.graphicsLayer {
-                                    renderEffect = RenderEffect
-                                        .createBlurEffect(40f, 40f, Shader.TileMode.DECAL)
-                                        .asComposeRenderEffect()
+                                    renderEffect = BlurEffect(40f, 40f, TileMode.Decal)
                                 } else m
                             }
                             if (heroBacklight.value) Canvas(glowMod) {
@@ -515,6 +515,23 @@ private const val LIQUIFY_AGSL = """
     }
 """
 
+// Owns the API 33+ RuntimeShader so the platform type never appears in HeroCard's
+// bytecode: a RuntimeShader-typed local there (e.g. the cast on a remember result)
+// crashes pre-33 devices with NoClassDefFoundError even when the value is null.
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+private class LiquifyEffect {
+    private val shader = RuntimeShader(LIQUIFY_AGSL)
+
+    fun renderEffect(width: Float, height: Float, time: Float, progress: Float): RenderEffect {
+        shader.setFloatUniform("size", width, height)
+        shader.setFloatUniform("time", time)
+        shader.setFloatUniform("progress", progress)
+        return android.graphics.RenderEffect
+            .createRuntimeShaderEffect(shader, "content")
+            .asComposeRenderEffect()
+    }
+}
+
 @Composable
 private fun HeroCard(data: BatteryData, showChargeLevel: Boolean, fontKey: String) {
     val context = LocalContext.current
@@ -537,8 +554,8 @@ private fun HeroCard(data: BatteryData, showChargeLevel: Boolean, fontKey: Strin
     // held, then un-melts on release. `warpProgress` is the 0..1 amount of melt;
     // `warpTime` advances every frame to animate the flow. Both default to a no-op
     // (0f) so the resting state and pre-33 path stay clean.
-    val liquifyShader = remember {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) RuntimeShader(LIQUIFY_AGSL) else null
+    val liquify = remember {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) LiquifyEffect() else null
     }
     val warpProgress = remember { Animatable(0f) }
     var warpTime by remember { mutableFloatStateOf(0f) }
@@ -744,13 +761,10 @@ private fun HeroCard(data: BatteryData, showChargeLevel: Boolean, fontKey: Strin
                         // already-applied effect can't be mutated). Reading warpProgress.value
                         // and warpTime here registers this lambda as a per-frame snapshot
                         // reader. The card-root clip keeps any melt overflow inside the border.
-                        if (liquifyShader != null && warpProgress.value > 0f) {
-                            liquifyShader.setFloatUniform("size", size.width, size.height)
-                            liquifyShader.setFloatUniform("time", warpTime)
-                            liquifyShader.setFloatUniform("progress", warpProgress.value)
-                            renderEffect = RenderEffect
-                                .createRuntimeShaderEffect(liquifyShader, "content")
-                                .asComposeRenderEffect()
+                        if (liquify != null && warpProgress.value > 0f) {
+                            renderEffect = liquify.renderEffect(
+                                size.width, size.height, warpTime, warpProgress.value,
+                            )
                         } else {
                             renderEffect = null
                         }
