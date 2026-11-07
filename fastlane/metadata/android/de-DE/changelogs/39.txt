@@ -1,0 +1,7 @@
+• Neue Seite für Spracheinstellungen für Android 12 und älter
+• Neuinstallationen zeigen nur das neueste Änderungsprotokoll
+• Die Startseite ist jetzt beim Laden animiert
+• Tippe schnell auf die Leistungsanzeige der Startseite, um sie aufzupumpen
+• DM Sans durch Google Sans Flex ersetzt
+• Kleine Verbesserungen der Benutzeroberfläche
+• Liberapay-Logo aktualisiert

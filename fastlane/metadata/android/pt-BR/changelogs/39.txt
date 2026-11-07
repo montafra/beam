@@ -1,0 +1,7 @@
+• Adicionada a página de configurações de idioma para Android 12 ou anterior
+• Novas instalações mostram apenas o registro de alterações mais recente
+• A tela inicial agora tem animação durante o carregamento
+• Toque rapidamente na potência na tela inicial para inflá-la
+• DM Sans substituída por Google Sans Flex
+• Pequenas melhorias na interface
+• Logo do Liberapay atualizado

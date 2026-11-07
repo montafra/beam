@@ -65,6 +65,7 @@
     <string name="about">Sobre</string>
     <string name="language">Idioma</string>
     <string name="languageDesc">Definir o idioma do aplicativo</string>
+    <string name="languageSystemDefault">Padrão do sistema</string>
     <string name="changelog">Registro de alterações</string>
     <string name="issueTracker">Rastreador de problemas</string>
     <string name="appDescription">Métricas de bateria em tempo real fixadas na barra de status</string>

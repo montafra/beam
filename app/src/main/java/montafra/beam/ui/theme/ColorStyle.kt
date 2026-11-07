@@ -25,9 +25,9 @@ enum class ColorStyle(val key: String, @StringRes val labelRes: Int) {
     TonalSpot("tonalSpot", R.string.colorStyleTonalSpot),
     Neutral("neutral", R.string.colorStyleNeutral),
     Vibrant("vibrant", R.string.colorStyleVibrant),
-    Expressive("expressive", R.string.colorStyleExpressive),
-    Rainbow("rainbow", R.string.colorStyleRainbow),
     FruitSalad("fruitSalad", R.string.colorStyleFruitSalad),
+    Rainbow("rainbow", R.string.colorStyleRainbow),
+    Expressive("expressive", R.string.colorStyleExpressive),
     Monochrome("monochrome", R.string.colorStyleMonochrome);
 
     companion object {

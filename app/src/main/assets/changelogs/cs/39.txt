@@ -1,0 +1,8 @@
+2.3
+• Přidána stránka nastavení jazyka pro Android 12 a starší
+• Nové instalace zobrazují pouze nejnovější seznam změn
+• Domovská stránka se nyní během nabíjení animuje
+• Rychlým klepáním na hodnotu výkonu na domovské stránce ji nafouknete
+• Písmo DM Sans nahrazeno písmem Google Sans Flex
+• Drobná vylepšení rozhraní
+• Aktualizováno logo Liberapay

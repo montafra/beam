@@ -65,6 +65,7 @@
     <string name="about">关于</string>
     <string name="language">语言</string>
     <string name="languageDesc">设置应用语言</string>
+    <string name="languageSystemDefault">跟随系统</string>
     <string name="changelog">更新日志</string>
     <string name="issueTracker">问题追踪</string>
     <string name="appDescription">将实时电池指标固定到状态栏</string>

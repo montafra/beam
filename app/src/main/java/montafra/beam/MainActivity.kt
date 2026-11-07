@@ -25,6 +25,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalView
 import montafra.beam.ui.AlarmsSettingsScreen
 import montafra.beam.ui.ColorPickerScreen
+import montafra.beam.ui.LanguageSettingsScreen
 import montafra.beam.ui.LocalSilentHaptics
 import montafra.beam.ui.LocalSoundEnabled
 import montafra.beam.ui.LocalTapHaptics
@@ -120,6 +121,12 @@ class MainActivity : ComponentActivity() {
         super.onDestroy()
     }
 
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(newBase)
+        // The in-app language pick (API < 33 only). Must land before anything touches resources.
+        appLanguageOverride(newBase)?.let { applyOverrideConfiguration(it) }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // The default SystemBarStyle.auto() writes a scrim into navigationBarColor on API 28 and
@@ -190,6 +197,7 @@ class MainActivity : ComponentActivity() {
                         "settings" -> SettingsScreen(navController)
                         "settings/theme" -> ThemeSettingsScreen(navController)
                         "settings/theme/color" -> ColorPickerScreen(navController)
+                        "settings/language" -> LanguageSettingsScreen(navController)
                         "settings/notification" -> NotificationSettingsScreen(navController)
                         "settings/alarms" -> AlarmsSettingsScreen(navController)
                         "settings/workarounds" -> WorkaroundsSettingsScreen(navController)

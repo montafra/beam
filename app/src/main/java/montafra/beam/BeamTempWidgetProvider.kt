@@ -50,10 +50,14 @@ class BeamTempWidgetProvider : AppWidgetProvider() {
             val fontKey = context.getSharedPreferences(settingsName, Context.MODE_MULTI_PROCESS)
                 .getString("fontFamily", defaultFontKey)
             val typeface = BeamFont.forKey(fontKey)?.typeface(context, TEXT_WEIGHT)
+            // Set here even for the TextView: the launcher resolves the layout's @string in the
+            // system locale, which misses the in-app language pick on API < 33.
+            val label = context.withAppLanguage().getString(R.string.temperature)
 
             if (typeface == null) {
                 // Default font: keep the native, scalable TextViews.
                 views.setTextViewText(R.id.widget_temp_value, temperature)
+                views.setTextViewText(R.id.widget_temp_label, label)
                 views.setViewVisibility(R.id.widget_temp_value, View.VISIBLE)
                 views.setViewVisibility(R.id.widget_temp_label, View.VISIBLE)
                 views.setViewVisibility(R.id.widget_temp_value_img, View.GONE)
@@ -66,7 +70,7 @@ class BeamTempWidgetProvider : AppWidgetProvider() {
                 )
                 views.setImageViewBitmap(
                     R.id.widget_temp_label_img,
-                    renderText(context, context.getString(R.string.temperature), 11f, LABEL_COLOR, typeface),
+                    renderText(context, label, 11f, LABEL_COLOR, typeface),
                 )
                 views.setViewVisibility(R.id.widget_temp_value_img, View.VISIBLE)
                 views.setViewVisibility(R.id.widget_temp_label_img, View.VISIBLE)

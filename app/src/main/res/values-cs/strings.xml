@@ -65,6 +65,7 @@
     <string name="about">O aplikaci</string>
     <string name="language">Jazyk</string>
     <string name="languageDesc">Nastavit jazyk aplikace</string>
+    <string name="languageSystemDefault">Výchozí nastavení systému</string>
     <string name="changelog">Seznam změn</string>
     <string name="issueTracker">Hlášení problémů</string>
     <string name="appDescription">Živé metriky baterie připnuté na stavový řádek</string>

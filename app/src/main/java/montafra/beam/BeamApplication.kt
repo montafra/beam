@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatDelegate
 class BeamApplication : Application() {
     override fun onCreate() {
         super.onCreate()
+        migrateAppLanguage(this)
         applyNightMode(getSharedPreferences(settingsName, MODE_PRIVATE).getString("themeMode", "system"))
     }
 }

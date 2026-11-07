@@ -96,7 +96,11 @@ fun ThemeSettingsScreen(navController: BeamNavController) {
     var hapticsEnabled by remember { mutableStateOf(prefs.getBoolean("hapticsEnabled", true)) }
     var soundEnabled by remember { mutableStateOf(prefs.getBoolean("soundEnabled", true)) }
     var keepScreenOn by remember { mutableStateOf(prefs.getBoolean("keepScreenOn", false)) }
-    var fontFamily by remember { mutableStateOf(prefs.getString("fontFamily", defaultFontKey) ?: defaultFontKey) }
+    var fontFamily by remember {
+        // Normalise retired keys (e.g. "dm_sans") so the picker highlights the font actually in use.
+        val stored = prefs.getString("fontFamily", defaultFontKey) ?: defaultFontKey
+        mutableStateOf(BeamFont.forKey(stored)?.key ?: stored)
+    }
     var outlineOnlyCards by remember { mutableStateOf(prefs.getBoolean("outlineOnlyCards", false)) }
 
     SettingsScaffold(
