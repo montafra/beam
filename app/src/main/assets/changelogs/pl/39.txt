@@ -1,0 +1,8 @@
+2.3
+• Dodano stronę ustawień języka dla Androida 12 i starszych
+• Nowe instalacje pokazują tylko najnowszą listę zmian
+• Ekran główny jest teraz animowany podczas ładowania
+• Szybko stukaj w odczyt mocy na ekranie głównym, aby go napompować
+• Zastąpiono czcionkę DM Sans czcionką Google Sans Flex
+• Drobne ulepszenia interfejsu
+• Zaktualizowano logo Liberapay

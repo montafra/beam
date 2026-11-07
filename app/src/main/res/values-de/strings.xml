@@ -65,6 +65,7 @@
     <string name="about">Über</string>
     <string name="language">Sprache</string>
     <string name="languageDesc">App-Sprache festlegen</string>
+    <string name="languageSystemDefault">Systemstandard</string>
     <string name="changelog">Änderungsprotokoll</string>
     <string name="issueTracker">Issue-Tracker</string>
     <string name="appDescription">Live-Akkudaten direkt in der Statusleiste angeheftet</string>

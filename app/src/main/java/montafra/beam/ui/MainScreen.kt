@@ -1,6 +1,8 @@
 package montafra.beam.ui
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -12,9 +14,12 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -38,6 +43,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -53,6 +60,7 @@ import android.content.SharedPreferences
 import android.graphics.RuntimeShader
 import androidx.annotation.RequiresApi
 import android.os.Build
+import android.provider.Settings
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
@@ -65,11 +73,13 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
@@ -81,6 +91,8 @@ import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -90,14 +102,20 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalView
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlin.math.cos
+import kotlin.math.hypot
 import kotlin.math.roundToInt
 import kotlin.math.sin
 import montafra.beam.BatteryData
@@ -106,6 +124,7 @@ import montafra.beam.LocalHapticsEnabled
 import montafra.beam.R
 import montafra.beam.VendorBatteryHints
 import montafra.beam.defaultFontKey
+import montafra.beam.heroRestWeight
 import montafra.beam.settingsName
 import montafra.beam.ui.theme.BeamCard
 import montafra.beam.ui.theme.BeamMaxContentWidth
@@ -116,6 +135,7 @@ import montafra.beam.ui.theme.cardShapeMiddle
 import montafra.beam.ui.theme.cardShapeSingle
 import montafra.beam.ui.theme.cardShapeTop
 import montafra.beam.ui.theme.heroNumberFontFamily
+import montafra.beam.ui.theme.heroOutlineFor
 import montafra.beam.ui.theme.heroWeightFor
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -200,7 +220,9 @@ fun MainScreen(navController: BeamNavController, vm: BatteryViewModel = viewMode
         val prefs = context.getSharedPreferences(settingsName, Context.MODE_PRIVATE)
         val lastSeen = prefs.getInt("lastSeenVersionCode", 0)
         if (currentVersionCode > lastSeen) {
-            val entries = loadChangelogs(context, lastSeen, currentVersionCode)
+            val all = loadChangelogs(context, lastSeen, currentVersionCode)
+            // First run (no recorded version): only the current release, not the whole history.
+            val entries = if (lastSeen == 0) all.take(1) else all
             if (entries.isNotEmpty()) {
                 changelogEntries = entries
                 showChangelog = true
@@ -263,10 +285,83 @@ fun MainScreen(navController: BeamNavController, vm: BatteryViewModel = viewMode
     )
 
     val isOled = background == Color.Black
+    val isLight = background.luminance() > 0.5f
     val glowScale = when {
-        background.luminance() > 0.5f -> 0.40f
+        isLight -> 0.40f
         isOled -> 0.35f
         else -> 1.0f
+    }
+    // The surge wave is a one-off, so it can afford to read a little stronger than the ambient glow.
+    val waveScale = when {
+        isLight -> 0.60f
+        isOled -> 0.70f
+        else -> 1.0f
+    }
+
+    // Plug-in "charge surge": energy enters at the port (bottom centre) as a wave that floods up the
+    // page; each card takes a spring kick as the front reaches it, bottom first, and the hero's
+    // backlight flares when it arrives at the top. The springs are hand-tuned to M3 Expressive's
+    // spatial/effects specs since the material3 on the classpath has no public MotionScheme.
+    val surgeWave = remember { Animatable(0f) }
+    val heroFlare = remember { Animatable(0f) }
+    // The backlight brightens and swells, then settles back. Fired when the surge reaches the hero
+    // and when the hero number's rapid-tap pump pops.
+    val flareHero: () -> Unit = {
+        scope.launch {
+            heroFlare.animateTo(1f, spring(dampingRatio = 1f, stiffness = 800f))
+            heroFlare.animateTo(0f, spring(dampingRatio = 1f, stiffness = 200f))
+        }
+    }
+    // Impulse springs, indexed hero, metric top, metric middle, metric bottom.
+    val cardKicks = remember { List(4) { Animatable(0f) } }
+    val lifecycleOwner = LocalLifecycleOwner.current
+    // Seeded from the VM (which outlives this screen) so coming back from Settings or recomposing
+    // never reads as a fresh plug-in.
+    var lastPlugged by remember { mutableStateOf(data.plugged) }
+    // The hero's charging bolt. Mirrors the plug state, except on a surge, where it is held back
+    // until the wave reaches the hero so it pops in with the hero's kick.
+    var boltShown by remember { mutableStateOf(data.plugged == true) }
+    LaunchedEffect(data.plugged) {
+        val plugged = data.plugged
+        // Only a seen false -> true edge: null -> true is just the first report arriving.
+        val edge = lastPlugged == false && plugged == true
+        lastPlugged = plugged
+        val surge = edge &&
+            // Plugged in with the screen off or the app backgrounded: don't replay it on return.
+            lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) &&
+            Settings.Global.getFloat(
+                context.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f,
+            ) != 0f
+        if (!surge) {
+            boltShown = plugged == true
+            return@LaunchedEffect
+        }
+
+        // Launched on the screen's scope, not this effect's: an unplug mid-surge restarts this
+        // effect, and cancelling here would freeze the wave half-way up the page.
+        scope.launch {
+            surgeWave.snapTo(0f)
+            surgeWave.animateTo(1f, tween(SurgeDurationMs, easing = EmphasizedDecelerateEasing))
+            surgeWave.snapTo(0f)
+        }
+        // Hero, top, middle, bottom: the wave front reaches the bottom card first.
+        val kickDelaysMs = longArrayOf(300L, 180L, 90L, 0L)
+        cardKicks.forEachIndexed { i, kick ->
+            scope.launch {
+                delay(kickDelaysMs[i])
+                // Re-read the live plug state: an unplug during the delay has already hidden the
+                // bolt, and showing it now would leave it lit on an unplugged phone.
+                if (i == 0 && vm.data.value.plugged == true) boltShown = true
+                kick.snapTo(0f)
+                // Started at rest with an upward velocity: peaks near 1 after ~60 ms, then one small
+                // counter-swing before settling.
+                kick.animateTo(0f, spring(dampingRatio = 0.5f, stiffness = 380f), initialVelocity = 36f)
+            }
+        }
+        scope.launch {
+            delay(kickDelaysMs[0])
+            flareHero()
+        }
     }
 
     Box(Modifier.fillMaxSize().background(background)) {
@@ -274,6 +369,34 @@ fun MainScreen(navController: BeamNavController, vm: BatteryViewModel = viewMode
             Canvas(Modifier.fillMaxSize()) {
                 drawRect(brush = grainBrush, alpha = 22f / 255f)
             }
+        }
+
+        // Surge wave: behind the cards, which are translucent enough to let it show through without
+        // costing legibility. Read only at draw time, so it never recomposes the screen.
+        Canvas(Modifier.fillMaxSize()) {
+            val p = surgeWave.value
+            if (p <= 0f || p >= 1f) return@Canvas
+            val origin = Offset(size.width / 2f, size.height)
+            val radius = p * hypot(size.width, size.height) * 1.05f
+            if (radius < 1f) return@Canvas
+            // Quick fade-in so the wave doesn't pop at the port, then it fades as it travels.
+            val life = (p * 10f).coerceAtMost(1f) * (1f - p)
+            val band = 140.dp.toPx()
+            val inner = ((radius - band) / radius).coerceIn(0f, 0.998f)
+            val crest = ((radius - band * 0.35f) / radius).coerceIn(inner + 0.001f, 0.999f)
+            val tint = primary.copy(alpha = 0.08f * life * waveScale)
+            drawCircle(
+                brush = Brush.radialGradient(
+                    0f to tint,
+                    inner to tint,
+                    crest to primary.copy(alpha = 0.32f * life * waveScale),
+                    1f to Color.Transparent,
+                    center = origin,
+                    radius = radius,
+                ),
+                radius = radius,
+                center = origin,
+            )
         }
 
         Scaffold(
@@ -346,20 +469,25 @@ fun MainScreen(navController: BeamNavController, vm: BatteryViewModel = viewMode
                         .fillMaxHeight()
                         .widthIn(max = BeamMaxContentWidth)
                         .align(Alignment.TopCenter)
-                        .padding(top = padding.calculateTopPadding())
-                        .padding(
-                            // The scaffold's start/end insets clear a landscape side nav bar or
-                            // cutout; they are zero in portrait, so this stays the plain 16.dp.
-                            start = 16.dp + padding.calculateStartPadding(layoutDirection),
-                            end = 16.dp + padding.calculateEndPadding(layoutDirection),
-                        ),
-                    contentPadding = PaddingValues(bottom = padding.calculateBottomPadding()),
+                        .padding(top = padding.calculateTopPadding()),
+                    // The side gutter is content padding rather than layout padding so the list's
+                    // clip includes it: the surge's scale kick pushes card edges a few dp out.
+                    contentPadding = PaddingValues(
+                        // The scaffold's start/end insets clear a landscape side nav bar or
+                        // cutout; they are zero in portrait, so this stays the plain 16.dp.
+                        start = 16.dp + padding.calculateStartPadding(layoutDirection),
+                        end = 16.dp + padding.calculateEndPadding(layoutDirection),
+                        bottom = padding.calculateBottomPadding(),
+                    ),
                     verticalArrangement = Arrangement.spacedBy(LocalCardSpacing.current.homeGroup),
                 ) {
                     item { Spacer(Modifier.height(4.dp)) }
                     item {
                         Box(modifier = Modifier
                             .fillMaxWidth()
+                            // Smaller lift than the metric cards: the 4dp spacer above is all the
+                            // room the list's clip leaves it.
+                            .surgeBump(lift = 4.dp) { cardKicks[0].value }
                             .clip(cardShapeSingle(radius = 40.dp))
                         ) {
                             val glowMod = Modifier.matchParentSize().let { m ->
@@ -374,16 +502,20 @@ fun MainScreen(navController: BeamNavController, vm: BatteryViewModel = viewMode
                                 val b = (p2 - 0.5f) * 2f
                                 val c = (p3 - 0.5f) * 2f
                                 val br = breathe
+                                // Surge flare: the glow brightens and swells, then settles back.
+                                val fl = heroFlare.value
+                                val gs = glowScale * (1f + 1.5f * fl)
+                                val rs = 1f + 0.12f * fl
 
                                 val cx = w * 0.50f + w * 0.05f * a   // gentle whole-shape sway, centered
                                 val cy = h * 0.50f + h * 0.03f * b   // centered, no directional bias
 
                                 // Ambient halo — steady, large, fills gaps so the union never splits.
                                 run {
-                                    val r = w * 0.78f * (0.92f + 0.08f * br)
+                                    val r = w * 0.78f * (0.92f + 0.08f * br) * rs
                                     drawCircle(
                                         brush = Brush.radialGradient(
-                                            listOf(primary.copy(alpha = (0.07f + 0.03f * br) * glowScale), Color.Transparent),
+                                            listOf(primary.copy(alpha = (0.07f + 0.03f * br) * gs), Color.Transparent),
                                             center = Offset(cx, cy), radius = r,
                                         ),
                                         radius = r, center = Offset(cx, cy),
@@ -404,10 +536,10 @@ fun MainScreen(navController: BeamNavController, vm: BatteryViewModel = viewMode
                                     val rFrac = l[3]; val rPulse = l[4]; val alpha = l[5]
                                     val ox = cx + w * 0.085f * dA + w * 0.045f * cos(ang + dB * 0.8f).toFloat()
                                     val oy = cy + h * 0.06f * dB + h * 0.045f * sin(ang + dA * 0.8f).toFloat()
-                                    val r = w * rFrac * (0.85f + 0.15f * (rPulse * 0.5f + 0.5f))
+                                    val r = w * rFrac * (0.85f + 0.15f * (rPulse * 0.5f + 0.5f)) * rs
                                     drawCircle(
                                         brush = Brush.radialGradient(
-                                            listOf(primary.copy(alpha = alpha * (0.80f + 0.20f * br) * glowScale), Color.Transparent),
+                                            listOf(primary.copy(alpha = alpha * (0.80f + 0.20f * br) * gs), Color.Transparent),
                                             center = Offset(ox, oy), radius = r,
                                         ),
                                         radius = r, center = Offset(ox, oy),
@@ -415,16 +547,18 @@ fun MainScreen(navController: BeamNavController, vm: BatteryViewModel = viewMode
                                 }
 
                                 // Steady bright core — keeps a hot center so the shape never reads as hollow/split.
-                                val coreR = w * 0.16f * (0.85f + 0.15f * br)
+                                val coreR = w * 0.16f * (0.85f + 0.15f * br) * rs
                                 drawCircle(
                                     brush = Brush.radialGradient(
-                                        listOf(primary.copy(alpha = (0.24f + 0.10f * br) * glowScale), Color.Transparent),
+                                        listOf(primary.copy(alpha = ((0.24f + 0.10f * br) * gs).coerceAtMost(1f)), Color.Transparent),
                                         center = Offset(cx, cy), radius = coreR,
                                     ),
                                     radius = coreR, center = Offset(cx, cy),
                                 )
                             }
-                            HeroCard(data, showChargeLevel.value, fontKey.value)
+                            HeroCard(data, showChargeLevel.value, fontKey.value, boltShown, onPop = flareHero) {
+                                cardKicks[0].value
+                            }
                         }
                     }
                     // Deliberate extra break between the hero and the metrics, on top of the two
@@ -435,6 +569,7 @@ fun MainScreen(navController: BeamNavController, vm: BatteryViewModel = viewMode
                         val homeSeam = LocalCardSpacing.current.homeInner
                         MetricCard(
                             shape = cardShapeTop(radius = 24.dp, seam = homeSeam),
+                            modifier = Modifier.surgeBump { cardKicks[1].value },
                         ) {
                             MetricRow(stringResource(R.string.power), data.power)
                             MetricRow(stringResource(R.string.current), data.current)
@@ -445,6 +580,7 @@ fun MainScreen(navController: BeamNavController, vm: BatteryViewModel = viewMode
                         HomeCardGap()
                         MetricCard(
                             shape = cardShapeMiddle(seam = homeSeam),
+                            modifier = Modifier.surgeBump { cardKicks[2].value },
                         ) {
                             val rows = listOf(
                                 stringResource(R.string.chargeLevel) to data.chargeLevel,
@@ -457,6 +593,7 @@ fun MainScreen(navController: BeamNavController, vm: BatteryViewModel = viewMode
                         HomeCardGap()
                         MetricCard(
                             shape = cardShapeBottom(radius = 24.dp, seam = homeSeam),
+                            modifier = Modifier.surgeBump { cardKicks[3].value },
                         ) {
                             MetricRow(stringResource(R.string.screenTime), data.screenTime)
                         }
@@ -532,19 +669,79 @@ private class LiquifyEffect {
     }
 }
 
+private const val SurgeDurationMs = 1300
+
+// Rapid-tap "pump" on the hero number. A press landing within PumpTapWindowMs of the previous one
+// steps it up a level, bolder and bigger; a press at PumpMaxLevel pops it back to rest. With no
+// new press PumpIdleMs after the last release, it deflates.
+private const val PumpTapWindowMs = 350L
+private const val PumpMaxLevel = 5
+// 1.15x at the top step: the weight and outline carry most of the effect, size only backs it.
+private const val PumpScaleStep = 0.03f
+// Outline width, as a fraction of the font size, at the pump's top step. About one weight
+// class (Bold to Black) of extra stem thickness.
+private const val PumpOutlineEm = 0.04f
+private const val PumpIdleMs = 700L
+// How far a pumpJolt of 1 stretches the number tall (and -1 splats it wide).
+private const val PumpJoltStretch = 0.06f
+
+/**
+ * Gesture bookkeeping for the hero's tap streak. Only touched by the pointer handler and the
+ * coroutines it launches, never read during composition, so none of it is snapshot state.
+ */
+private class TapStreak {
+    var lastDownMs = 0L
+    var level = 0
+    var deflateJob: Job? = null
+}
+
+// M3 emphasized decelerate, the same curve PredictiveNav uses for its push transition.
+private val EmphasizedDecelerateEasing = CubicBezierEasing(0.05f, 0.7f, 0.1f, 1f)
+
+/**
+ * Applies a plug-in surge kick to a card: a lift plus a slight swell, scaled by [kick] (about 1 at
+ * its peak, briefly negative on the counter-swing). Read inside the layer so the per-frame value
+ * never recomposes the card.
+ */
+private fun Modifier.surgeBump(lift: Dp = 8.dp, kick: () -> Float): Modifier = graphicsLayer {
+    val k = kick()
+    translationY = -k * lift.toPx()
+    val s = 1f + k * 0.02f
+    scaleX = s
+    scaleY = s
+}
+
 @Composable
-private fun HeroCard(data: BatteryData, showChargeLevel: Boolean, fontKey: String) {
+private fun HeroCard(
+    data: BatteryData,
+    showChargeLevel: Boolean,
+    fontKey: String,
+    boltVisible: Boolean,
+    onPop: () -> Unit,
+    boltKick: () -> Float,
+) {
     val context = LocalContext.current
     val haptic = LocalTapHaptics.current
     val hapticsEnabled = LocalHapticsEnabled.current
+    val tapSound = rememberTapSound()
     val scope = rememberCoroutineScope()
     val primary = MaterialTheme.colorScheme.primary
     val onSurface = MaterialTheme.colorScheme.onSurface
+    // The pointer handler below is keyed on Unit, so it must read the latest callback.
+    val currentOnPop by rememberUpdatedState(onPop)
 
+    val restWeight = heroRestWeight.toFloat()
     val scaleAnim = remember { Animatable(1f) }
-    val tapWeight = remember { Animatable(700f) }
+    val tapWeight = remember { Animatable(restWeight) }
     var holdActive by remember { mutableStateOf(false) }
-    val lastTapMs = remember { LongArray(1) }
+    // Rapid-tap pump. pumpBold is the level as 0..1 (springs carry it a little past both ends) and
+    // drives the weight climb and outline; pumpScale sits on top of scaleAnim's hold squeeze; and
+    // pumpJolt is an impulse (about 1 at its peak, then a counter-swing) that squashes and
+    // stretches the number on each step. tapWeight stays the press morph alone.
+    val pumpBold = remember { Animatable(0f) }
+    val pumpScale = remember { Animatable(1f) }
+    val pumpJolt = remember { Animatable(0f) }
+    val streak = remember { TapStreak() }
     // The press target is the number Box, but a hold stays alive while the finger
     // remains anywhere inside the card — these track both bounds for that check.
     var cardCoords by remember { mutableStateOf<LayoutCoordinates?>(null) }
@@ -609,6 +806,90 @@ private fun HeroCard(data: BatteryData, showChargeLevel: Boolean, fontKey: Strin
     }
     val releaseTickWaveform = remember {
         VibrationEffect.createWaveform(longArrayOf(0, 22), intArrayOf(0, 110), -1)
+    }
+    // Pump steps: one tick per level, firming up as the number climbs.
+    val pumpTicks = remember(splashCapable) {
+        if (splashCapable) {
+            List(PumpMaxLevel) { i ->
+                VibrationEffect.startComposition()
+                    .addPrimitive(
+                        VibrationEffect.Composition.PRIMITIVE_TICK,
+                        0.3f + 0.7f * (i + 1) / PumpMaxLevel,
+                        0,
+                    )
+                    .compose()
+            }
+        } else null
+    }
+    // Pop: one hard THUD with a short fading tail.
+    val popEffect = remember(splashCapable) {
+        if (splashCapable) {
+            VibrationEffect.startComposition()
+                .addPrimitive(VibrationEffect.Composition.PRIMITIVE_THUD, 1.0f, 0)
+                .addPrimitive(VibrationEffect.Composition.PRIMITIVE_LOW_TICK, 0.5f, 40)
+                .addPrimitive(VibrationEffect.Composition.PRIMITIVE_LOW_TICK, 0.25f, 70)
+                .compose()
+        } else null
+    }
+
+    // Feedback for a pump or pop step. Primitives go straight to the vibrator, which bypasses
+    // LocalTapHaptics and its click, so the tap sound is played alongside them by hand.
+    fun stepFeedback(effect: VibrationEffect?, fallback: HapticFeedbackType) {
+        if (hapticsEnabled && effect != null) {
+            vibrator.vibrate(effect)
+            tapSound()
+        } else {
+            haptic.performHapticFeedback(fallback)
+        }
+    }
+
+    fun deflate() {
+        streak.level = 0
+        val settle = spring<Float>(dampingRatio = 0.4f, stiffness = 260f)
+        scope.launch { pumpBold.animateTo(0f, settle) }
+        scope.launch { pumpScale.animateTo(1f, settle) }
+    }
+
+    fun pop() {
+        streak.level = 0
+        currentOnPop()
+        stepFeedback(popEffect, HapticFeedbackType.LongPress)
+        // Low damping: scale and weight both wobble through rest (briefly thinner and smaller than
+        // normal) before settling, like a burst balloon flapping.
+        val jelly = spring<Float>(dampingRatio = 0.3f, stiffness = 380f)
+        scope.launch {
+            // Splat: the inverse of a pump step's stretch, squashed wide and short at the burst.
+            pumpJolt.snapTo(0f)
+            pumpJolt.animateTo(0f, jelly, initialVelocity = -45f)
+        }
+        scope.launch {
+            // One last gulp of air past the top step, then it bursts.
+            pumpScale.animateTo(
+                1.05f + PumpScaleStep * PumpMaxLevel,
+                spring(dampingRatio = 1f, stiffness = 1500f),
+            )
+            pumpScale.animateTo(1f, jelly)
+        }
+        // Undershoots below 0, which heroWeightFor turns into a brief dip thinner than rest.
+        scope.launch { pumpBold.animateTo(0f, jelly) }
+    }
+
+    fun pump() {
+        if (streak.level >= PumpMaxLevel) {
+            pop()
+            return
+        }
+        val level = ++streak.level
+        val boing = spring<Float>(dampingRatio = 0.5f, stiffness = 700f)
+        scope.launch { pumpBold.animateTo(level.toFloat() / PumpMaxLevel, boing) }
+        scope.launch { pumpScale.animateTo(1f + PumpScaleStep * level, boing) }
+        scope.launch {
+            // Started at rest with an upward velocity, like the surge kicks: stretches tall,
+            // peaking near 1, then one counter-squash before settling.
+            pumpJolt.snapTo(0f)
+            pumpJolt.animateTo(0f, spring(dampingRatio = 0.4f, stiffness = 500f), initialVelocity = 45f)
+        }
+        stepFeedback(pumpTicks?.get(level - 1), HapticFeedbackType.TextHandleMove)
     }
 
     LaunchedEffect(holdActive) {
@@ -684,15 +965,23 @@ private fun HeroCard(data: BatteryData, showChargeLevel: Boolean, fontKey: Strin
                         // do this — it cancels as soon as the pointer exits its own node.
                         awaitEachGesture {
                             val down = awaitFirstDown()
-                            val now = System.currentTimeMillis()
-                            val isDouble = (now - lastTapMs[0]) < 300L
-                            lastTapMs[0] = now
-                            if (isDouble) {
-                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            streak.deflateJob?.cancel()
+                            // A press hot on the heels of the last one keeps the streak going and
+                            // pumps the number; anything slower is a plain tap.
+                            val isStreak = down.uptimeMillis - streak.lastDownMs < PumpTapWindowMs
+                            streak.lastDownMs = down.uptimeMillis
+                            if (isStreak) {
+                                pump()
                             } else {
                                 if (hapticsEnabled) {
                                     haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                 }
+                                // A fresh tap starts a new streak, so shed anything left over from
+                                // the last one (a no-op when it already sits at rest).
+                                streak.level = 0
+                                val shed = spring<Float>(dampingRatio = 0.6f, stiffness = 500f)
+                                scope.launch { pumpBold.animateTo(0f, shed) }
+                                scope.launch { pumpScale.animateTo(1f, shed) }
                                 scope.launch {
                                     tapWeight.animateTo(
                                         200f,
@@ -727,12 +1016,20 @@ private fun HeroCard(data: BatteryData, showChargeLevel: Boolean, fontKey: Strin
                             }
                             longPressJob.cancel()
                             holdActive = false
-                            if (!isDouble) {
+                            if (!isStreak) {
                                 scope.launch {
                                     tapWeight.animateTo(
-                                        700f,
+                                        restWeight,
                                         spring(stiffness = 500f, dampingRatio = 0.4f),
                                     )
+                                }
+                            }
+                            // Stays pumped while taps keep coming (or the finger is down), and
+                            // lets the air out once they stop.
+                            if (streak.level > 0) {
+                                streak.deflateJob = scope.launch {
+                                    delay(PumpIdleMs)
+                                    deflate()
                                 }
                             }
                         }
@@ -742,20 +1039,29 @@ private fun HeroCard(data: BatteryData, showChargeLevel: Boolean, fontKey: Strin
             ) {
             // Press thins the number (variable-font weight morph) like the
             // Android 16 lock-screen clock; it stays thin through a hold and
-            // springs back to bold on release. heroWeightFor remaps the sweep onto
+            // springs back to bold on release. Rapid taps pump it heavier than
+            // rest instead (see pump()): first up the real wght axis, then with an
+            // outline once the axis runs out. heroWeightFor remaps both onto
             // whatever the selected font's wght axis can reach, and the same value
             // feeds both the family and the style so they can't disagree.
-            val numberWeight = heroWeightFor(fontKey, tapWeight.value.roundToInt())
+            val pump = pumpBold.value
+            val numberWeight = heroWeightFor(fontKey, tapWeight.value.roundToInt(), pump)
             val heroStyle = MaterialTheme.typography.displayLarge.copy(
                 fontFamily = heroNumberFontFamily(context, fontKey, numberWeight),
                 fontWeight = FontWeight(numberWeight),
             )
+            val outlinePx = with(LocalDensity.current) {
+                heroOutlineFor(fontKey, pump) * PumpOutlineEm * heroStyle.fontSize.toPx()
+            }
             Row(
                 modifier = Modifier
                     .graphicsLayer {
-                        val s = scaleAnim.value
-                        scaleX = s
-                        scaleY = s
+                        val s = scaleAnim.value * pumpScale.value
+                        // Pump squash-and-stretch: a positive jolt draws the number up tall, a
+                        // negative one (the pop) splats it wide.
+                        val j = pumpJolt.value * PumpJoltStretch
+                        scaleX = s * (1f - j)
+                        scaleY = s * (1f + j)
                         // Liquify (API 33+): rebuild the RenderEffect every frame so the
                         // animated time/progress uniforms take effect (uniforms of an
                         // already-applied effect can't be mutated). Reading warpProgress.value
@@ -779,17 +1085,9 @@ private fun HeroCard(data: BatteryData, showChargeLevel: Boolean, fontKey: Strin
                     },
                     label = "power-value",
                 ) { value ->
-                    Text(
-                        text = value,
-                        style = heroStyle,
-                        color = onSurface,
-                    )
+                    HeroText(value, heroStyle, onSurface, outlinePx)
                 }
-                Text(
-                    text = "W",
-                    style = heroStyle,
-                    color = onSurface,
-                )
+                HeroText("W", heroStyle, onSurface, outlinePx)
             }
             }
             if (showChargeLevel) {
@@ -815,12 +1113,66 @@ private fun HeroCard(data: BatteryData, showChargeLevel: Boolean, fontKey: Strin
                     }
                 }
                 Spacer(Modifier.height(14.dp))
-                Text(
-                    text = data.chargeLevel,
-                    style = MaterialTheme.typography.labelMedium,
-                    color = onSurface.copy(alpha = 0.6f),
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    // Plug state rather than charging status, so the bolt stays lit through
+                    // charge-limit and adaptive-charging pauses while still on the cable. Timed
+                    // by MainScreen so a plug-in reveals it in step with the surge.
+                    AnimatedVisibility(
+                        visible = boltVisible,
+                        enter = fadeIn(tween(150)) +
+                            scaleIn(spring(dampingRatio = 0.5f, stiffness = 800f), initialScale = 0.3f) +
+                            expandHorizontally(
+                                spring(dampingRatio = 0.8f, stiffness = 380f),
+                                expandFrom = Alignment.End,
+                            ),
+                        exit = fadeOut(tween(150)) +
+                            scaleOut(tween(150), targetScale = 0.3f) +
+                            shrinkHorizontally(
+                                spring(dampingRatio = 1f, stiffness = 380f),
+                                shrinkTowards = Alignment.End,
+                            ),
+                        label = "charging-bolt",
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                painter = painterResource(R.drawable.ico_lightning),
+                                contentDescription = stringResource(R.string.charging),
+                                tint = primary,
+                                modifier = Modifier
+                                    .size(14.dp)
+                                    // Wiggles when the plug-in surge reaches the hero.
+                                    .graphicsLayer { rotationZ = boltKick() * 18f },
+                            )
+                            Spacer(Modifier.width(2.dp))
+                        }
+                    }
+                    Text(
+                        text = data.chargeLevel,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = onSurface.copy(alpha = 0.6f),
+                    )
+                }
             }
+        }
+    }
+}
+
+/**
+ * The hero number's text, thickened past its font's heaviest weight by an [outlinePx]-wide
+ * outline drawn over the fill in the same colour. drawStyle only changes how the text draws,
+ * never its layout, so the overlay always sits exactly on the fill and a changing width costs
+ * a redraw, not a relayout. Only composed while the pump calls for it.
+ */
+@Composable
+private fun HeroText(text: String, style: TextStyle, color: Color, outlinePx: Float) {
+    Box {
+        Text(text = text, style = style, color = color)
+        if (outlinePx > 0.5f) {
+            Text(
+                text = text,
+                style = style.copy(drawStyle = Stroke(width = outlinePx, join = StrokeJoin.Round)),
+                color = color,
+            )
         }
     }
 }
@@ -828,10 +1180,11 @@ private fun HeroCard(data: BatteryData, showChargeLevel: Boolean, fontKey: Strin
 @Composable
 private fun MetricCard(
     shape: androidx.compose.ui.graphics.Shape = cardShapeSingle(radius = 24.dp),
+    modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
     BeamCard(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         shape = shape,
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.45f),
     ) {

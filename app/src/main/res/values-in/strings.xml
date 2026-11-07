@@ -66,6 +66,7 @@
     <string name="about">Tentang</string>
     <string name="language">Bahasa</string>
     <string name="languageDesc">Atur bahasa aplikasi</string>
+    <string name="languageSystemDefault">Default sistem</string>
     <string name="changelog">Catatan Perubahan</string>
     <string name="issueTracker">Pelacak Masalah</string>
     <string name="appDescription">Metrik baterai langsung yang disematkan ke bilah status Anda</string>

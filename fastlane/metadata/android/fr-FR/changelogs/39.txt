@@ -1,0 +1,7 @@
+• Ajout d'une page de paramètres de langue pour Android 12 ou antérieur
+• Les nouvelles installations n'affichent que le dernier journal des modifications
+• La page d'accueil s'anime désormais pendant la charge
+• Touchez rapidement la puissance sur la page d'accueil pour la gonfler
+• DM Sans remplacée par Google Sans Flex
+• Petites améliorations de l'interface
+• Logo Liberapay mis à jour

@@ -1,0 +1,7 @@
+• Added Language settings page for Android 12 or lower
+• Fresh app installs only show latest changelog
+• Home page now animates when charging
+• Tap the power reading on the home page quickly to pump it up
+• Replaced DM Sans with Google Sans Flex
+• Small UI improvements
+• Updated Liberapay logo

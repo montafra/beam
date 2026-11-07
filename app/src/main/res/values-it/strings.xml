@@ -65,6 +65,7 @@
     <string name="about">Informazioni</string>
     <string name="language">Lingua</string>
     <string name="languageDesc">Imposta la lingua dell\'app</string>
+    <string name="languageSystemDefault">Predefinita di sistema</string>
     <string name="changelog">Novità</string>
     <string name="issueTracker">Segnalazione problemi</string>
     <string name="appDescription">Aggiornamenti in tempo reale sullo stato della batteria dentro la barra di stato</string>

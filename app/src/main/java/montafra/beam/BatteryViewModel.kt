@@ -22,6 +22,8 @@ data class BatteryData(
     val timeToFullCharge: String = "-",
     val screenTime: String = "-",
     val chargeLevelFloat: Float = 0f,
+    // null until the service has reported, so the UI can tell "unknown" from "unplugged".
+    val plugged: Boolean? = null,
 )
 
 class BatteryViewModel(app: Application) : AndroidViewModel(app) {
@@ -46,6 +48,7 @@ class BatteryViewModel(app: Application) : AndroidViewModel(app) {
                 timeToFullCharge = intent.getStringExtra("timeToFullCharge") ?: ind,
                 screenTime = intent.getStringExtra("screenTime") ?: ind,
                 chargeLevelFloat = levelFloat,
+                plugged = if (intent.hasExtra("plugged")) intent.getBooleanExtra("plugged", false) else null,
             )
         }
     }

@@ -17,6 +17,8 @@ import androidx.compose.ui.text.font.Typeface
 import androidx.compose.ui.unit.sp
 import kotlin.math.roundToInt
 import montafra.beam.BeamFont
+import montafra.beam.heroPressWeight
+import montafra.beam.heroRestWeight
 import montafra.beam.mapHeroWeight
 import montafra.beam.typeface
 
@@ -127,21 +129,59 @@ fun TextStyle.beamWeight(weight: FontWeight): TextStyle {
     return remember(this, font, weight, adjust) { pinned(context, font, adjust, weight) }
 }
 
-// Quantised so a press produces ~20 distinct typefaces instead of ~500. Compose caches
-// typefaces in a small LRU, and an unquantised sweep thrashes it badly enough to rebuild
-// faces mid-animation; 25-point steps are indistinguishable by eye. It also bounds how many
-// entries the hero morph can add to familyCache.
+// The final hero weight is quantised, so the full press-to-pump range visits at most ~40
+// distinct typefaces per font instead of ~1000. Compose caches typefaces in a small LRU, and
+// an unquantised sweep thrashes it badly enough to rebuild faces mid-animation; 25-point
+// steps are indistinguishable by eye. It also bounds how many entries the hero morph can add
+// to familyCache.
 private const val heroWeightStep = 25
 
+// The rapid-tap pump spends the real wght axis over the first half of its range, then a
+// synthetic outline over the rest (see heroOutlineFor).
+private const val heroPumpAxisSpan = 0.5f
+
+// The system font's heaviest face (Roboto Black), for the "default" font, which has no BeamFont.
+private const val systemMaxWeight = 900
+
+// Front-loads a 0..1 ramp so the first pump steps already read clearly.
+private fun easeOut(x: Float): Float = 1f - (1f - x) * (1f - x)
+
 /**
- * The weight to draw the hero number at for a raw animation value, remapped onto the
- * selected font's axis. Callers must feed the result to both the family and the TextStyle
+ * The weight to draw the hero number at. [authored] is the tap morph's raw value, remapped
+ * onto the selected font's axis; [pump] is the rapid-tap pump (0 at rest, 1 at its top step,
+ * with spring overshoot past either end). The pump climbs the font's real headroom past rest,
+ * front-loaded into the first half of its range; below 0 — the pop's wobble — it dips into
+ * the press range instead. Callers must feed the result to both the family and the TextStyle
  * so the requested weight and the declared entry always agree.
  */
-fun heroWeightFor(key: String, authored: Int): Int {
-    val stepped = (authored.toFloat() / heroWeightStep).roundToInt() * heroWeightStep
-    return BeamFont.forKey(key)?.mapHeroWeight(stepped)
-        ?: stepped.coerceIn(1, 1000)
+fun heroWeightFor(key: String, authored: Int, pump: Float): Int {
+    val font = BeamFont.forKey(key)
+    val base = font?.mapHeroWeight(authored) ?: authored.coerceIn(1, 1000)
+    val top = font?.clampWeight(heroRestWeight) ?: heroRestWeight
+    val shift = if (pump >= 0f) {
+        val max = font?.maxWeight ?: systemMaxWeight
+        (max - top) * easeOut((pump / heroPumpAxisSpan).coerceAtMost(1f))
+    } else {
+        val bottom = font?.clampWeight(heroPressWeight) ?: heroPressWeight
+        (top - bottom) * pump
+    }
+    val stepped = ((base + shift) / heroWeightStep).roundToInt() * heroWeightStep
+    return font?.clampWeight(stepped) ?: stepped.coerceIn(1, 1000)
+}
+
+/**
+ * How much of the hero pump's synthetic outline to draw: 0 at rest, about 1 at the top step.
+ * It covers what the font's wght axis can't — the second half of the pump on fonts with
+ * headroom past rest, and the whole pump on fonts that top out at rest (Space Grotesk, Ubuntu
+ * Sans Mono), where it is the only thing that thickens the number.
+ */
+fun heroOutlineFor(key: String, pump: Float): Float {
+    val font = BeamFont.forKey(key)
+    val hasHeadroom = font == null || font.maxWeight > font.clampWeight(heroRestWeight)
+    val start = if (hasHeadroom) heroPumpAxisSpan else 0f
+    val x = ((pump - start) / (1f - start)).coerceAtLeast(0f)
+    // Past the top step (spring overshoot) keep growing linearly rather than folding back.
+    return (if (x <= 1f) easeOut(x) else x).coerceAtMost(1.2f)
 }
 
 // The hero number's tap effect morphs weight frame by frame; "default" falls back to the

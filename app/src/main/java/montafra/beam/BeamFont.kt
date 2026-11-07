@@ -25,7 +25,7 @@ enum class BeamFont(
 ) {
     Inter("inter", "Inter", R.font.inter, 100, 900),
     Gantari("gantari", "Gantari", R.font.gantari, 100, 900),
-    DmSans("dm_sans", "DM Sans", R.font.dm_sans, 100, 1000),
+    GoogleSansFlex("google_sans_flex", "Google Sans Flex", R.font.google_sans_flex, 1, 1000),
     SpaceGrotesk("space_grotesk", "Space Grotesk", R.font.space_grotesk, 300, 700),
     JetBrainsMono("jetbrains_mono", "JetBrains Mono", R.font.jetbrains_mono, 100, 800),
     UbuntuSansMono("ubuntu_sans_mono", "Ubuntu Sans Mono", R.font.ubuntu_sans_mono, 400, 700);
@@ -34,8 +34,12 @@ enum class BeamFont(
     fun clampWeight(weight: Int): Int = weight.coerceIn(minWeight, maxWeight)
 
     companion object {
+        /** Retired keys and the font that took their place, so an old pick isn't silently lost. */
+        private val legacyKeys = mapOf("dm_sans" to GoogleSansFlex)
+
         /** `null` for "default" and for any key we no longer ship — both mean the system font. */
-        fun forKey(key: String?): BeamFont? = entries.firstOrNull { it.key == key }
+        fun forKey(key: String?): BeamFont? =
+            legacyKeys[key] ?: entries.firstOrNull { it.key == key }
     }
 }
 

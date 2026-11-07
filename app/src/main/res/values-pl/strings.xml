@@ -65,6 +65,7 @@
     <string name="about">O aplikacji</string>
     <string name="language">Język</string>
     <string name="languageDesc">Ustaw język aplikacji</string>
+    <string name="languageSystemDefault">Domyślny systemowy</string>
     <string name="changelog">Lista zmian</string>
     <string name="issueTracker">Zgłaszanie problemów</string>
     <string name="appDescription">Bieżące dane baterii przypięte do paska stanu</string>

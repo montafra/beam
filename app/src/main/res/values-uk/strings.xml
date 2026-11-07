@@ -65,6 +65,7 @@
     <string name="about">Про застосунок</string>
     <string name="language">Мова</string>
     <string name="languageDesc">Встановити мову застосунку</string>
+    <string name="languageSystemDefault">Як у системі</string>
     <string name="changelog">Журнал змін</string>
     <string name="issueTracker">Відстеження проблем</string>
     <string name="appDescription">Актуальні дані акумулятора, закріплені в рядку стану</string>

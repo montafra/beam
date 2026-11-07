@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
+import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.Icon
 import android.os.Binder
@@ -103,6 +104,11 @@ class StatusService : Service() {
     private var stateRestored = false
     private var notificationEnabled = true
     private var useFahrenheit = false
+    // The in-app language pick (API < 33). Every getString() here goes through getResources(), so
+    // swapping this localizes the notification, the alarms and the strings broadcast to the main
+    // screen alike. Null means the system locale; appLanguage is the tag it was built for.
+    private var localizedResources: Resources? = null
+    private var appLanguage: String? = null
     private var initialized = false
     private lateinit var msgReceiver: MsgReceiver
     private val metricOrder = listOf("W", "A", "Ah", "C", "V", "Wh", "%")
@@ -180,6 +186,7 @@ class StatusService : Service() {
 
     private fun loadSettings() {
         val settings = getSharedPreferences(settingsName, MODE_MULTI_PROCESS)
+        if (applyAppLanguage(settings)) createAlarmChannel()
         notificationEnabled = settings.getBoolean("notificationEnabled", true)
         if (!notificationEnabled) stopForeground(STOP_FOREGROUND_REMOVE)
         battery.currentScalar = settings.getFloat("currentScalar", 1f).toDouble()
@@ -203,6 +210,17 @@ class StatusService : Service() {
         }
         alarmRepeatIntervalMs = settings.getInt("alarmRepeatIntervalMin", alarmRepeatDefaultMin) * 60_000L
     }
+
+    /** Rebuilds [localizedResources] if the in-app language changed; true when it did. */
+    private fun applyAppLanguage(settings: SharedPreferences): Boolean {
+        val language = settings.getString("appLanguage", "") ?: ""
+        if (language == appLanguage) return false
+        appLanguage = language
+        localizedResources = appLanguageOverride(this)?.let { createConfigurationContext(it).resources }
+        return true
+    }
+
+    override fun getResources(): Resources = localizedResources ?: super.getResources()
 
     /**
      * Loads the state this service owns and repairs whatever the previous process left behind.
@@ -428,6 +446,8 @@ class StatusService : Service() {
 
         battery = Battery(applicationContext)
         snapshot = battery.snapshot()
+        // Before the channels, so the alarm channel is named in the picked language from the start.
+        applyAppLanguage(getSharedPreferences(settingsName, MODE_MULTI_PROCESS))
 
         noteMgr = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         noteMgr.createNotificationChannel(
@@ -439,15 +459,7 @@ class StatusService : Service() {
                 description = "Continuously displays current battery power consumption"
             }
         )
-        noteMgr.createNotificationChannel(
-            NotificationChannel(
-                alarmChannelId,
-                getString(R.string.alarmChannelName),
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                description = getString(R.string.alarmChannelDesc)
-            }
-        )
+        createAlarmChannel()
 
         noteIntent = PendingIntent.getActivity(
             this,
@@ -473,6 +485,20 @@ class StatusService : Service() {
                 addAction(Intent.ACTION_SHUTDOWN)
             },
             RECEIVER_NOT_EXPORTED,
+        )
+    }
+
+    // Also re-run on a language change: re-creating an existing channel renames it in place and
+    // leaves the user's channel settings alone.
+    private fun createAlarmChannel() {
+        noteMgr.createNotificationChannel(
+            NotificationChannel(
+                alarmChannelId,
+                getString(R.string.alarmChannelName),
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = getString(R.string.alarmChannelDesc)
+            }
         )
     }
 
@@ -614,6 +640,9 @@ class StatusService : Service() {
                     false -> no
                 }
             )
+            // Plug state for the home screen's bolt and plug-in animation. Plug, not charging
+            // status, for the same charge-limiting reason as checkAlarms().
+            .putExtra("plugged", snapshot.plugged ?: snapshot.charging)
             .putExtra("chargeLevel", fmtPercent(snapshot.levelPercent) + "%")
             .putExtra("chargingSince",
                 when (val pluggedInAt = pluggedInAt) {

@@ -220,10 +220,9 @@ fun SettingsScreen(navController: BeamNavController) {
                         CardGap()
                     }
                 }
-                val showLanguage = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
                 BeamCard(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = if (showLanguage) cardShapeMiddle() else cardShapeBottom(),
+                    shape = cardShapeMiddle(),
                 ) {
                     ListItem(
                         headlineContent = { Text(stringResource(R.string.theme)) },
@@ -243,26 +242,28 @@ fun SettingsScreen(navController: BeamNavController) {
                         },
                     )
                 }
-                if (showLanguage) {
-                    CardGap()
-                    BeamCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = cardShapeBottom(),
-                    ) {
-                        ListItem(
-                            headlineContent = { Text(stringResource(R.string.language)) },
-                            supportingContent = { Text(stringResource(R.string.languageDesc)) },
-                            leadingContent = {
-                                Icon(
-                                    painter = painterResource(R.drawable.ico_language),
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.size(24.dp),
-                                )
-                            },
-                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                            modifier = Modifier.clickable {
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                CardGap()
+                BeamCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = cardShapeBottom(),
+                ) {
+                    ListItem(
+                        headlineContent = { Text(stringResource(R.string.language)) },
+                        supportingContent = { Text(stringResource(R.string.languageDesc)) },
+                        leadingContent = {
+                            Icon(
+                                painter = painterResource(R.drawable.ico_language),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(24.dp),
+                            )
+                        },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                        modifier = Modifier.clickable {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            // The system's per-app language page only exists from API 33;
+                            // below that the app hosts its own.
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                                 try {
                                     context.startActivity(
                                         Intent(Settings.ACTION_APP_LOCALE_SETTINGS, Uri.fromParts("package", context.packageName, null))
@@ -272,9 +273,11 @@ fun SettingsScreen(navController: BeamNavController) {
                                         Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null))
                                     )
                                 }
-                            },
-                        )
-                    }
+                            } else {
+                                navController.navigate("settings/language")
+                            }
+                        },
+                    )
                 }
             }
 
@@ -587,7 +590,7 @@ fun SettingsScreen(navController: BeamNavController) {
                                     painter = painterResource(R.drawable.ico_open_in_new),
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.size(18.dp),
+                                    modifier = Modifier.size(22.dp),
                                 )
                             }
                         }
@@ -632,7 +635,7 @@ fun SettingsScreen(navController: BeamNavController) {
                                     painter = painterResource(R.drawable.ico_open_in_new),
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.size(18.dp),
+                                    modifier = Modifier.size(22.dp),
                                 )
                             }
                         }
@@ -854,7 +857,7 @@ private fun DonateCard(
                     painter = painterResource(actionIconRes),
                     contentDescription = stringResource(actionContentDescRes),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(20.dp),
+                    modifier = Modifier.size(22.dp),
                 )
             }
         }

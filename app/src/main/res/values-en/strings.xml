@@ -66,6 +66,7 @@
     <string name="about">About</string>
     <string name="language">Language</string>
     <string name="languageDesc">Set the app\'s language</string>
+    <string name="languageSystemDefault">System default</string>
     <string name="changelog">Changelog</string>
     <string name="issueTracker">Issue tracker</string>
     <string name="appDescription">Live battery metrics pinned to your status bar</string>
@@ -85,7 +86,7 @@
     <string name="notificationDesc">Icon, entries</string>
     <string name="notificationEnableDesc">Persistent battery notification</string>
     <string name="workaroundsShortDesc">Device-specific fixes</string>
-    <string name="sourceCode">Source Code</string>
+    <string name="sourceCode">Source code</string>
     <string name="advancedSettings">Advanced Settings</string>
     <string name="advancedSection">Advanced</string>
     <string name="tweaks">Tweaks</string>
